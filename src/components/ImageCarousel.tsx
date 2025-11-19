@@ -17,14 +17,16 @@ const ImageCarousel = () => {
   }, []);
 
   return (
-    <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-card aspect-video">
+    <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-card aspect-video w-full scale-110">
       {images.map((image, index) => (
         <img
           key={index}
           src={image}
           alt={`Shopping showcase ${index + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            index === currentIndex ? "opacity-100" : "opacity-0"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${
+            index === currentIndex 
+              ? "opacity-100 translate-x-0" 
+              : "opacity-0 -translate-x-full"
           }`}
         />
       ))}

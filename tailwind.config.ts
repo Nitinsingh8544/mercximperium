@@ -91,6 +91,14 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "gradient": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -98,6 +106,8 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "float-delayed": "float-delayed 3.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out",
+        "gradient": "gradient 8s ease infinite",
+        "spin-slow": "spin-slow 20s linear infinite",
       },
     },
   },
