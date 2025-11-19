@@ -11,11 +11,13 @@ const Index = () => {
       <Header />
       
       <main className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        {/* Vibrant animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 animate-gradient" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/30 via-secondary/10 to-transparent animate-pulse" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/30 via-primary/10 to-transparent animate-pulse" />
-        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,hsl(var(--secondary)/0.1)_90deg,transparent_180deg,hsl(var(--primary)/0.1)_270deg,transparent_360deg)] animate-spin-slow" />
+        {/* Ultra vibrant animated background with multiple layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-secondary/20 to-primary/10 animate-gradient bg-[length:200%_200%]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/40 via-secondary/15 to-transparent animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/40 via-primary/15 to-transparent animate-pulse-slow animation-delay-1000" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-secondary/10 to-transparent animate-pulse-slower" />
+        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,hsl(var(--secondary)/0.15)_90deg,transparent_180deg,hsl(var(--primary)/0.15)_270deg,transparent_360deg)] animate-spin-slow" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-hero-brown/5 via-transparent to-hero-green/5 animate-gradient-shift" />
         
         {/* Animated shopping items */}
         <AnimatedItems />

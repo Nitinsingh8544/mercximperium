@@ -95,9 +95,21 @@ export default {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        "gradient-shift": {
+          "0%, 100%": { backgroundPosition: "0% 0%" },
+          "50%": { backgroundPosition: "100% 100%" },
+        },
         "spin-slow": {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "0.3" },
+          "50%": { opacity: "0.6" },
+        },
+        "pulse-slower": {
+          "0%, 100%": { opacity: "0.2" },
+          "50%": { opacity: "0.5" },
         },
       },
       animation: {
@@ -107,7 +119,10 @@ export default {
         "float-delayed": "float-delayed 3.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out",
         "gradient": "gradient 8s ease infinite",
+        "gradient-shift": "gradient-shift 12s ease infinite",
         "spin-slow": "spin-slow 20s linear infinite",
+        "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        "pulse-slower": "pulse-slower 6s ease-in-out infinite",
       },
     },
   },
