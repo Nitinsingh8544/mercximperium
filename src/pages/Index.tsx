@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import Header from "@/components/Header";
 import AnimatedItems from "@/components/AnimatedItems";
+import ImageCarousel from "@/components/ImageCarousel";
 
 const Index = () => {
   return (
@@ -10,29 +11,19 @@ const Index = () => {
       <Header />
       
       <main className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        {/* Enhanced background with gradients */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+        
         {/* Animated shopping items */}
         <AnimatedItems />
 
         <div className="container mx-auto px-6 py-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Video */}
+            {/* Left side - Image Carousel */}
             <div className="animate-fade-in-up">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-card">
-                <video
-                  className="w-full aspect-video object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                >
-                  <source
-                    src="https://assets.mixkit.co/videos/preview/mixkit-person-adding-products-to-an-online-shopping-cart-46634-large.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none" />
-              </div>
+              <ImageCarousel />
             </div>
 
             {/* Right side - Content */}
