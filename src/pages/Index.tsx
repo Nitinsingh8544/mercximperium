@@ -11,10 +11,11 @@ const Index = () => {
       <Header />
       
       <main className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        {/* Enhanced background with gradients */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/10" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+        {/* Vibrant animated background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 animate-gradient" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/30 via-secondary/10 to-transparent animate-pulse" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/30 via-primary/10 to-transparent animate-pulse" />
+        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,hsl(var(--secondary)/0.1)_90deg,transparent_180deg,hsl(var(--primary)/0.1)_270deg,transparent_360deg)] animate-spin-slow" />
         
         {/* Animated shopping items */}
         <AnimatedItems />
@@ -27,40 +28,28 @@ const Index = () => {
             </div>
 
             {/* Right side - Content */}
-            <div className="space-y-8 animate-fade-in-up">
+            <div className="space-y-6 animate-fade-in-up">
               <div>
-                <h1 className="text-6xl font-bold leading-tight mb-6">
-                  The Live Shopping{" "}
+                <h1 className="text-4xl font-bold leading-tight mb-4">
+                  Your Imperial{" "}
                   <span className="text-primary">Marketplace</span>
                 </h1>
-                <p className="text-2xl text-muted-foreground mb-8">
-                  Shop, sell, and connect around the things you love.
+                <p className="text-lg text-muted-foreground">
+                  Reign over commerce.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-4">
                 <Link to="/signup">
-                  <Button size="lg" variant="hero" className="text-lg px-8">
+                  <Button size="lg" variant="hero" className="px-8">
                     Get Started
                   </Button>
                 </Link>
                 <Link to="/how-it-works">
-                  <Button size="lg" variant="hero-outline" className="text-lg px-8">
+                  <Button size="lg" variant="hero-outline" className="px-8">
                     Learn More
                   </Button>
                 </Link>
-              </div>
-
-              <div className="pt-8 border-t border-border">
-                <p className="text-sm text-muted-foreground mb-4">Download our app</p>
-                <div className="flex gap-4">
-                  <Button variant="outline" size="lg">
-                    App Store
-                  </Button>
-                  <Button variant="outline" size="lg">
-                    Google Play
-                  </Button>
-                </div>
               </div>
             </div>
           </div>
