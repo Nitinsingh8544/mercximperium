@@ -38,14 +38,11 @@ const Index = () => {
                   Your Imperial{" "}
                   <span className="text-primary">Marketplace</span>
                 </h1>
-                <p className="text-lg text-muted-foreground mb-3">
-                  Reign over commerce.
+                <p className="text-lg text-muted-foreground mb-4">
+                  Live shopping. Exclusive deals. Imperial experience.
                 </p>
-                <p className="text-xl font-semibold text-foreground/90 mb-2">
-                  Experience Live Commerce Like Never Before
-                </p>
-                <p className="text-base text-muted-foreground leading-relaxed">
-                  Join thousands of shoppers in real-time shopping events. Discover exclusive deals, interact with sellers live, and shop with confidence in our imperial marketplace.
+                <p className="text-base text-muted-foreground">
+                  Shop in real-time with thousands of buyers.
                 </p>
               </div>
 
