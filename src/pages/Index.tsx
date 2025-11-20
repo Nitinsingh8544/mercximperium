@@ -12,12 +12,14 @@ const Index = () => {
       
       <main className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Ultra vibrant animated background with multiple layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-secondary/20 to-primary/10 animate-gradient bg-[length:200%_200%]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/40 via-secondary/15 to-transparent animate-pulse-slow" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/40 via-primary/15 to-transparent animate-pulse-slow animation-delay-1000" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-secondary/10 to-transparent animate-pulse-slower" />
-        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,hsl(var(--secondary)/0.15)_90deg,transparent_180deg,hsl(var(--primary)/0.15)_270deg,transparent_360deg)] animate-spin-slow" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-hero-brown/5 via-transparent to-hero-green/5 animate-gradient-shift" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/30 to-primary/15 animate-gradient bg-[length:200%_200%]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/50 via-secondary/20 to-transparent animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/50 via-primary/20 to-transparent animate-pulse-slow animation-delay-1000" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-secondary/15 to-transparent animate-pulse-slower" />
+        <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,transparent_0deg,hsl(var(--secondary)/0.25)_90deg,transparent_180deg,hsl(var(--primary)/0.25)_270deg,transparent_360deg)] animate-spin-slow" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-hero-brown/10 via-transparent to-hero-green/10 animate-gradient-shift" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-hero-green/30 via-transparent to-transparent animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-hero-brown/30 via-transparent to-transparent animate-pulse-slower" />
         
         {/* Animated shopping items */}
         <AnimatedItems />
