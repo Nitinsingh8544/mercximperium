@@ -9,22 +9,22 @@ const AnimatedItems = () => {
       <img
         src={shoppingBag}
         alt=""
-        className="absolute top-20 right-32 w-32 h-32 opacity-95 animate-float drop-shadow-2xl"
+        className="absolute top-20 right-32 w-16 h-16 opacity-90 animate-float drop-shadow-xl"
       />
       <img
         src={shoppingCart}
         alt=""
-        className="absolute top-48 right-16 w-36 h-36 opacity-90 animate-float-delayed drop-shadow-2xl"
+        className="absolute top-48 right-16 w-20 h-20 opacity-85 animate-float-delayed drop-shadow-xl"
       />
       <img
         src={giftBox}
         alt=""
-        className="absolute bottom-40 right-40 w-28 h-28 opacity-95 animate-float drop-shadow-2xl"
+        className="absolute bottom-40 right-40 w-14 h-14 opacity-90 animate-float drop-shadow-xl"
       />
       <img
         src={storefront}
         alt=""
-        className="absolute bottom-20 right-20 w-40 h-40 opacity-85 animate-float-delayed drop-shadow-2xl"
+        className="absolute bottom-20 right-20 w-24 h-24 opacity-80 animate-float-delayed drop-shadow-xl"
       />
     </div>
   );
