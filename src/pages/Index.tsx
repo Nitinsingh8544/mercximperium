@@ -24,25 +24,25 @@ const Index = () => {
         {/* Animated shopping items */}
         <AnimatedItems />
 
-        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Left side - Image Carousel */}
-            <div className="animate-fade-in-up order-2 lg:order-1">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Image Carousel - Top on mobile, Left on desktop */}
+            <div className="animate-fade-in-up order-1 lg:order-1 mb-8 lg:mb-0">
               <ImageCarousel />
             </div>
 
-            {/* Right side - Content */}
-            <div className="space-y-4 sm:space-y-6 animate-fade-in-up order-1 lg:order-2">
+            {/* Content - Bottom on mobile, Right on desktop */}
+            <div className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in-up order-2 lg:order-2">
               <div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-4">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-3 sm:mb-4 md:mb-5">
                   Live shopping. Exclusive deals. Imperial experience.
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground">
                   Shop in real-time with thousands of buyers.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
                 <Link to="/signup" className="w-full sm:w-auto">
                   <Button size="lg" variant="hero" className="w-full sm:w-auto px-8">
                     Get Started
