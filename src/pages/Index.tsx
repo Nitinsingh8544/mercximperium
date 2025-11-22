@@ -24,36 +24,32 @@ const Index = () => {
         {/* Animated shopping items */}
         <AnimatedItems />
 
-        <div className="container mx-auto px-6 py-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left side - Image Carousel */}
-            <div className="animate-fade-in-up">
+            <div className="animate-fade-in-up order-2 lg:order-1">
               <ImageCarousel />
             </div>
 
             {/* Right side - Content */}
-            <div className="space-y-6 animate-fade-in-up">
+            <div className="space-y-4 sm:space-y-6 animate-fade-in-up order-1 lg:order-2">
               <div>
-                <h1 className="text-4xl font-bold leading-tight mb-4">
-                  Your Imperial{" "}
-                  <span className="text-primary">Marketplace</span>
-                </h1>
-                <p className="text-lg text-muted-foreground mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-4">
                   Live shopping. Exclusive deals. Imperial experience.
-                </p>
-                <p className="text-base text-muted-foreground">
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
                   Shop in real-time with thousands of buyers.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <Link to="/signup">
-                  <Button size="lg" variant="hero" className="px-8">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Link to="/signup" className="w-full sm:w-auto">
+                  <Button size="lg" variant="hero" className="w-full sm:w-auto px-8">
                     Get Started
                   </Button>
                 </Link>
-                <Link to="/how-it-works">
-                  <Button size="lg" variant="hero-outline" className="px-8">
+                <Link to="/how-it-works" className="w-full sm:w-auto">
+                  <Button size="lg" variant="hero-outline" className="w-full sm:w-auto px-8">
                     Learn More
                   </Button>
                 </Link>
@@ -63,7 +59,7 @@ const Index = () => {
         </div>
 
         {/* How it works indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
           <Link to="/how-it-works">
             <Button variant="ghost" className="flex flex-col items-center gap-2">
               <span className="text-sm">How it works</span>
