@@ -17,13 +17,13 @@ const ImageCarousel = () => {
   }, []);
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[288px]">
+    <div className="relative w-full max-w-md mx-auto h-[200px] sm:h-[250px] md:h-[288px]">
       {images.map((image, index) => (
         <img
           key={index}
           src={image}
           alt={`Shopping showcase ${index + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-700 ease-out ${
+          className={`absolute inset-0 w-full h-full object-cover rounded-xl sm:rounded-2xl shadow-2xl transition-all duration-700 ease-out ${
             index === currentIndex 
               ? "opacity-100 translate-x-0 scale-100" 
               : index < currentIndex
