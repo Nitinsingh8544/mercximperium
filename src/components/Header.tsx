@@ -50,7 +50,7 @@ const Header = () => {
           </Link>
           <Link to="/signin">
             <Button 
-              variant="hero-outline" 
+              variant="ghost" 
               size="sm" 
               className={`text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6 transition-all ${
                 location.pathname === "/signin" 
@@ -63,7 +63,7 @@ const Header = () => {
           </Link>
           <Link to="/signup">
             <Button 
-              variant="hero" 
+              variant="ghost" 
               size="sm" 
               className={`text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6 transition-all ${
                 location.pathname === "/signup" 
