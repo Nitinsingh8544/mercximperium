@@ -1,10 +1,34 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import miLogo from "@/assets/mi-logo.png";
+import { useEffect, useState } from "react";
 
 const Header = () => {
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isLandingPage) return;
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLandingPage]);
+
+  const headerClasses = isLandingPage
+    ? `fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+        isScrolled
+          ? "backdrop-blur-md bg-background/60 border-border/40"
+          : "backdrop-blur-none bg-transparent border-transparent"
+      }`
+    : "fixed top-0 left-0 right-0 z-50 bg-transparent border-b border-transparent";
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm border-b border-border/30">
+    <header className={headerClasses}>
       <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 md:gap-3 text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-foreground hover:opacity-80 transition-opacity">
           <img src={miLogo} alt="Mi Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10" />

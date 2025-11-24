@@ -34,10 +34,10 @@ const Index = () => {
             {/* Content - Bottom on mobile, Right on desktop */}
             <div className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in-up order-2 lg:order-2">
               <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mb-3 sm:mb-4 md:mb-5">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight mb-2 sm:mb-3 md:mb-4">
                   Live shopping. Exclusive deals. Imperial experience.
                 </h1>
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground">
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground">
                   Shop in real-time with thousands of buyers.
                 </p>
               </div>
