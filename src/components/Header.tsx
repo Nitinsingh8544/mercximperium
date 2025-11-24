@@ -25,7 +25,7 @@ const Header = () => {
           ? "backdrop-blur-md bg-background/60 border-border/40"
           : "backdrop-blur-none bg-transparent border-transparent"
       }`
-    : "fixed top-0 left-0 right-0 z-50 bg-transparent border-b border-transparent";
+    : "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/40";
 
   return (
     <header className={headerClasses}>
@@ -37,13 +37,42 @@ const Header = () => {
 
         <nav className="flex items-center gap-1.5 sm:gap-2 md:gap-3 lg:gap-4">
           <Link to="/how-it-works" className="hidden md:block">
-            <Button variant="ghost" className="text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4">How it works</Button>
+            <Button 
+              variant="ghost" 
+              className={`text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4 transition-all ${
+                location.pathname === "/how-it-works" 
+                  ? "border-2 border-primary scale-105" 
+                  : ""
+              }`}
+            >
+              How it works
+            </Button>
           </Link>
           <Link to="/signin">
-            <Button variant="hero-outline" size="sm" className="text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6">Log in</Button>
+            <Button 
+              variant="hero-outline" 
+              size="sm" 
+              className={`text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6 transition-all ${
+                location.pathname === "/signin" 
+                  ? "border-2 border-primary scale-105" 
+                  : ""
+              }`}
+            >
+              Log in
+            </Button>
           </Link>
           <Link to="/signup">
-            <Button variant="hero" size="sm" className="text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6">Sign up</Button>
+            <Button 
+              variant="hero" 
+              size="sm" 
+              className={`text-xs sm:text-sm md:text-base px-2.5 sm:px-3 md:px-4 lg:px-6 transition-all ${
+                location.pathname === "/signup" 
+                  ? "border-2 border-primary scale-105" 
+                  : ""
+              }`}
+            >
+              Sign up
+            </Button>
           </Link>
         </nav>
       </div>

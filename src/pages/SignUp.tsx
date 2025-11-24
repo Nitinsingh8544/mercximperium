@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -27,7 +26,7 @@ const SignUp = () => {
             <CardTitle className="text-xl sm:text-2xl">Sign up</CardTitle>
             <CardDescription className="text-xs sm:text-sm">Get started on MercxImperium</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2.5">
             {/* Social Login Buttons */}
             <div className="space-y-2">
               <Button variant="outline" className="w-full">
@@ -56,25 +55,22 @@ const SignUp = () => {
             </div>
 
             {/* Full Name Input */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Full name</Label>
+            <div>
               <Input id="name" placeholder="First and last name" />
             </div>
 
             {/* Email Input */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div>
               <Input id="email" type="email" placeholder="name@example.com" />
             </div>
 
             {/* Password Input with Toggle */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div>
               <div className="relative">
                 <Input 
                   id="password" 
                   type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
+                  placeholder="Password" 
                   className="pr-10"
                 />
                 <button
@@ -88,8 +84,7 @@ const SignUp = () => {
             </div>
 
             {/* Country Selector */}
-            <div className="space-y-2">
-              <Label htmlFor="country">Country</Label>
+            <div>
               <Select defaultValue="us">
                 <SelectTrigger id="country">
                   <SelectValue placeholder="Select country" />
