@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
@@ -26,7 +25,7 @@ const SignIn = () => {
             <CardTitle className="text-xl sm:text-2xl">Log in</CardTitle>
             <CardDescription className="text-xs sm:text-sm">Welcome back to MercxImperium</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2.5">
             {/* Social Login Buttons */}
             <div className="space-y-2">
               <Button variant="outline" className="w-full">
@@ -62,19 +61,17 @@ const SignIn = () => {
             </div>
 
             {/* Email/Username Input */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email or username</Label>
-              <Input id="email" type="text" placeholder="name@example.com" />
+            <div>
+              <Input id="email" type="text" placeholder="Email or username" />
             </div>
 
             {/* Password Input with Toggle */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div>
               <div className="relative">
                 <Input 
                   id="password" 
                   type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
+                  placeholder="Password" 
                   className="pr-10"
                 />
                 <button
