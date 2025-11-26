@@ -8,6 +8,12 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/Dashboard";
+import Browse from "./pages/Browse";
+import Activity from "./pages/Activity";
+import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +28,12 @@ const App = () => (
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/browse" element={<Browse />} />
+          <Route path="/activity" element={<Activity />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications" element={<Notifications />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
