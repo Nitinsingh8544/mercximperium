@@ -1,11 +1,27 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import miLogo from "@/assets/mi-logo.png";
-import { Search, Heart, MessageSquare, Bell, Gift, User } from "lucide-react";
+import { Search, Heart, MessageSquare, Bell, Gift, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthenticatedHeader = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut, user } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been signed out successfully.",
+    });
+    navigate("/");
+  };
+
+  const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40">
@@ -107,10 +123,19 @@ const AuthenticatedHeader = () => {
                 className={`${location.pathname === "/profile" ? "bg-primary/10" : ""}`}
               >
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
-                  N
+                  {userInitial}
                 </div>
               </Button>
             </Link>
+
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleSignOut}
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
           </div>
         </div>
 
