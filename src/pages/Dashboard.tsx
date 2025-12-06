@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   const liveStreams = [
     { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
     { id: 2, host: "streetwearking", title: "Limited Edition Streetwear", viewers: 291, image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400" },
@@ -49,7 +51,7 @@ const Dashboard = () => {
           <div className="flex-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {liveStreams.map((stream) => (
-                <Card key={stream.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
+                <Card key={stream.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/live/${stream.id}`)}>
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img 
                       src={stream.image} 
