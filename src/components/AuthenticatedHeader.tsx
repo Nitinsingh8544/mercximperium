@@ -1,25 +1,13 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import miLogo from "@/assets/mi-logo.png";
-import { Search, Heart, MessageSquare, Bell, Gift, LogOut } from "lucide-react";
+import { Search, Heart, MessageSquare, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
 
 const AuthenticatedHeader = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { signOut, user } = useAuth();
-  const { toast } = useToast();
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: "Signed out",
-      description: "You have been signed out successfully.",
-    });
-    navigate("/");
-  };
+  const { user } = useAuth();
 
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
@@ -112,30 +100,17 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
-            <Button variant="ghost" size="icon">
-              <Gift className="w-5 h-5" />
-            </Button>
-
             <Link to="/profile">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={`${location.pathname === "/profile" ? "bg-primary/10" : ""}`}
+                className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
               >
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
                   {userInitial}
                 </div>
               </Button>
             </Link>
-
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleSignOut}
-              title="Sign out"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 
