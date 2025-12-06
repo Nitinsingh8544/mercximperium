@@ -16,6 +16,7 @@ import Activity from "./pages/Activity";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
+import LiveStream from "./pages/LiveStream";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
