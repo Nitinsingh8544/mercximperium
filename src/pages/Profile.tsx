@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { 
-  Gift, 
   Store, 
   CreditCard, 
   Bookmark, 
@@ -35,7 +34,6 @@ const Profile = () => {
   const userName = user?.email?.split("@")[0] || "Your Name";
 
   const menuItems = [
-    { icon: Gift, label: "Refer Friends", to: "/refer" },
     { icon: Store, label: "Become a Seller", to: "/become-seller" },
     { icon: CreditCard, label: "Payments & Shipping", to: "/payments" },
     { icon: Bookmark, label: "Saved", to: "/saved" },
@@ -66,9 +64,11 @@ const Profile = () => {
               <span>0 Followers</span>
             </div>
           </div>
-          <Button variant="ghost" size="icon">
-            <ChevronRight className="w-5 h-5" />
-          </Button>
+          <Link to="/profile-view">
+            <Button variant="ghost" size="icon">
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
 
         {/* Menu Grid */}

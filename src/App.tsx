@@ -15,6 +15,7 @@ import Browse from "./pages/Browse";
 import Activity from "./pages/Activity";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/activity" element={<ProtectedRoute><Activity /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/profile-view" element={<ProtectedRoute><ProfileView /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
