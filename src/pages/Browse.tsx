@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Browse = () => {
+  const [activeTab, setActiveTab] = useState("recommended");
   const categories = [
     { name: "Sneakers & Streetwear", icon: "👟", viewers: "2.8K" },
     { name: "Home & Garden", icon: "🌿", viewers: "1.2K" },
@@ -23,6 +25,22 @@ const Browse = () => {
     { name: "Music", icon: "🎵", viewers: "890" },
   ];
 
+  const parseViewers = (viewers: string): number => {
+    const num = parseFloat(viewers.replace("K", ""));
+    return viewers.includes("K") ? num * 1000 : num;
+  };
+
+  const filteredCategories = useMemo(() => {
+    switch (activeTab) {
+      case "popular":
+        return [...categories].sort((a, b) => parseViewers(b.viewers) - parseViewers(a.viewers));
+      case "az":
+        return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return categories;
+    }
+  }, [activeTab]);
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Themed background */}
@@ -36,7 +54,7 @@ const Browse = () => {
           Browse by Category
         </h1>
 
-        <Tabs defaultValue="recommended" className="mb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
           <TabsList className="bg-muted">
             <TabsTrigger value="recommended">Recommended</TabsTrigger>
             <TabsTrigger value="popular">Popular</TabsTrigger>
@@ -45,7 +63,7 @@ const Browse = () => {
         </Tabs>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {categories.map((category) => (
+          {filteredCategories.map((category) => (
             <Card 
               key={category.name} 
               className="hover:shadow-lg transition-all cursor-pointer group hover:scale-105"
