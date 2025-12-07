@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, Volume2, Camera, Share2, Grid3X3, Timer } from "lucide-react";
+import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 interface LiveStreamVideoProps {
   currentBid: number;
@@ -11,30 +12,44 @@ interface LiveStreamVideoProps {
 
 const LiveStreamVideo = ({ currentBid, onBid }: LiveStreamVideoProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isSellerProfileOpen, setIsSellerProfileOpen] = useState(false);
+
+  const sellerInfo = {
+    name: "stewsshoes",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
+    rating: 4.8,
+  };
 
   return (
+    <>
     <div className="relative rounded-xl overflow-hidden bg-card border border-border">
       {/* Video Area */}
       <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
         {/* Streamer Info Overlay */}
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-          <div className="flex items-center gap-3">
+          <div 
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setIsSellerProfileOpen(true)}
+          >
             <Avatar className="h-10 w-10 border-2 border-secondary">
-              <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" />
+              <AvatarImage src={sellerInfo.image} />
               <AvatarFallback>SS</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold text-foreground">stewsshoes</p>
+              <p className="font-semibold text-foreground">{sellerInfo.name}</p>
               <div className="flex items-center gap-1 text-sm">
                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-muted-foreground">4.8</span>
+                <span className="text-muted-foreground">{sellerInfo.rating}</span>
               </div>
             </div>
             <Button
               variant={isFollowing ? "outline" : "secondary"}
               size="sm"
               className="ml-2"
-              onClick={() => setIsFollowing(!isFollowing)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFollowing(!isFollowing);
+              }}
             >
               {isFollowing ? "Following" : "Follow"}
             </Button>
@@ -118,6 +133,15 @@ const LiveStreamVideo = ({ currentBid, onBid }: LiveStreamVideoProps) => {
         </div>
       </div>
     </div>
+
+      <SellerProfileModal
+        isOpen={isSellerProfileOpen}
+        onClose={() => setIsSellerProfileOpen(false)}
+        sellerName={sellerInfo.name}
+        sellerImage={sellerInfo.image}
+        sellerRating={sellerInfo.rating}
+      />
+    </>
   );
 };
 
