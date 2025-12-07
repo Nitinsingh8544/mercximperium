@@ -3,16 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import EditProfileModal from "@/components/EditProfileModal";
-import ShareProfileModal from "@/components/ShareProfileModal";
-import MessageChatModal from "@/components/MessageChatModal";
-import { Share, Camera, MoreHorizontal } from "lucide-react";
+import { Share, Camera } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const ProfileView = () => {
   const { user } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
   const userName = user?.email?.split("@")[0] || "Your Name";
@@ -51,25 +47,12 @@ const ProfileView = () => {
             <Button 
               variant="outline" 
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-              onClick={() => setIsChatModalOpen(true)}
+              onClick={() => setIsEditModalOpen(true)}
             >
-              Message
-            </Button>
-            <Button 
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Follow
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="border border-border"
-              onClick={() => setIsShareModalOpen(true)}
-            >
-              <Share className="w-5 h-5" />
+              Edit Profile
             </Button>
             <Button variant="ghost" size="icon" className="border border-border">
-              <MoreHorizontal className="w-5 h-5" />
+              <Share className="w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -129,19 +112,6 @@ const ProfileView = () => {
       <EditProfileModal 
         isOpen={isEditModalOpen} 
         onClose={() => setIsEditModalOpen(false)} 
-      />
-
-      <ShareProfileModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        userName={userName}
-      />
-
-      <MessageChatModal
-        isOpen={isChatModalOpen}
-        onClose={() => setIsChatModalOpen(false)}
-        userName={userName}
-        userInitial={userInitial}
       />
     </div>
   );

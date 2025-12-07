@@ -52,19 +52,17 @@ const AuthenticatedHeader = () => {
             </nav>
           </div>
 
-          {/* Search Bar - only on home/browse pages */}
-          {(location.pathname === "/dashboard" || location.pathname === "/browse") && (
-            <div className="hidden lg:flex flex-1 max-w-md">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
-                  type="text" 
-                  placeholder="Search MercxImperium" 
-                  className="pl-10 bg-muted/50"
-                />
-              </div>
+          {/* Search Bar */}
+          <div className="hidden lg:flex flex-1 max-w-md">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input 
+                type="text" 
+                placeholder="Search MercxImperium" 
+                className="pl-10 bg-muted/50"
+              />
             </div>
-          )}
+          </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -116,19 +114,17 @@ const AuthenticatedHeader = () => {
           </div>
         </div>
 
-        {/* Mobile Search - only on home/browse pages */}
-        {(location.pathname === "/dashboard" || location.pathname === "/browse") && (
-          <div className="lg:hidden mt-3">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input 
-                type="text" 
-                placeholder="Search MercxImperium" 
-                className="pl-10 bg-muted/50"
-              />
-            </div>
+        {/* Mobile Search */}
+        <div className="lg:hidden mt-3">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              type="text" 
+              placeholder="Search MercxImperium" 
+              className="pl-10 bg-muted/50"
+            />
           </div>
-        )}
+        </div>
       </div>
     </header>
   );
