@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
+import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [selectedSeller, setSelectedSeller] = useState<{ name: string; image?: string } | null>(null);
   
   const liveStreams = [
     { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
@@ -13,7 +16,22 @@ const Dashboard = () => {
     { id: 4, host: "fashionfinds", title: "Designer Fashion Sale 🛍️", viewers: 94, image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400" },
     { id: 5, host: "vintagevault", title: "Vintage Treasures Collection", viewers: 135, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
     { id: 6, host: "urbanstyle", title: "Urban Style Essentials", viewers: 88, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
+    { id: 7, host: "techgadgets", title: "Latest Tech Gadgets 📱", viewers: 203, image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400" },
+    { id: 8, host: "jewelryqueen", title: "Handmade Jewelry Collection", viewers: 156, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
+    { id: 9, host: "booklover", title: "Rare Book Finds 📚", viewers: 67, image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
+    { id: 10, host: "fitnessgear", title: "Premium Gym Equipment", viewers: 189, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
+    { id: 11, host: "artcollector", title: "Original Art Pieces 🎨", viewers: 112, image: "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400" },
+    { id: 12, host: "gamingzone", title: "Gaming Setup Sale", viewers: 245, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400" },
+    { id: 13, host: "homedecore", title: "Modern Home Decor ✨", viewers: 78, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400" },
+    { id: 14, host: "watchexpert", title: "Luxury Watch Collection", viewers: 167, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" },
+    { id: 15, host: "plantparent", title: "Rare Plants & Succulents 🌱", viewers: 134, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400" },
+    { id: 16, host: "musicstore", title: "Vinyl Records & Instruments", viewers: 98, image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400" },
   ];
+
+  const handleSellerClick = (e: React.MouseEvent, host: string) => {
+    e.stopPropagation();
+    setSelectedSeller({ name: host });
+  };
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -64,15 +82,21 @@ const Dashboard = () => {
                   </div>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                      <button
+                        onClick={(e) => handleSellerClick(e, stream.host)}
+                        className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 hover:bg-primary/30 hover:ring-2 hover:ring-secondary transition-all"
+                      >
                         <span className="text-sm font-semibold text-primary">
                           {stream.host.charAt(0).toUpperCase()}
                         </span>
-                      </div>
+                      </button>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-foreground truncate">
+                        <button
+                          onClick={(e) => handleSellerClick(e, stream.host)}
+                          className="font-medium text-sm text-foreground truncate block hover:text-secondary transition-colors text-left"
+                        >
                           {stream.host}
-                        </p>
+                        </button>
                         <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                           {stream.title}
                         </p>
@@ -85,6 +109,16 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Seller Profile Modal */}
+      {selectedSeller && (
+        <SellerProfileModal
+          isOpen={!!selectedSeller}
+          onClose={() => setSelectedSeller(null)}
+          sellerName={selectedSeller.name}
+          sellerImage={selectedSeller.image}
+        />
+      )}
     </div>
   );
 };
