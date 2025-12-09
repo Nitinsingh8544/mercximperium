@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share, MoreHorizontal, Star, Camera } from "lucide-react";
+import { Share, X, Star } from "lucide-react";
 import ShareProfileModal from "./ShareProfileModal";
 import MessageChatModal from "./MessageChatModal";
 
@@ -28,7 +28,6 @@ const SellerProfileModal = ({
 
   const sellerInitial = sellerName.charAt(0).toUpperCase();
 
-  // Mock data for the seller
   const sellerStats = {
     followers: "12.5K",
     following: "234",
@@ -47,16 +46,16 @@ const SellerProfileModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-md p-0 bg-[#1a3a3a] border-[#8B4513]/30 overflow-hidden">
+        <DialogContent className="max-w-md p-0 bg-card border-border overflow-hidden">
           {/* Header with cover */}
-          <div className="relative h-24 bg-gradient-to-r from-[#2d5a5a] to-[#1a3a3a]">
+          <div className="relative h-24 bg-gradient-to-r from-secondary/30 to-primary/20">
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-2 right-2 text-white/70 hover:text-white hover:bg-white/10"
+              className="absolute top-2 right-2 text-foreground/70 hover:text-foreground hover:bg-background/20"
               onClick={onClose}
             >
-              <MoreHorizontal className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </Button>
           </div>
 
@@ -64,46 +63,43 @@ const SellerProfileModal = ({
           <div className="px-6 pb-6 -mt-12">
             {/* Avatar */}
             <div className="relative inline-block mb-4">
-              <Avatar className="h-24 w-24 border-4 border-[#1a3a3a]">
+              <Avatar className="h-24 w-24 border-4 border-card">
                 <AvatarImage src={sellerImage} />
-                <AvatarFallback className="bg-[#8B4513] text-white text-2xl font-bold">
+                <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
                   {sellerInitial}
                 </AvatarFallback>
               </Avatar>
-              <button className="absolute bottom-0 right-0 p-1.5 bg-[#8B4513] rounded-full text-white">
-                <Camera className="w-4 h-4" />
-              </button>
             </div>
 
             {/* Name and Rating */}
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h2 className="text-xl font-bold text-white">{sellerName}</h2>
-                <div className="flex items-center gap-1 text-[#20b2aa]">
-                  <Star className="h-4 w-4 fill-[#20b2aa]" />
+                <h2 className="text-xl font-bold text-foreground">{sellerName}</h2>
+                <div className="flex items-center gap-1 text-secondary">
+                  <Star className="h-4 w-4 fill-secondary" />
                   <span className="text-sm">{sellerRating} Rating</span>
                 </div>
               </div>
             </div>
 
             {/* Bio */}
-            <p className="text-[#a0c4c4] text-sm mb-4">
-              Premium sneaker seller | Authentic products only | Fast shipping 📦
+            <p className="text-muted-foreground text-sm mb-4">
+              Premium seller | Authentic products only | Fast shipping 📦
             </p>
 
             {/* Stats */}
             <div className="flex gap-6 mb-6">
               <div className="text-center">
-                <p className="text-white font-bold">{sellerStats.followers}</p>
-                <p className="text-[#a0c4c4] text-xs">Followers</p>
+                <p className="text-foreground font-bold">{sellerStats.followers}</p>
+                <p className="text-muted-foreground text-xs">Followers</p>
               </div>
               <div className="text-center">
-                <p className="text-white font-bold">{sellerStats.following}</p>
-                <p className="text-[#a0c4c4] text-xs">Following</p>
+                <p className="text-foreground font-bold">{sellerStats.following}</p>
+                <p className="text-muted-foreground text-xs">Following</p>
               </div>
               <div className="text-center">
-                <p className="text-white font-bold">{sellerStats.sales}</p>
-                <p className="text-[#a0c4c4] text-xs">Sales</p>
+                <p className="text-foreground font-bold">{sellerStats.sales}</p>
+                <p className="text-muted-foreground text-xs">Sales</p>
               </div>
             </div>
 
@@ -111,21 +107,21 @@ const SellerProfileModal = ({
             <div className="flex gap-3 mb-6">
               <Button 
                 variant="outline" 
-                className="flex-1 border-[#20b2aa] text-[#20b2aa] hover:bg-[#20b2aa] hover:text-white bg-transparent"
+                className="flex-1 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
                 onClick={() => setIsChatModalOpen(true)}
               >
                 Message
               </Button>
               <Button 
-                className={`flex-1 ${isFollowing ? 'bg-[#8B4513]/50 hover:bg-[#8B4513]/70' : 'bg-[#8B4513] hover:bg-[#8B4513]/90'} text-white`}
+                className={`flex-1 ${isFollowing ? 'bg-primary/70 hover:bg-primary/80' : 'bg-primary hover:bg-primary/90'} text-primary-foreground`}
                 onClick={() => setIsFollowing(!isFollowing)}
               >
                 {isFollowing ? "Following" : "Follow"}
               </Button>
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="icon" 
-                className="border border-[#20b2aa]/30 text-[#20b2aa] hover:bg-[#20b2aa]/10"
+                className="border-secondary/30 text-secondary hover:bg-secondary/10"
                 onClick={() => setIsShareModalOpen(true)}
               >
                 <Share className="w-5 h-5" />
@@ -134,22 +130,22 @@ const SellerProfileModal = ({
 
             {/* Tabs */}
             <Tabs defaultValue="products" className="w-full">
-              <TabsList className="w-full bg-[#2d5a5a] border-[#20b2aa]/20">
+              <TabsList className="w-full bg-muted">
                 <TabsTrigger 
                   value="products" 
-                  className="flex-1 data-[state=active]:bg-[#20b2aa] data-[state=active]:text-white text-[#a0c4c4]"
+                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   Products
                 </TabsTrigger>
                 <TabsTrigger 
                   value="reviews" 
-                  className="flex-1 data-[state=active]:bg-[#20b2aa] data-[state=active]:text-white text-[#a0c4c4]"
+                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   Reviews
                 </TabsTrigger>
                 <TabsTrigger 
                   value="about" 
-                  className="flex-1 data-[state=active]:bg-[#20b2aa] data-[state=active]:text-white text-[#a0c4c4]"
+                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   About
                 </TabsTrigger>
@@ -160,7 +156,7 @@ const SellerProfileModal = ({
                   {sellerProducts.map((product) => (
                     <div 
                       key={product.id} 
-                      className="relative aspect-square rounded-lg overflow-hidden bg-[#2d5a5a] group cursor-pointer"
+                      className="relative aspect-square rounded-lg overflow-hidden bg-muted group cursor-pointer"
                     >
                       <img 
                         src={product.image} 
@@ -176,14 +172,14 @@ const SellerProfileModal = ({
               </TabsContent>
 
               <TabsContent value="reviews" className="mt-4">
-                <div className="text-center text-[#a0c4c4] py-8">
-                  <Star className="w-8 h-8 mx-auto mb-2 fill-[#20b2aa] text-[#20b2aa]" />
+                <div className="text-center text-muted-foreground py-8">
+                  <Star className="w-8 h-8 mx-auto mb-2 fill-secondary text-secondary" />
                   <p className="text-sm">4.8 average from 256 reviews</p>
                 </div>
               </TabsContent>
 
               <TabsContent value="about" className="mt-4">
-                <div className="text-[#a0c4c4] text-sm space-y-2">
+                <div className="text-muted-foreground text-sm space-y-2">
                   <p>Joined: March 2022</p>
                   <p>Location: Los Angeles, CA</p>
                   <p>Response time: Usually within 1 hour</p>
