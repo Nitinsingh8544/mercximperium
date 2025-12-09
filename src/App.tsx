@@ -18,6 +18,8 @@ import Profile from "./pages/Profile";
 import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
+import AccountSettings from "./pages/AccountSettings";
+import AccountPayments from "./pages/AccountPayments";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/profile-view" element={<ProtectedRoute><ProfileView /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
+            <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+            <Route path="/account-settings/payments" element={<ProtectedRoute><AccountPayments /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

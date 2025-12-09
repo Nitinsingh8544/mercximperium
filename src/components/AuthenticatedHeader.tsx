@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import miLogo from "@/assets/mi-logo.png";
+import appLogo from "@/assets/app-logo.jpg";
 import { Search, Heart, MessageSquare, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import ProfileSheet from "@/components/ProfileSheet";
 
 const AuthenticatedHeader = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
@@ -18,7 +21,7 @@ const AuthenticatedHeader = () => {
           {/* Logo and Navigation */}
           <div className="flex items-center gap-4 sm:gap-6">
             <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img src={miLogo} alt="MercxImperium Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9" />
+              <img src={appLogo} alt="MercxImperium Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md object-cover" />
               <span className="hidden sm:inline text-base md:text-lg lg:text-xl font-bold text-foreground">
                 MercxImperium
               </span>
@@ -102,17 +105,18 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
-            <Link to="/profile">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
-              >
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
-                  {userInitial}
-                </div>
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setIsProfileOpen(true)}
+              className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
+            >
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
+                {userInitial}
+              </div>
+            </Button>
+
+            <ProfileSheet isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
           </div>
         </div>
 
