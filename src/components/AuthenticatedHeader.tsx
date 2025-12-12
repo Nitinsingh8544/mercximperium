@@ -6,135 +6,173 @@ import appLogo from "@/assets/app-logo.jpg";
 import { Search, Heart, MessageSquare, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
+import SearchCommand from "@/components/SearchCommand";
 
 const AuthenticatedHeader = () => {
   const location = useLocation();
   const { user } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40">
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2.5 sm:py-3">
-        <div className="flex items-center justify-between gap-4">
-          {/* Logo and Navigation */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img src={appLogo} alt="MercxImperium Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md object-cover" />
-              <span className="hidden sm:inline text-base md:text-lg lg:text-xl font-bold text-foreground">
-                MercxImperium
-              </span>
-            </Link>
+  const showSearchBar = location.pathname === "/dashboard" || location.pathname === "/browse";
 
-            <nav className="hidden md:flex items-center gap-2">
-              <Link to="/dashboard">
+  return (
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2.5 sm:py-3">
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo and Navigation */}
+            <div className="flex items-center gap-4 sm:gap-6">
+              <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <img src={appLogo} alt="MercxImperium Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md object-cover" />
+                <span className="hidden sm:inline text-base md:text-lg lg:text-xl font-bold text-foreground">
+                  MercxImperium
+                </span>
+              </Link>
+
+              <nav className="hidden md:flex items-center gap-2">
+                <Link to="/dashboard">
+                  <Button 
+                    variant="ghost" 
+                    className={`text-sm ${
+                      location.pathname === "/dashboard" 
+                        ? "bg-primary/10 text-primary font-medium" 
+                        : ""
+                    }`}
+                  >
+                    Home
+                  </Button>
+                </Link>
+                <Link to="/browse">
+                  <Button 
+                    variant="ghost" 
+                    className={`text-sm ${
+                      location.pathname === "/browse" 
+                        ? "bg-primary/10 text-primary font-medium" 
+                        : ""
+                    }`}
+                  >
+                    Browse
+                  </Button>
+                </Link>
+              </nav>
+            </div>
+
+            {/* Search Bar - clickable to open command */}
+            {showSearchBar && (
+              <div className="hidden lg:flex flex-1 max-w-md">
+                <div 
+                  className="relative w-full cursor-pointer"
+                  onClick={() => setIsSearchOpen(true)}
+                >
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    type="text" 
+                    placeholder="Search MercxImperium..." 
+                    className="pl-10 bg-muted/50 cursor-pointer"
+                    readOnly
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Search Icon for other pages */}
+            {!showSearchBar && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+                className="hidden md:flex"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+            )}
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button variant="ghost" className="hidden sm:flex text-sm">
+                Become a Seller
+              </Button>
+
+              {/* Mobile search button */}
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+                className="md:hidden"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+
+              <Link to="/activity">
                 <Button 
                   variant="ghost" 
-                  className={`text-sm ${
-                    location.pathname === "/dashboard" 
-                      ? "bg-primary/10 text-primary font-medium" 
-                      : ""
-                  }`}
+                  size="icon"
+                  className={location.pathname === "/activity" ? "bg-primary/10" : ""}
                 >
-                  Home
+                  <Heart className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/browse">
+
+              <Link to="/messages">
                 <Button 
                   variant="ghost" 
-                  className={`text-sm ${
-                    location.pathname === "/browse" 
-                      ? "bg-primary/10 text-primary font-medium" 
-                      : ""
-                  }`}
+                  size="icon"
+                  className={location.pathname === "/messages" ? "bg-primary/10" : ""}
                 >
-                  Browse
+                  <MessageSquare className="w-5 h-5" />
                 </Button>
               </Link>
-            </nav>
+
+              <Link to="/notifications">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className={location.pathname === "/notifications" ? "bg-primary/10" : ""}
+                >
+                  <Bell className="w-5 h-5" />
+                </Button>
+              </Link>
+
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setIsProfileOpen(true)}
+                className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
+              >
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
+                  {userInitial}
+                </div>
+              </Button>
+
+              <ProfileSheet isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+            </div>
           </div>
 
-          {/* Search Bar - only on home/browse pages */}
-          {(location.pathname === "/dashboard" || location.pathname === "/browse") && (
-            <div className="hidden lg:flex flex-1 max-w-md">
-              <div className="relative w-full">
+          {/* Mobile Search - only on home/browse pages */}
+          {showSearchBar && (
+            <div className="lg:hidden mt-3">
+              <div 
+                className="relative w-full cursor-pointer"
+                onClick={() => setIsSearchOpen(true)}
+              >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input 
                   type="text" 
-                  placeholder="Search MercxImperium" 
-                  className="pl-10 bg-muted/50"
+                  placeholder="Search MercxImperium..." 
+                  className="pl-10 bg-muted/50 cursor-pointer"
+                  readOnly
                 />
               </div>
             </div>
           )}
-
-          {/* Right Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="ghost" className="hidden sm:flex text-sm">
-              Become a Seller
-            </Button>
-
-            <Link to="/activity">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={location.pathname === "/activity" ? "bg-primary/10" : ""}
-              >
-                <Heart className="w-5 h-5" />
-              </Button>
-            </Link>
-
-            <Link to="/messages">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={location.pathname === "/messages" ? "bg-primary/10" : ""}
-              >
-                <MessageSquare className="w-5 h-5" />
-              </Button>
-            </Link>
-
-            <Link to="/notifications">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={location.pathname === "/notifications" ? "bg-primary/10" : ""}
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
-            </Link>
-
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setIsProfileOpen(true)}
-              className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
-            >
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
-                {userInitial}
-              </div>
-            </Button>
-
-            <ProfileSheet isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
-          </div>
         </div>
+      </header>
 
-        {/* Mobile Search - only on home/browse pages */}
-        {(location.pathname === "/dashboard" || location.pathname === "/browse") && (
-          <div className="lg:hidden mt-3">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input 
-                type="text" 
-                placeholder="Search MercxImperium" 
-                className="pl-10 bg-muted/50"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
+      <SearchCommand open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+    </>
   );
 };
 

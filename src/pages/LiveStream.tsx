@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import LiveStreamVideo from "@/components/livestream/LiveStreamVideo";
 import LiveStreamShop from "@/components/livestream/LiveStreamShop";
 import LiveStreamChat from "@/components/livestream/LiveStreamChat";
+import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 
 const LiveStream = () => {
-  const navigate = useNavigate();
+  const { id } = useParams();
   const [currentBid, setCurrentBid] = useState(79);
+  const currentStreamId = id ? parseInt(id) : undefined;
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,6 +40,11 @@ const LiveStream = () => {
         <div className="lg:hidden mt-4 space-y-4">
           <LiveStreamShop />
           <LiveStreamChat />
+        </div>
+
+        {/* Recommended Streams */}
+        <div className="max-w-[1600px] mx-auto">
+          <RecommendedStreams currentStreamId={currentStreamId} />
         </div>
       </div>
     </div>
