@@ -3,22 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import EditProfileModal from "@/components/EditProfileModal";
-import { Share, Camera } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Share, Camera, Loader2 } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 const ProfileView = () => {
-  const { user } = useAuth();
+  const { profile, loading } = useProfile();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
-  const userName = user?.email?.split("@")[0] || "Your Name";
-  const displayName = userName.charAt(0).toUpperCase() + userName.slice(1);
+  const userInitial = profile?.username?.charAt(0).toUpperCase() || profile?.name?.charAt(0).toUpperCase() || "U";
+  const displayName = profile?.name || "Your Name";
+  const username = profile?.username || "username";
 
   // Mock clips data
   const clips = [
-    { id: 1, title: "THURSDAY RANDOM VINTAGE", views: 0, author: userName },
-    { id: 2, title: "THURSDAY RANDOM VINTAGE", views: 0, author: userName },
+    { id: 1, title: "THURSDAY RANDOM VINTAGE", views: 0, author: username },
+    { id: 2, title: "THURSDAY RANDOM VINTAGE", views: 0, author: username },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -35,8 +43,11 @@ const ProfileView = () => {
             {userInitial}
           </div>
           <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">{userName}</h2>
-            <p className="text-sm text-muted-foreground">{displayName}</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">{displayName}</h2>
+            <p className="text-sm text-muted-foreground">@{username}</p>
+            {profile?.bio && (
+              <p className="text-sm text-foreground mt-2">{profile.bio}</p>
+            )}
             <div className="flex gap-4 text-sm text-foreground mt-2">
               <span><strong>1</strong> Following</span>
               <span className="text-muted-foreground">•</span>
@@ -82,7 +93,7 @@ const ProfileView = () => {
 
           <TabsContent value="clips" className="mt-0">
             <h3 className="text-lg font-semibold text-primary mb-4">
-              Clips by {userName} ({clips.length})
+              Clips by {username} ({clips.length})
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {clips.map((clip) => (

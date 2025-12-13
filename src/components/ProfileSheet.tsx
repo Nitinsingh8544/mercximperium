@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Sheet,
@@ -20,6 +19,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 
 interface ProfileSheetProps {
@@ -28,12 +28,13 @@ interface ProfileSheetProps {
 }
 
 const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
-  const { signOut, user } = useAuth();
+  const { signOut } = useAuth();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
-  const userName = user?.email?.split("@")[0] || "User";
+  const userInitial = profile?.username?.charAt(0).toUpperCase() || profile?.name?.charAt(0).toUpperCase() || "U";
+  const userName = profile?.name || profile?.username || "User";
 
   const handleLogout = async () => {
     await signOut();
