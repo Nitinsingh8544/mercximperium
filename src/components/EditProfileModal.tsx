@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Camera } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Camera, Loader2 } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 
 interface EditProfileModalProps {
@@ -19,22 +19,54 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
-  const { user } = useAuth();
+  const { profile, updateProfile } = useProfile();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const defaultUsername = user?.email?.split("@")[0] || "";
-  const defaultName = defaultUsername.charAt(0).toUpperCase() + defaultUsername.slice(1) + " " + "User";
-  
-  const [name, setName] = useState(defaultName);
-  const [username, setUsername] = useState(defaultUsername);
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
 
-  const handleSave = () => {
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been updated successfully.",
+  // Sync form with profile data when modal opens or profile changes
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || "");
+      setUsername(profile.username || "");
+      setBio(profile.bio || "");
+    }
+  }, [profile, isOpen]);
+
+  const handleSave = async () => {
+    if (!name.trim() || !username.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Name and username are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const { error } = await updateProfile({
+      name: name.trim(),
+      username: username.trim(),
+      bio: bio.trim() || null,
     });
-    onClose();
+    setIsLoading(false);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Username might be taken.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+      });
+      onClose();
+    }
   };
 
   return (
@@ -68,6 +100,7 @@ const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="bg-muted/50 border-border"
+                  disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
@@ -79,13 +112,14 @@ const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="bg-muted/50 border-border"
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="bio" className="text-muted-foreground">
-                Bio <span className="text-destructive">*</span>
+                Bio
               </Label>
               <Textarea
                 id="bio"
@@ -93,6 +127,7 @@ const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell us about yourself..."
                 className="bg-muted/50 border-border min-h-[80px] resize-none"
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -102,14 +137,23 @@ const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
               variant="outline"
               onClick={onClose}
               className="flex-1 border-border"
+              disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
               onClick={handleSave}
               className="flex-1 bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              disabled={isLoading}
             >
-              Save Changes
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </div>
         </div>
