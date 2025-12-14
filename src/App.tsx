@@ -20,6 +20,8 @@ import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
 import AccountSettings from "./pages/AccountSettings";
 import AccountPayments from "./pages/AccountPayments";
+import Addresses from "./pages/Addresses";
+import Account from "./pages/Account";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ const App = () => (
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
             <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/account-settings/payments" element={<ProtectedRoute><AccountPayments /></ProtectedRoute>} />
+            <Route path="/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
+            <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
