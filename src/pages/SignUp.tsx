@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import { useState, useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Phone } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,9 +15,13 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [signupMethod, setSignupMethod] = useState<"email" | "phone">("email");
   const [country, setCountry] = useState("us");
   const [loading, setLoading] = useState(false);
-  const { signUp, signInWithGoogle, signInWithFacebook, user } = useAuth();
+  const { signUp, signInWithGoogle, signInWithFacebook, signInWithOtp, verifyOtp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -95,6 +99,64 @@ const SignUp = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    if (!phone) {
+      toast({
+        title: "Error",
+        description: "Please enter your phone number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await signInWithOtp(phone);
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: "OTP request failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      setShowOtpInput(true);
+      toast({
+        title: "OTP Sent",
+        description: "Please check your phone for the verification code.",
+      });
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpCode) {
+      toast({
+        title: "Error",
+        description: "Please enter the OTP code",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await verifyOtp(phone, otpCode);
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: "Verification failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Welcome to MercxImperium!",
+        description: "Your account has been created successfully.",
+      });
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Vibrant animated background matching landing page */}
@@ -146,66 +208,125 @@ const SignUp = () => {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-2.5">
-              <Input 
-                id="name" 
-                placeholder="First and last name" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="name@example.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <div className="relative">
-                <Input 
-                  id="password" 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Password" 
-                  className="pr-10"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              <Select value={country} onValueChange={setCountry}>
-                <SelectTrigger id="country">
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="us">🇺🇸 United States</SelectItem>
-                  <SelectItem value="uk">🇬🇧 United Kingdom</SelectItem>
-                  <SelectItem value="ca">🇨🇦 Canada</SelectItem>
-                  <SelectItem value="au">🇦🇺 Australia</SelectItem>
-                  <SelectItem value="in">🇮🇳 India</SelectItem>
-                  <SelectItem value="de">🇩🇪 Germany</SelectItem>
-                  <SelectItem value="fr">🇫🇷 France</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-center text-muted-foreground">
-                By continuing, you agree to our{" "}
-                <Link to="/terms" className="text-secondary hover:underline">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link to="/privacy" className="text-secondary hover:underline">
-                  Privacy Policy
-                </Link>
-                .
-              </p>
-              <Button variant="hero" className="w-full" type="submit" disabled={loading}>
-                {loading ? "Creating account..." : "Sign up"}
+            {/* Toggle between email and phone signup */}
+            <div className="flex gap-2 mb-4">
+              <Button 
+                variant={signupMethod === "email" ? "default" : "outline"} 
+                size="sm"
+                className="flex-1"
+                onClick={() => setSignupMethod("email")}
+              >
+                Email
               </Button>
-            </form>
+              <Button 
+                variant={signupMethod === "phone" ? "default" : "outline"} 
+                size="sm"
+                className="flex-1"
+                onClick={() => { setSignupMethod("phone"); setShowOtpInput(false); }}
+              >
+                <Phone className="w-4 h-4 mr-1" /> OTP
+              </Button>
+            </div>
+
+            {signupMethod === "email" ? (
+              <form onSubmit={handleSubmit} className="space-y-2.5">
+                <Input 
+                  id="name" 
+                  placeholder="First and last name" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="name@example.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="Password" 
+                    className="pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <Select value={country} onValueChange={setCountry}>
+                  <SelectTrigger id="country">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="us">🇺🇸 United States</SelectItem>
+                    <SelectItem value="uk">🇬🇧 United Kingdom</SelectItem>
+                    <SelectItem value="ca">🇨🇦 Canada</SelectItem>
+                    <SelectItem value="au">🇦🇺 Australia</SelectItem>
+                    <SelectItem value="in">🇮🇳 India</SelectItem>
+                    <SelectItem value="de">🇩🇪 Germany</SelectItem>
+                    <SelectItem value="fr">🇫🇷 France</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-center text-muted-foreground">
+                  By continuing, you agree to our{" "}
+                  <Link to="/terms" className="text-secondary hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-secondary hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
+                <Button variant="hero" className="w-full" type="submit" disabled={loading}>
+                  {loading ? "Creating account..." : "Sign up"}
+                </Button>
+              </form>
+            ) : (
+              <div className="space-y-2.5">
+                <Input 
+                  type="tel" 
+                  placeholder="Phone number (e.g., +1234567890)" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                {showOtpInput && (
+                  <Input 
+                    type="text" 
+                    placeholder="Enter OTP code" 
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                  />
+                )}
+                <p className="text-xs text-center text-muted-foreground">
+                  By continuing, you agree to our{" "}
+                  <Link to="/terms" className="text-secondary hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" className="text-secondary hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
+                {!showOtpInput ? (
+                  <Button variant="hero" className="w-full" onClick={handleSendOtp} disabled={loading}>
+                    {loading ? "Sending..." : "Send OTP"}
+                  </Button>
+                ) : (
+                  <Button variant="hero" className="w-full" onClick={handleVerifyOtp} disabled={loading}>
+                    {loading ? "Verifying..." : "Verify & Sign Up"}
+                  </Button>
+                )}
+              </div>
+            )}
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
