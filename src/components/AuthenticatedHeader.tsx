@@ -102,18 +102,18 @@ const AuthenticatedHeader = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40">
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2.5 sm:py-3">
-        <div className="flex items-center justify-between gap-4">
+      <div className="container mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo and Navigation */}
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link to="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+            <Link to="/dashboard" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
               <img src={appLogo} alt="MercxImperium Logo" className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md object-cover" />
-              <span className="hidden sm:inline text-base md:text-lg lg:text-xl font-bold text-foreground">
+              <span className="hidden md:inline text-base lg:text-lg xl:text-xl font-bold text-foreground">
                 MercxImperium
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden lg:flex items-center gap-2">
               <Link to="/dashboard">
                 <Button 
                   variant="ghost" 
@@ -141,7 +141,7 @@ const AuthenticatedHeader = () => {
             </nav>
           </div>
 
-          {/* Search Bar with inline dropdown */}
+          {/* Search Bar with inline dropdown - Desktop */}
           <div className="hidden lg:flex flex-1 max-w-md relative">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -241,39 +241,29 @@ const AuthenticatedHeader = () => {
             )}
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="ghost" className="hidden sm:flex text-sm">
+          {/* Right Actions - Compact on mobile */}
+          <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
+            <Button variant="ghost" className="hidden lg:flex text-sm">
               Become a Seller
             </Button>
 
-            {/* Mobile search button */}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="md:hidden"
-            >
-              <Search className="w-5 h-5" />
-            </Button>
-
-            <Link to="/activity">
+            <Link to="/activity" className="hidden sm:block">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={location.pathname === "/activity" ? "bg-primary/10" : ""}
+                className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/activity" ? "bg-primary/10" : ""}`}
               >
-                <Heart className="w-5 h-5" />
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
 
-            <Link to="/messages">
+            <Link to="/messages" className="hidden sm:block">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={location.pathname === "/messages" ? "bg-primary/10" : ""}
+                className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/messages" ? "bg-primary/10" : ""}`}
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
 
@@ -281,9 +271,9 @@ const AuthenticatedHeader = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={location.pathname === "/notifications" ? "bg-primary/10" : ""}
+                className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/notifications" ? "bg-primary/10" : ""}`}
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
 
@@ -291,9 +281,9 @@ const AuthenticatedHeader = () => {
               variant="ghost" 
               size="icon"
               onClick={() => setIsProfileOpen(true)}
-              className={`${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
+              className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
             >
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-sm font-semibold text-primary-foreground">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground">
                 {userInitial}
               </div>
             </Button>
@@ -302,14 +292,14 @@ const AuthenticatedHeader = () => {
           </div>
         </div>
 
-        {/* Mobile Search */}
-        <div className="lg:hidden mt-3 relative">
+        {/* Mobile Search Bar */}
+        <div className="lg:hidden mt-2 relative">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
               type="text" 
-              placeholder="Search MercxImperium..." 
-              className="pl-10 bg-muted/50"
+              placeholder="Search..." 
+              className="pl-9 pr-3 h-9 text-sm bg-muted/50"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -322,9 +312,9 @@ const AuthenticatedHeader = () => {
           
           {/* Mobile Search Dropdown */}
           {showDropdown && searchQuery && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-[250px] overflow-y-auto">
               {!hasResults ? (
-                <div className="p-4 text-center text-muted-foreground text-sm">
+                <div className="p-3 text-center text-muted-foreground text-xs">
                   No results found for "{searchQuery}"
                 </div>
               ) : (
@@ -336,9 +326,9 @@ const AuthenticatedHeader = () => {
                           <CommandItem
                             key={page.path}
                             onSelect={() => handleSelect(page.path)}
-                            className="cursor-pointer"
+                            className="cursor-pointer text-sm py-2"
                           >
-                            <page.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <page.icon className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                             <span>{page.name}</span>
                           </CommandItem>
                         ))}
@@ -351,10 +341,25 @@ const AuthenticatedHeader = () => {
                           <CommandItem
                             key={stream.id}
                             onSelect={() => handleSelect(`/live/${stream.id}`)}
-                            className="cursor-pointer"
+                            className="cursor-pointer text-sm py-2"
                           >
-                            <Video className="mr-2 h-4 w-4 text-destructive" />
-                            <span>{stream.title}</span>
+                            <Video className="mr-2 h-3.5 w-3.5 text-destructive" />
+                            <span className="truncate">{stream.title}</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
+                    
+                    {filteredResults.sellers.length > 0 && (
+                      <CommandGroup heading="Sellers">
+                        {filteredResults.sellers.slice(0, 2).map((seller) => (
+                          <CommandItem
+                            key={seller.name}
+                            onSelect={() => handleSelect(`/seller/${seller.name}`)}
+                            className="cursor-pointer text-sm py-2"
+                          >
+                            <Users className="mr-2 h-3.5 w-3.5 text-primary" />
+                            <span>{seller.name}</span>
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -364,6 +369,26 @@ const AuthenticatedHeader = () => {
               )}
             </div>
           )}
+        </div>
+
+        {/* Mobile Bottom Navigation Bar */}
+        <div className="sm:hidden flex items-center justify-around py-2 mt-2 border-t border-border/40">
+          <Link to="/dashboard" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"}`}>
+            <Home className="w-5 h-5" />
+            <span className="text-[10px]">Home</span>
+          </Link>
+          <Link to="/browse" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/browse" ? "text-primary" : "text-muted-foreground"}`}>
+            <ShoppingBag className="w-5 h-5" />
+            <span className="text-[10px]">Browse</span>
+          </Link>
+          <Link to="/activity" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/activity" ? "text-primary" : "text-muted-foreground"}`}>
+            <Heart className="w-5 h-5" />
+            <span className="text-[10px]">Activity</span>
+          </Link>
+          <Link to="/messages" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/messages" ? "text-primary" : "text-muted-foreground"}`}>
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-[10px]">Inbox</span>
+          </Link>
         </div>
       </div>
     </header>

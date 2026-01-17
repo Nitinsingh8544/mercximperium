@@ -73,10 +73,38 @@ const AccountSettings = () => {
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
-      <div className="flex pt-16">
-        {/* Sidebar */}
+      <div className="flex flex-col md:flex-row pt-32 sm:pt-28 md:pt-16">
+        {/* Mobile Header Navigation */}
+        <div className="md:hidden px-4 py-3 border-b border-border bg-card/50">
+          <Link to="/profile-view" className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+              {userInitial}
+            </div>
+            <div>
+              <p className="font-medium text-foreground">{userName}</p>
+              <p className="text-xs text-primary">View Profile</p>
+            </div>
+          </Link>
+          <div className="flex overflow-x-auto gap-2 pb-2 -mx-4 px-4 scrollbar-hide">
+            {sidebarItems.filter(item => !item.isHeader).map((item, index) => (
+              <Link
+                key={index}
+                to={item.path || "#"}
+                className={`shrink-0 flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap ${
+                  item.active 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {item.icon && <item.icon className="w-3.5 h-3.5" />}
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Sidebar - Desktop Only */}
         <aside className="w-64 min-h-[calc(100vh-4rem)] border-r border-border bg-card/50 p-4 hidden md:block">
-          {/* User Profile */}
           <Link to="/profile-view" className="flex items-center gap-3 mb-6 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
               {userInitial}
@@ -87,7 +115,6 @@ const AccountSettings = () => {
             </div>
           </Link>
 
-          {/* Navigation */}
           <nav className="space-y-1">
             {sidebarItems.map((item, index) => (
               item.isHeader ? (
@@ -111,7 +138,6 @@ const AccountSettings = () => {
             ))}
           </nav>
 
-          {/* Seller Hub Button */}
           <div className="mt-8">
             <Button 
               className="w-full gap-2 bg-foreground text-background hover:bg-foreground/90"
@@ -124,26 +150,26 @@ const AccountSettings = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          <h1 className="text-2xl font-bold text-foreground mb-6">Preferences</h1>
+        <main className="flex-1 p-4 sm:p-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">Preferences</h1>
 
-          <div className="bg-card rounded-lg border border-border p-6">
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-foreground">Privacy</h2>
-              <p className="text-sm text-muted-foreground">
+          <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">Privacy</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Select how you can interact with and be viewed by others.
               </p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {privacySettings.map((setting) => (
-                <div key={setting.key} className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center flex-shrink-0">
-                    <setting.icon className="w-5 h-5 text-foreground" />
+                <div key={setting.key} className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-muted/50 flex items-center justify-center flex-shrink-0">
+                    <setting.icon className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-foreground">{setting.title}</h3>
-                    <p className="text-sm text-muted-foreground">{setting.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm sm:text-base text-foreground">{setting.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{setting.description}</p>
                   </div>
                   <Switch
                     checked={preferences[setting.key]}

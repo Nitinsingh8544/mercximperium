@@ -36,14 +36,25 @@ const ProfileView = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Profile Header */}
-        <div className="flex items-start gap-4 sm:gap-6 mb-8">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary flex items-center justify-center text-2xl sm:text-3xl font-bold text-primary-foreground flex-shrink-0">
-            {userInitial}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-primary flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold text-primary-foreground flex-shrink-0">
+              {userInitial}
+            </div>
+            <div className="sm:hidden flex-1">
+              <h2 className="text-lg font-bold text-foreground">{displayName}</h2>
+              <p className="text-xs text-muted-foreground">@{username}</p>
+              <div className="flex gap-3 text-xs text-foreground mt-1">
+                <span><strong>1</strong> Following</span>
+                <span><strong>0</strong> Followers</span>
+              </div>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">{displayName}</h2>
+          
+          <div className="hidden sm:block flex-1">
+            <h2 className="text-xl md:text-2xl font-bold text-foreground">{displayName}</h2>
             <p className="text-sm text-muted-foreground">@{username}</p>
             {profile?.bio && (
               <p className="text-sm text-foreground mt-2">{profile.bio}</p>
@@ -54,64 +65,69 @@ const ProfileView = () => {
               <span><strong>0</strong> Followers</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1 sm:flex-none text-sm"
               onClick={() => setIsEditModalOpen(true)}
             >
               Edit Profile
             </Button>
-            <Button variant="ghost" size="icon" className="border border-border">
-              <Share className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="border border-border h-9 w-9 sm:h-10 sm:w-10">
+              <Share className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           </div>
         </div>
 
+        {profile?.bio && (
+          <p className="text-sm text-foreground mb-4 sm:hidden">{profile.bio}</p>
+        )}
+
         {/* Tabs */}
         <Tabs defaultValue="clips" className="w-full">
-          <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start h-auto p-0 mb-6">
+          <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start h-auto p-0 mb-4 sm:mb-6">
             <TabsTrigger 
               value="sell" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 sm:px-4 py-2.5 sm:py-3 text-sm"
             >
               Sell
             </TabsTrigger>
             <TabsTrigger 
               value="clips" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-3 sm:px-4 py-2.5 sm:py-3 text-sm"
             >
               Clips
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="sell" className="mt-0">
-            <div className="text-center py-12 text-muted-foreground">
-              <p>No items for sale yet</p>
+            <div className="text-center py-8 sm:py-12 text-muted-foreground">
+              <p className="text-sm sm:text-base">No items for sale yet</p>
             </div>
           </TabsContent>
 
           <TabsContent value="clips" className="mt-0">
-            <h3 className="text-lg font-semibold text-primary mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-primary mb-3 sm:mb-4">
               Clips by {username} ({clips.length})
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
               {clips.map((clip) => (
                 <div key={clip.id} className="group cursor-pointer">
-                  <div className="relative aspect-[3/4] bg-muted rounded-lg overflow-hidden mb-2">
+                  <div className="relative aspect-[3/4] bg-muted rounded-lg overflow-hidden mb-1.5 sm:mb-2">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute top-2 right-2">
-                      <Button variant="ghost" size="icon" className="w-8 h-8 bg-black/30 hover:bg-black/50">
-                        <Camera className="w-4 h-4 text-white" />
+                    <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+                      <Button variant="ghost" size="icon" className="w-6 h-6 sm:w-8 sm:h-8 bg-black/30 hover:bg-black/50">
+                        <Camera className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </Button>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 bg-secondary/30 rounded-lg" />
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-secondary/30 rounded-lg" />
                     </div>
                   </div>
-                  <h4 className="text-sm font-medium text-foreground truncate">{clip.title}</h4>
-                  <p className="text-xs text-muted-foreground">
-                    {clip.views} Views · Clipped by @{clip.author}
+                  <h4 className="text-xs sm:text-sm font-medium text-foreground truncate">{clip.title}</h4>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
+                    {clip.views} Views · @{clip.author}
                   </p>
                 </div>
               ))}
