@@ -15,8 +15,8 @@ const LiveStream = () => {
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
-      <div className="pt-20 px-4 lg:px-6">
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-4">
+      <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4">
           {/* Left Sidebar - Shop */}
           <div className="hidden lg:block">
             <LiveStreamShop />
@@ -37,7 +37,7 @@ const LiveStream = () => {
         </div>
 
         {/* Mobile Shop & Chat Tabs */}
-        <div className="lg:hidden mt-4 space-y-4">
+        <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
           <LiveStreamShop />
           <LiveStreamChat />
         </div>

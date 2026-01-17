@@ -38,9 +38,9 @@ const RecommendedStreams = ({ currentStreamId }: RecommendedStreamsProps) => {
     .slice(0, 6);
 
   return (
-    <div className="mt-8 pb-8">
-      <h2 className="text-xl font-bold text-foreground mb-4">Similar Streams</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div className="mt-6 sm:mt-8 pb-6 sm:pb-8">
+      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Similar Streams</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
         {recommendedStreams.map((stream) => (
           <Card 
             key={stream.id} 
@@ -53,22 +53,22 @@ const RecommendedStreams = ({ currentStreamId }: RecommendedStreamsProps) => {
                 alt={stream.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
-              <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-xs">
+              <Badge className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-[10px] sm:text-xs px-1 sm:px-1.5">
                 Live · {stream.viewers}
               </Badge>
             </div>
-            <CardContent className="p-2.5">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-semibold text-primary">
+            <CardContent className="p-2 sm:p-2.5">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <span className="text-[9px] sm:text-xs font-semibold text-primary">
                     {stream.host.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-xs text-foreground truncate">
+                  <p className="font-medium text-[10px] sm:text-xs text-foreground truncate">
                     {stream.host}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground truncate">
                     {stream.title}
                   </p>
                 </div>

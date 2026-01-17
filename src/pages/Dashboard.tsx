@@ -41,33 +41,55 @@ const Dashboard = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Welcome Section */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">
             Hi there! 👋
           </h1>
         </div>
 
-        {/* Sidebar Navigation */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          <aside className="lg:w-64 shrink-0">
-            <div className="space-y-2">
-              <Link to="/dashboard" className="block px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-medium">
+        {/* Horizontal Navigation for Mobile */}
+        <div className="flex overflow-x-auto gap-2 pb-3 mb-4 lg:hidden scrollbar-hide -mx-3 px-3">
+          <Link 
+            to="/dashboard" 
+            className="shrink-0 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap"
+          >
+            For You
+          </Link>
+          <Link 
+            to="/followed" 
+            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
+          >
+            Followed Hosts
+          </Link>
+          <Link 
+            to="/browse" 
+            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
+          >
+            Browse Categories
+          </Link>
+        </div>
+
+        {/* Sidebar Navigation - Desktop Only */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          <aside className="hidden lg:block lg:w-56 xl:w-64 shrink-0">
+            <div className="space-y-2 sticky top-24">
+              <Link to="/dashboard" className="block px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm">
                 For You
               </Link>
-              <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Followed Hosts
               </Link>
-              <Link to="/browse" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/browse" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Browse Categories
               </Link>
             </div>
           </aside>
 
-          {/* Live Streams Grid */}
+          {/* Live Streams Grid - 2 columns on mobile */}
           <div className="flex-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
               {liveStreams.map((stream) => (
                 <Card key={stream.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => navigate(`/live/${stream.id}`)}>
                   <div className="relative aspect-[4/3] overflow-hidden">
@@ -76,28 +98,28 @@ const Dashboard = () => {
                       alt={stream.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <Badge className="absolute top-3 left-3 bg-red-600 hover:bg-red-600 text-white border-0">
+                    <Badge className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 md:top-3 md:left-3 bg-red-600 hover:bg-red-600 text-white border-0 text-[10px] sm:text-xs px-1.5 sm:px-2">
                       Live · {stream.viewers}
                     </Badge>
                   </div>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
+                  <CardContent className="p-2 sm:p-3 md:p-4">
+                    <div className="flex items-start gap-1.5 sm:gap-2 md:gap-3">
                       <button
                         onClick={(e) => handleSellerClick(e, stream.host)}
-                        className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 hover:bg-primary/30 hover:ring-2 hover:ring-secondary transition-all"
+                        className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 hover:bg-primary/30 hover:ring-2 hover:ring-secondary transition-all"
                       >
-                        <span className="text-sm font-semibold text-primary">
+                        <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-primary">
                           {stream.host.charAt(0).toUpperCase()}
                         </span>
                       </button>
                       <div className="flex-1 min-w-0">
                         <button
                           onClick={(e) => handleSellerClick(e, stream.host)}
-                          className="font-medium text-sm text-foreground truncate block hover:text-secondary transition-colors text-left"
+                          className="font-medium text-[11px] sm:text-xs md:text-sm text-foreground truncate block hover:text-secondary transition-colors text-left w-full"
                         >
                           {stream.host}
                         </button>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                        <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-2 mt-0.5 sm:mt-1">
                           {stream.title}
                         </p>
                       </div>
