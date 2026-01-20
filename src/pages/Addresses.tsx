@@ -9,7 +9,8 @@ import {
   User,
   AlertTriangle,
   MessageSquare,
-  MoreHorizontal
+  MoreHorizontal,
+  ArrowLeft
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -185,7 +186,17 @@ const Addresses = () => {
 
         {/* Main Content */}
         <main className="flex-1 p-4 sm:p-6">
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">Addresses</h1>
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="h-9 w-9 text-foreground hover:bg-muted"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Addresses</h1>
+          </div>
 
           {/* Saved Addresses */}
           <div className="bg-card rounded-lg border border-border p-4 sm:p-6 mb-4 sm:mb-6">

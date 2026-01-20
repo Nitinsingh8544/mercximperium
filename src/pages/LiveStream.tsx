@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import LiveStreamVideo from "@/components/livestream/LiveStreamVideo";
 import LiveStreamShop from "@/components/livestream/LiveStreamShop";
 import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const LiveStream = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [currentBid, setCurrentBid] = useState(79);
   const currentStreamId = id ? parseInt(id) : undefined;
 
@@ -16,6 +19,19 @@ const LiveStream = () => {
       <AuthenticatedHeader />
       
       <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6">
+        {/* Back Button */}
+        <div className="max-w-[1600px] mx-auto mb-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2 text-foreground hover:bg-muted"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+        </div>
+        
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4">
           {/* Left Sidebar - Shop */}
           <div className="hidden lg:block">

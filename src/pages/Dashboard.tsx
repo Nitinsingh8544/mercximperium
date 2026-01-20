@@ -4,10 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import SellerProfileModal from "@/components/seller/SellerProfileModal";
+import { useProfile } from "@/hooks/useProfile";
+import { Bell } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { profile } = useProfile();
   const [selectedSeller, setSelectedSeller] = useState<{ name: string; image?: string } | null>(null);
+  
+  const userName = profile?.name || profile?.username || "there";
   
   const liveStreams = [
     { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
@@ -45,7 +50,7 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 md:mb-8">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">
-            Hi there! 👋
+            Hi {userName}! 👋
           </h1>
         </div>
 
@@ -55,13 +60,20 @@ const Dashboard = () => {
             to="/dashboard" 
             className="shrink-0 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap"
           >
-            For You
+            Auction
           </Link>
           <Link 
             to="/followed" 
             className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
           >
-            Followed Hosts
+            Shop Live
+          </Link>
+          <Link 
+            to="/notifications" 
+            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80 flex items-center gap-1.5"
+          >
+            <Bell className="w-3.5 h-3.5" />
+            Notifications
           </Link>
           <Link 
             to="/browse" 
@@ -76,10 +88,14 @@ const Dashboard = () => {
           <aside className="hidden lg:block lg:w-56 xl:w-64 shrink-0">
             <div className="space-y-2 sticky top-24">
               <Link to="/dashboard" className="block px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm">
-                For You
+                Auction
               </Link>
               <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
-                Followed Hosts
+                Shop Live
+              </Link>
+              <Link to="/notifications" className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
+                <Bell className="w-4 h-4" />
+                Notifications
               </Link>
               <Link to="/browse" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Browse Categories
