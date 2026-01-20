@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share, X, Star } from "lucide-react";
+import { Share, ArrowLeft, Star } from "lucide-react";
 import ShareProfileModal from "./ShareProfileModal";
 import MessageChatModal from "./MessageChatModal";
 
@@ -52,10 +52,10 @@ const SellerProfileModal = ({
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-2 right-2 text-foreground/70 hover:text-foreground hover:bg-background/20"
+              className="absolute top-2 left-2 text-foreground/70 hover:text-foreground hover:bg-background/20"
               onClick={onClose}
             >
-              <X className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" />
             </Button>
           </div>
 
