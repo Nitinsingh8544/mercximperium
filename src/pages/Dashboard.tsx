@@ -5,14 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import SellerProfileModal from "@/components/seller/SellerProfileModal";
 import { useProfile } from "@/hooks/useProfile";
-import { Bell } from "lucide-react";
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const [selectedSeller, setSelectedSeller] = useState<{ name: string; image?: string } | null>(null);
   
-  const userName = profile?.name || profile?.username || "there";
+  // Extract first name only
+  const fullName = profile?.name || profile?.username || "there";
+  const firstName = fullName.split(' ')[0];
   
   const liveStreams = [
     { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
@@ -50,7 +52,7 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="mb-4 sm:mb-6 md:mb-8">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">
-            Hi {userName}! 👋
+            Hi {firstName}!
           </h1>
         </div>
 
@@ -69,11 +71,10 @@ const Dashboard = () => {
             Shop Live
           </Link>
           <Link 
-            to="/notifications" 
-            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80 flex items-center gap-1.5"
+            to="/followed" 
+            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
           >
-            <Bell className="w-3.5 h-3.5" />
-            Notifications
+            Followed Host
           </Link>
           <Link 
             to="/browse" 
@@ -93,9 +94,8 @@ const Dashboard = () => {
               <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Shop Live
               </Link>
-              <Link to="/notifications" className="flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
-                <Bell className="w-4 h-4" />
-                Notifications
+              <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
+                Followed Host
               </Link>
               <Link to="/browse" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Browse Categories
