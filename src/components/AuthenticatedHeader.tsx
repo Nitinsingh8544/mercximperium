@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
-import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, Settings, CreditCard, User, Video, Tag, Users, Coins } from "lucide-react";
+import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, Settings, CreditCard, User, Video, Tag, Users, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
 import {
@@ -272,7 +272,7 @@ const AuthenticatedHeader = () => {
               size="sm"
               className="h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground"
             >
-              <Coins className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
+              <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
               <span className="text-xs sm:text-sm font-medium">0</span>
             </Button>
 

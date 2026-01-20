@@ -16,7 +16,8 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -71,20 +72,27 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-[340px] sm:w-[380px] bg-background border-border p-0 overflow-y-auto">
         <SheetHeader className="p-4 border-b border-border">
-          <div 
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => handleNavigation("/profile-view")}
-          >
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-lg font-bold text-primary-foreground">
-              {userInitial}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onClose}
+              className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div 
+              className="flex items-center gap-3 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => handleNavigation("/profile-view")}
+            >
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-base font-bold text-primary-foreground">
+                {userInitial}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground text-left">{userName}</h3>
+                <p className="text-sm text-muted-foreground text-left">
+                  1 Following | 0 Followers
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-foreground text-left">{userName}</h3>
-              <p className="text-sm text-muted-foreground text-left">
-                1 Following | 0 Followers
-              </p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </div>
         </SheetHeader>
 
