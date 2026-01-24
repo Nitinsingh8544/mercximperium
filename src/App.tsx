@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
+import ShopLive from "./pages/ShopLive";
 import AccountSettings from "./pages/AccountSettings";
 import AccountPayments from "./pages/AccountPayments";
 import Addresses from "./pages/Addresses";
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/profile-view" element={<ProtectedRoute><ProfileView /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
+            <Route path="/shop-live" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
             <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/account-settings/payments" element={<ProtectedRoute><AccountPayments /></ProtectedRoute>} />
             <Route path="/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
