@@ -22,7 +22,7 @@ const creators: Creator[] = [
 
 const FeaturedCreators = () => {
   return (
-    <div className="bg-card rounded-xl border border-border p-4 h-fit max-h-[calc(100vh-120px)] overflow-y-auto">
+    <div className="bg-card rounded-xl border border-border p-4 h-full overflow-y-auto sticky top-24">
       <div className="mb-4">
         <h2 className="font-bold text-foreground text-lg">Following</h2>
         <p className="text-xs text-muted-foreground">Sign-in to see content from creators you follow.</p>

@@ -30,19 +30,19 @@ const ShopLive = () => {
           </Button>
         </div>
         
-        {/* Main Content Grid: Creators | Video | Chat */}
+        {/* Main Content Grid: Creators | Video+Products+Streams | Chat */}
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[220px_1fr_280px] gap-3 sm:gap-4">
-          {/* Left Sidebar - Featured Creators (Desktop only) */}
-          <div className="hidden lg:block">
+          {/* Left Sidebar - Featured Creators (Desktop only - spans full height) */}
+          <div className="hidden lg:block lg:row-span-3">
             <FeaturedCreators />
           </div>
 
-          {/* Center - Video Player & Products */}
-          <div className="w-full">
+          {/* Center Column - Video, Products, Upcoming, Recommended */}
+          <div className="w-full space-y-4 lg:row-span-3">
             <ShopLiveVideo />
-            
-            {/* Horizontal Products Section */}
             <HorizontalProducts />
+            <UpcomingStreams />
+            <RecommendedStreams />
           </div>
 
           {/* Right Sidebar - Chat (Desktop only) */}
@@ -55,15 +55,7 @@ const ShopLive = () => {
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
           <ShopLiveChat />
           <FeaturedCreators />
-        </div>
-
-        {/* Upcoming Streams */}
-        <div className="max-w-[1600px] mx-auto">
           <UpcomingStreams />
-        </div>
-
-        {/* Recommended Streams */}
-        <div className="max-w-[1600px] mx-auto">
           <RecommendedStreams />
         </div>
       </div>
