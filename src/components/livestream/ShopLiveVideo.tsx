@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, Play, Pause, Volume2, VolumeX, Maximize, ChevronRight } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, ChevronRight } from "lucide-react";
 
 interface ShopLiveVideoProps {
   hostName?: string;
@@ -24,12 +24,11 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar }: ShopLiveVide
           </Badge>
         </div>
 
-        {/* Amazon Live Logo (simulated) */}
+        {/* Live Indicator */}
         <div className="absolute top-4 right-4 z-10">
-          <div className="bg-card/80 backdrop-blur-sm px-3 py-1 rounded text-sm font-semibold">
-            <span className="text-foreground">amazon</span>
-            <span className="text-secondary ml-1">live</span>
-          </div>
+          <Badge variant="destructive" className="bg-red-600 text-white">
+            LIVE
+          </Badge>
         </div>
 
         {/* Video Placeholder */}
@@ -41,17 +40,19 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar }: ShopLiveVide
           />
         </div>
 
-        {/* Play/Like Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80"
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            <ThumbsUp className="h-8 w-8 text-foreground" />
-          </Button>
-        </div>
+        {/* Play Overlay */}
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80"
+              onClick={() => setIsPlaying(true)}
+            >
+              <Play className="h-8 w-8 text-foreground" />
+            </Button>
+          </div>
+        )}
 
         {/* Navigation Arrow */}
         <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
