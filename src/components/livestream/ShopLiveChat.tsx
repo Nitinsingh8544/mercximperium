@@ -53,9 +53,9 @@ const ShopLiveChat = () => {
   const [message, setMessage] = useState("");
 
   return (
-    <div className="bg-card rounded-xl border border-border h-fit max-h-[calc(100vh-120px)] flex flex-col">
+    <div className="bg-card rounded-xl border border-border h-full min-h-[500px] flex flex-col">
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 max-h-[400px]">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {chatMessages.map((chat) => (
           <div key={chat.id} className="flex gap-2">
             <Avatar className="h-7 w-7 flex-shrink-0">

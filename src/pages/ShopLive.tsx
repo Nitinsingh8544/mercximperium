@@ -30,24 +30,31 @@ const ShopLive = () => {
           </Button>
         </div>
         
-        {/* Main Content Grid: Creators | Video+Products+Streams | Chat */}
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[220px_1fr_280px] gap-3 sm:gap-4">
-          {/* Left Sidebar - Featured Creators (Desktop only - spans full height) */}
-          <div className="hidden lg:block lg:row-span-3">
-            <FeaturedCreators />
+        {/* Main Content Grid: Creators | Video + Chat | then Products/Streams full width */}
+        <div className="max-w-[1600px] mx-auto">
+          {/* Top Section: Creators | Video | Chat */}
+          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_280px] gap-3 sm:gap-4">
+            {/* Left Sidebar - Featured Creators (Desktop only - spans 2 rows) */}
+            <div className="hidden lg:block lg:row-span-2">
+              <FeaturedCreators />
+            </div>
+
+            {/* Center Column - Video and Products */}
+            <div className="w-full space-y-4 lg:row-span-2">
+              <ShopLiveVideo />
+              <HorizontalProducts />
+            </div>
+
+            {/* Right Sidebar - Chat (Desktop only - spans 2 rows to align with video+products) */}
+            <div className="hidden lg:block lg:row-span-2">
+              <ShopLiveChat />
+            </div>
           </div>
 
-          {/* Center Column - Video, Products, Upcoming, Recommended */}
-          <div className="w-full space-y-4 lg:row-span-3">
-            <ShopLiveVideo />
-            <HorizontalProducts />
+          {/* Full Width Sections: Upcoming and Recommended Streams */}
+          <div className="mt-6">
             <UpcomingStreams />
             <RecommendedStreams />
-          </div>
-
-          {/* Right Sidebar - Chat (Desktop only) */}
-          <div className="hidden lg:block">
-            <ShopLiveChat />
           </div>
         </div>
 

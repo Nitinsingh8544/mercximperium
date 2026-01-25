@@ -85,9 +85,35 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
         </Button>
       </div>
 
-      {/* Horizontal Scrollable Products */}
-      <div className="relative">
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
+      {/* Horizontal Scrollable Products with Navigation */}
+      <div className="relative group/scroll">
+        {/* Left Arrow */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
+          onClick={() => {
+            const container = document.getElementById('products-scroll');
+            if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
+          }}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {/* Right Arrow */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
+          onClick={() => {
+            const container = document.getElementById('products-scroll');
+            if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
+          }}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+
+        <div id="products-scroll" className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2">
           {products.map((product) => (
             <div
               key={product.id}
