@@ -33,20 +33,20 @@ const ShopLive = () => {
         {/* Main Content Grid: Creators | Video + Chat | then Products/Streams full width */}
         <div className="max-w-[1600px] mx-auto">
           {/* Top Section: Creators | Video | Chat */}
-          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_280px] gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_300px] xl:grid-cols-[220px_1fr_320px] gap-3 sm:gap-4">
             {/* Left Sidebar - Featured Creators (Desktop only - spans 2 rows) */}
             <div className="hidden lg:block lg:row-span-2">
               <FeaturedCreators />
             </div>
 
             {/* Center Column - Video and Products */}
-            <div className="w-full space-y-4 lg:row-span-2">
+            <div className="w-full min-w-0 space-y-4 lg:row-span-2">
               <ShopLiveVideo />
               <HorizontalProducts />
             </div>
 
             {/* Right Sidebar - Chat (Desktop only - spans 2 rows to align with video+products) */}
-            <div className="hidden lg:block lg:row-span-2">
+            <div className="hidden lg:block lg:row-span-2 min-w-0">
               <ShopLiveChat />
             </div>
           </div>
