@@ -56,7 +56,7 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
   const [scrollPosition, setScrollPosition] = useState(0);
 
   return (
-    <div className="bg-card rounded-xl border border-border p-4 mt-4">
+    <div className="bg-card rounded-b-xl border-x border-b border-border p-4">
       {/* Stream Info Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
