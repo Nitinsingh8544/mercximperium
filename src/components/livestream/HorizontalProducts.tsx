@@ -57,7 +57,19 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
 
   return (
     <div className="bg-card rounded-b-xl border-x border-b border-border p-4">
-      {/* Description/Title - First */}
+      {/* Channel Info Row - First (Avatar + Name + View Storefront) */}
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={hostAvatar} />
+          <AvatarFallback className="bg-muted text-muted-foreground text-sm">S</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <span className="font-semibold text-foreground text-sm">Sponsored Live</span>
+          <span className="text-xs text-primary cursor-pointer hover:underline">View my storefront &gt;</span>
+        </div>
+      </div>
+
+      {/* Title - Second */}
       <div className="flex items-start justify-between mb-1">
         <h3 className="font-bold text-foreground text-base">From Chill to Sharp: Everyday Fashion Edit</h3>
         <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
@@ -65,18 +77,15 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
         </Button>
       </div>
 
-      {/* Stream Details - Second */}
+      {/* Stream Date - Third */}
       <p className="text-xs text-muted-foreground mb-3">Streamed live 2 days ago</p>
 
-      {/* Channel Info with Follow Button - Third */}
+      {/* Channel Badge Row with Follow Button - Fourth */}
       <div className="flex items-center gap-2 mb-4">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={hostAvatar} />
-          <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-            {hostName.charAt(0).toUpperCase()}
-          </AvatarFallback>
+        <Avatar className="h-6 w-6">
+          <AvatarFallback className="bg-muted text-muted-foreground text-xs">F</AvatarFallback>
         </Avatar>
-        <Badge variant="outline" className="text-xs px-2 py-0.5">Sponsored</Badge>
+        <Badge variant="outline" className="text-xs px-2 py-0.5 border-amber-500 text-amber-600 bg-amber-50">Sponsored</Badge>
         <span className="text-xs text-muted-foreground">Earns commissions</span>
         <Button variant="outline" size="sm" className="ml-auto h-7 text-xs">
           + Follow
@@ -111,27 +120,27 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
           <ChevronRight className="h-4 w-4" />
         </Button>
 
-        <div id="products-scroll" className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-1">
+        <div id="products-scroll" className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-1">
           {products.map((product) => (
             <div
               key={product.id}
-              className="shrink-0 w-[120px] sm:w-[130px] cursor-pointer group"
+              className="shrink-0 w-[140px] sm:w-[150px] cursor-pointer group"
             >
-              <div className="aspect-square bg-muted rounded-md overflow-hidden mb-1.5">
+              <div className="h-[140px] bg-muted rounded-md overflow-hidden mb-2">
                 <img
                   src={product.image}
                   alt={product.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <p className="text-[11px] text-foreground line-clamp-2 mb-0.5 leading-tight">
+              <p className="text-xs text-foreground line-clamp-2 mb-1 leading-tight h-8">
                 {product.title}
               </p>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-foreground">
+                <span className="text-sm font-bold text-foreground">
                   {product.currency}{product.price.toLocaleString()}
                 </span>
-                <span className="text-[10px] text-muted-foreground line-through">
+                <span className="text-xs text-muted-foreground line-through">
                   {product.currency}{product.originalPrice.toLocaleString()}
                 </span>
               </div>
