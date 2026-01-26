@@ -39,8 +39,8 @@ const ShopLive = () => {
               <FeaturedCreators />
             </div>
 
-            {/* Center Column - Video and Products */}
-            <div className="w-full min-w-0 space-y-4 lg:row-span-2">
+            {/* Center Column - Video and Products (seamless card) */}
+            <div className="w-full min-w-0 lg:row-span-2">
               <ShopLiveVideo />
               <HorizontalProducts />
             </div>

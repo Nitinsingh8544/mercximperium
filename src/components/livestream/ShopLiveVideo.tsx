@@ -14,7 +14,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar }: ShopLiveVide
   const [isMuted, setIsMuted] = useState(false);
 
   return (
-    <div className="relative rounded-xl overflow-hidden bg-card border border-border">
+    <div className="relative rounded-t-xl overflow-hidden bg-card border-x border-t border-border">
       {/* Video Area */}
       <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
         {/* Previously Live Badge */}
@@ -105,8 +105,8 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar }: ShopLiveVide
         </div>
       </div>
 
-      {/* Host Info Bar */}
-      <div className="p-3 bg-card border-t border-border">
+      {/* Host Info Bar - no bottom border/rounding, connects to next section */}
+      <div className="p-3 bg-card">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={hostAvatar} />
