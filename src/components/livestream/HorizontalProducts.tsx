@@ -57,19 +57,7 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
 
   return (
     <div className="bg-card rounded-b-xl border-x border-b border-border p-4">
-      {/* Channel Info Row - First (Avatar + Name + View Storefront) */}
-      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={hostAvatar} />
-          <AvatarFallback className="bg-muted text-muted-foreground text-sm">S</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="font-semibold text-foreground text-sm">Sponsored Live</span>
-          <span className="text-xs text-primary cursor-pointer hover:underline">View my storefront &gt;</span>
-        </div>
-      </div>
-
-      {/* Title - Second */}
+      {/* Title - First */}
       <div className="flex items-start justify-between mb-1">
         <h3 className="font-bold text-foreground text-base">From Chill to Sharp: Everyday Fashion Edit</h3>
         <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
@@ -77,14 +65,18 @@ const HorizontalProducts = ({ hostName = "Fashion Expert", hostAvatar }: Horizon
         </Button>
       </div>
 
-      {/* Stream Date - Third */}
+      {/* Stream Date - Second */}
       <p className="text-xs text-muted-foreground mb-3">Streamed live 2 days ago</p>
 
-      {/* Channel Badge Row with Follow Button - Fourth */}
+      {/* Channel Name + Sponsored Badge + Follow - Third */}
       <div className="flex items-center gap-2 mb-4">
-        <Avatar className="h-6 w-6">
-          <AvatarFallback className="bg-muted text-muted-foreground text-xs">F</AvatarFallback>
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={hostAvatar} />
+          <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+            {hostName.charAt(0).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
+        <span className="font-semibold text-foreground text-sm">{hostName}</span>
         <Badge variant="outline" className="text-xs px-2 py-0.5 border-amber-500 text-amber-600 bg-amber-50">Sponsored</Badge>
         <span className="text-xs text-muted-foreground">Earns commissions</span>
         <Button variant="outline" size="sm" className="ml-auto h-7 text-xs">
