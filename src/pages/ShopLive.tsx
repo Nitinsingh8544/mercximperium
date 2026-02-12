@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
@@ -8,9 +8,14 @@ import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { getStreamById, getDefaultStream } from "@/data/streamData";
 
 const ShopLive = () => {
   const navigate = useNavigate();
+  const { streamId } = useParams();
+
+  const stream = streamId ? getStreamById(Number(streamId)) : getDefaultStream();
+  const currentStream = stream || getDefaultStream();
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,40 +35,44 @@ const ShopLive = () => {
           </Button>
         </div>
         
-        {/* Main Content Grid: Creators | Video + Chat | then Products/Streams full width */}
+        {/* Main Content Grid */}
         <div className="max-w-[1600px] mx-auto">
-          {/* Top Section: Creators | Video | Chat */}
           <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_300px] xl:grid-cols-[220px_1fr_320px] gap-3 sm:gap-4">
-            {/* Left Sidebar - Featured Creators (Desktop only - spans 2 rows) */}
             <div className="hidden lg:block lg:row-span-2">
               <FeaturedCreators />
             </div>
 
-            {/* Center Column - Video and Products (seamless card) */}
             <div className="w-full min-w-0 lg:row-span-2">
-              <ShopLiveVideo />
-              <HorizontalProducts />
+              <ShopLiveVideo
+                hostName={currentStream.host}
+                hostAvatar={currentStream.hostAvatar}
+                streamImage={currentStream.image}
+              />
+              <HorizontalProducts
+                hostName={currentStream.host}
+                hostAvatar={currentStream.hostAvatar}
+                streamTitle={currentStream.streamTitle}
+                streamDate={currentStream.streamDate}
+                products={currentStream.products}
+              />
             </div>
 
-            {/* Right Sidebar - Chat (Desktop only - spans 2 rows to align with video+products) */}
             <div className="hidden lg:block lg:row-span-2 min-w-0">
               <ShopLiveChat />
             </div>
           </div>
 
-          {/* Full Width Sections: Upcoming and Recommended Streams */}
           <div className="mt-6">
             <UpcomingStreams />
-            <RecommendedStreams />
+            <RecommendedStreams currentStreamId={currentStream.id} />
           </div>
         </div>
 
-        {/* Mobile: Creators, Products & Chat stacked */}
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
           <ShopLiveChat />
           <FeaturedCreators />
           <UpcomingStreams />
-          <RecommendedStreams />
+          <RecommendedStreams currentStreamId={currentStream.id} />
         </div>
       </div>
     </div>

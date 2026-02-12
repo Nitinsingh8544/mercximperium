@@ -84,7 +84,7 @@ const RecommendedStreams = ({ currentStreamId }: RecommendedStreamsProps) => {
             <Card 
               key={stream.id} 
               className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group hover:scale-105 shrink-0 w-[160px] sm:w-[180px] md:w-[200px]"
-              onClick={() => navigate(`/live/${stream.id}`)}
+              onClick={() => navigate(`/shop-live/${stream.id}`)}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img 
