@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      auction_bids: {
+        Row: {
+          bid_amount: number
+          created_at: string
+          id: string
+          is_winning: boolean | null
+          item_description: string | null
+          item_image: string | null
+          item_name: string
+          seller_image: string | null
+          seller_name: string | null
+          stream_id: number
+          user_id: string
+        }
+        Insert: {
+          bid_amount: number
+          created_at?: string
+          id?: string
+          is_winning?: boolean | null
+          item_description?: string | null
+          item_image?: string | null
+          item_name: string
+          seller_image?: string | null
+          seller_name?: string | null
+          stream_id: number
+          user_id: string
+        }
+        Update: {
+          bid_amount?: number
+          created_at?: string
+          id?: string
+          is_winning?: boolean | null
+          item_description?: string | null
+          item_image?: string | null
+          item_name?: string
+          seller_image?: string | null
+          seller_name?: string | null
+          stream_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      follows: {
+        Row: {
+          created_at: string
+          id: string
+          seller_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          seller_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          seller_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      live_comments: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          stream_id: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          stream_id: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          stream_id?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

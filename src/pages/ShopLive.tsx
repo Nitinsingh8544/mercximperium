@@ -16,6 +16,7 @@ const ShopLive = () => {
 
   const stream = streamId ? getStreamById(Number(streamId)) : getDefaultStream();
   const currentStream = stream || getDefaultStream();
+  const chatStreamId = `shop-live-${currentStream.id}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,7 +59,7 @@ const ShopLive = () => {
             </div>
 
             <div className="hidden lg:block lg:row-span-2 min-w-0">
-              <ShopLiveChat />
+              <ShopLiveChat streamId={chatStreamId} />
             </div>
           </div>
 
@@ -69,7 +70,7 @@ const ShopLive = () => {
         </div>
 
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
-          <ShopLiveChat />
+          <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators />
           <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} />
