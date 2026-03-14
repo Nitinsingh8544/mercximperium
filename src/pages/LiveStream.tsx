@@ -13,13 +13,13 @@ const LiveStream = () => {
   const navigate = useNavigate();
   const [currentBid, setCurrentBid] = useState(79);
   const currentStreamId = id ? parseInt(id) : undefined;
+  const streamId = `live-${id || "default"}`;
 
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
       <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6">
-        {/* Back Button */}
         <div className="max-w-[1600px] mx-auto mb-3">
           <Button
             variant="ghost"
@@ -33,32 +33,28 @@ const LiveStream = () => {
         </div>
         
         <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4">
-          {/* Left Sidebar - Shop */}
           <div className="hidden lg:block">
             <LiveStreamShop />
           </div>
 
-          {/* Center - Video Player */}
           <div className="w-full">
             <LiveStreamVideo 
               currentBid={currentBid} 
-              onBid={() => setCurrentBid(prev => prev + 5)} 
+              onBid={(amount) => setCurrentBid(amount)} 
+              streamId={currentStreamId}
             />
           </div>
 
-          {/* Right Sidebar - Chat */}
           <div className="hidden lg:block">
-            <LiveStreamChat />
+            <LiveStreamChat streamId={streamId} />
           </div>
         </div>
 
-        {/* Mobile Shop & Chat Tabs */}
         <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
           <LiveStreamShop />
-          <LiveStreamChat />
+          <LiveStreamChat streamId={streamId} />
         </div>
 
-        {/* Recommended Streams */}
         <div className="max-w-[1600px] mx-auto">
           <RecommendedStreams currentStreamId={currentStreamId} />
         </div>
