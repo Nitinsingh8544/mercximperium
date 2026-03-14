@@ -16,6 +16,7 @@ const ShopLive = () => {
 
   const stream = streamId ? getStreamById(Number(streamId)) : getDefaultStream();
   const currentStream = stream || getDefaultStream();
+  const chatStreamId = `shop-live-${currentStream.id}`;
 
   return (
     <div className="min-h-screen bg-background">
