@@ -70,7 +70,7 @@ const ShopLive = () => {
         </div>
 
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
-          <ShopLiveChat />
+          <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators />
           <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} />
