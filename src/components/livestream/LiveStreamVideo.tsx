@@ -2,17 +2,27 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Star, Volume2, Camera, Share2, Grid3X3, Timer } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import SellerProfileModal from "@/components/seller/SellerProfileModal";
+import { useFollows } from "@/hooks/useFollows";
+import { useAuctionBids } from "@/hooks/useAuctionBids";
+import { useToast } from "@/hooks/use-toast";
 
 interface LiveStreamVideoProps {
   currentBid: number;
-  onBid: () => void;
+  onBid: (amount: number) => void;
+  streamId?: number;
 }
 
-const LiveStreamVideo = ({ currentBid, onBid }: LiveStreamVideoProps) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoProps) => {
   const [isSellerProfileOpen, setIsSellerProfileOpen] = useState(false);
+  const [isCustomBidOpen, setIsCustomBidOpen] = useState(false);
+  const [customBidAmount, setCustomBidAmount] = useState("");
+  const { isFollowing, toggleFollow } = useFollows();
+  const { placeBid } = useAuctionBids();
+  const { toast } = useToast();
 
   const sellerInfo = {
     name: "stewsshoes",
@@ -20,119 +30,196 @@ const LiveStreamVideo = ({ currentBid, onBid }: LiveStreamVideoProps) => {
     rating: 4.8,
   };
 
+  const itemInfo = {
+    name: "RB CRIMSON JORDAN RETRO 3 SZ: 14",
+    description: "USED REP BOX AS-482",
+    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+  };
+
+  const following = isFollowing(sellerInfo.name);
+
+  const handleBid = async (amount: number) => {
+    const result = await placeBid({
+      stream_id: streamId,
+      item_name: itemInfo.name,
+      item_image: itemInfo.image,
+      item_description: itemInfo.description,
+      bid_amount: amount,
+      seller_name: sellerInfo.name,
+      seller_image: sellerInfo.image,
+    });
+
+    if (!result.error) {
+      onBid(amount);
+      toast({ title: "Bid placed!", description: `You bid $${amount}` });
+    }
+  };
+
+  const handleCustomBidSubmit = () => {
+    const amount = parseFloat(customBidAmount);
+    if (isNaN(amount) || amount <= currentBid) {
+      toast({
+        title: "Invalid bid",
+        description: `Your bid must be greater than the current bid of $${currentBid}`,
+        variant: "destructive",
+      });
+      return;
+    }
+    handleBid(amount);
+    setIsCustomBidOpen(false);
+    setCustomBidAmount("");
+  };
+
   return (
     <>
-    <div className="relative rounded-xl overflow-hidden bg-card border border-border">
-      {/* Video Area */}
-      <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
-        {/* Streamer Info Overlay */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-          <div 
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => setIsSellerProfileOpen(true)}
-          >
-            <Avatar className="h-10 w-10 border-2 border-secondary">
-              <AvatarImage src={sellerInfo.image} />
-              <AvatarFallback>SS</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-semibold text-foreground">{sellerInfo.name}</p>
-              <div className="flex items-center gap-1 text-sm">
-                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-muted-foreground">{sellerInfo.rating}</span>
+      <div className="relative rounded-xl overflow-hidden bg-card border border-border">
+        {/* Video Area */}
+        <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
+          {/* Streamer Info Overlay */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+            <div
+              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setIsSellerProfileOpen(true)}
+            >
+              <Avatar className="h-10 w-10 border-2 border-secondary">
+                <AvatarImage src={sellerInfo.image} />
+                <AvatarFallback>SS</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-foreground">{sellerInfo.name}</p>
+                <div className="flex items-center gap-1 text-sm">
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  <span className="text-muted-foreground">{sellerInfo.rating}</span>
+                </div>
+              </div>
+              <Button
+                variant={following ? "outline" : "secondary"}
+                size="sm"
+                className="ml-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFollow(sellerInfo.name);
+                }}
+              >
+                {following ? "Following" : "Follow"}
+              </Button>
+            </div>
+
+            {/* Live Badge & Viewers */}
+            <div className="flex items-center gap-3">
+              <Badge variant="destructive" className="animate-pulse">
+                🔴 LIVE
+              </Badge>
+              <div className="bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                👁 1,055
               </div>
             </div>
-            <Button
-              variant={isFollowing ? "outline" : "secondary"}
-              size="sm"
-              className="ml-2"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFollowing(!isFollowing);
-              }}
-            >
-              {isFollowing ? "Following" : "Follow"}
+          </div>
+
+          {/* Video Controls Overlay */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
+              <Volume2 className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
+              <Camera className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
+              <Grid3X3 className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* Live Badge & Viewers */}
-          <div className="flex items-center gap-3">
-            <Badge variant="destructive" className="animate-pulse">
-              🔴 LIVE
-            </Badge>
-            <div className="bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
-              👁 1,055
-            </div>
+          {/* Placeholder for video */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={itemInfo.image}
+              alt="Product showcase"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Current Winner Banner */}
+          <div className="absolute bottom-20 left-4 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg">
+            <span className="text-sm">
+              <span className="font-semibold text-foreground">kingd72</span>
+              <span className="text-secondary font-bold ml-1">is Winning!</span>
+            </span>
           </div>
         </div>
 
-        {/* Video Controls Overlay */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-          <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-            <Volume2 className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-            <Camera className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-            <Share2 className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Product Info Bar */}
+        <div className="p-4 bg-gradient-to-r from-card to-muted border-t border-border">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex-1">
+              <h3 className="font-bold text-foreground text-lg">{itemInfo.name}</h3>
+              <p className="text-muted-foreground text-sm">{itemInfo.description}</p>
+              <p className="text-muted-foreground text-sm">34 Bids</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-secondary">${currentBid}</p>
+              <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                <Timer className="h-3 w-3" />
+                <span>00:00</span>
+              </div>
+            </div>
+          </div>
 
-        {/* Placeholder for video - shows sample image */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <img 
-            src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800" 
-            alt="Product showcase" 
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {/* Current Winner Banner */}
-        <div className="absolute bottom-20 left-4 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg">
-          <span className="text-sm">
-            <span className="font-semibold text-foreground">kingd72</span>
-            <span className="text-secondary font-bold ml-1">is Winning!</span>
-          </span>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-shrink-0"
+              onClick={() => setIsCustomBidOpen(true)}
+            >
+              Custom
+            </Button>
+            <Button
+              className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg"
+              onClick={() => handleBid(currentBid + 5)}
+            >
+              Bid: ${currentBid + 5}
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Product Info Bar */}
-      <div className="p-4 bg-gradient-to-r from-card to-muted border-t border-border">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex-1">
-            <h3 className="font-bold text-foreground text-lg">
-              RB CRIMSON JORDAN RETRO 3 SZ: 14
-            </h3>
-            <p className="text-muted-foreground text-sm">USED REP BOX AS-482</p>
-            <p className="text-muted-foreground text-sm">34 Bids</p>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-secondary">${currentBid}</p>
-            <div className="flex items-center gap-1 text-muted-foreground text-sm">
-              <Timer className="h-3 w-3" />
-              <span>00:00</span>
+      {/* Custom Bid Dialog */}
+      <Dialog open={isCustomBidOpen} onOpenChange={setIsCustomBidOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Enter Custom Bid</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Current highest bid: <span className="font-bold text-secondary">${currentBid}</span>
+            </p>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Your bid amount ($)</label>
+              <Input
+                type="number"
+                placeholder={`Enter more than $${currentBid}`}
+                value={customBidAmount}
+                onChange={(e) => setCustomBidAmount(e.target.value)}
+                min={currentBid + 1}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCustomBidSubmit();
+                }}
+              />
             </div>
           </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button variant="outline" className="flex-shrink-0">
-            Custom
-          </Button>
-          <Button 
-            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg"
-            onClick={onBid}
-          >
-            Bid: ${currentBid + 5}
-          </Button>
-        </div>
-      </div>
-    </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+              Place Bid
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <SellerProfileModal
         isOpen={isSellerProfileOpen}

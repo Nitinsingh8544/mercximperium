@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share, ArrowLeft, Star } from "lucide-react";
 import ShareProfileModal from "./ShareProfileModal";
 import MessageChatModal from "./MessageChatModal";
+import { useFollows } from "@/hooks/useFollows";
 
 interface SellerProfileModalProps {
   isOpen: boolean;
@@ -24,8 +25,9 @@ const SellerProfileModal = ({
 }: SellerProfileModalProps) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const { isFollowing, toggleFollow } = useFollows();
 
+  const following = isFollowing(sellerName);
   const sellerInitial = sellerName.charAt(0).toUpperCase();
 
   const sellerStats = {
@@ -61,7 +63,6 @@ const SellerProfileModal = ({
 
           {/* Profile Section */}
           <div className="px-6 pb-6 -mt-12">
-            {/* Avatar */}
             <div className="relative inline-block mb-4">
               <Avatar className="h-24 w-24 border-4 border-card">
                 <AvatarImage src={sellerImage} />
@@ -71,7 +72,6 @@ const SellerProfileModal = ({
               </Avatar>
             </div>
 
-            {/* Name and Rating */}
             <div className="flex items-center justify-between mb-2">
               <div>
                 <h2 className="text-xl font-bold text-foreground">{sellerName}</h2>
@@ -82,12 +82,10 @@ const SellerProfileModal = ({
               </div>
             </div>
 
-            {/* Bio */}
             <p className="text-muted-foreground text-sm mb-4">
               Premium seller | Authentic products only | Fast shipping 📦
             </p>
 
-            {/* Stats */}
             <div className="flex gap-6 mb-6">
               <div className="text-center">
                 <p className="text-foreground font-bold">{sellerStats.followers}</p>
@@ -103,24 +101,23 @@ const SellerProfileModal = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 mb-6">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="flex-1 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
                 onClick={() => setIsChatModalOpen(true)}
               >
                 Message
               </Button>
-              <Button 
-                className={`flex-1 ${isFollowing ? 'bg-primary/70 hover:bg-primary/80' : 'bg-primary hover:bg-primary/90'} text-primary-foreground`}
-                onClick={() => setIsFollowing(!isFollowing)}
+              <Button
+                className={`flex-1 ${following ? "bg-primary/70 hover:bg-primary/80" : "bg-primary hover:bg-primary/90"} text-primary-foreground`}
+                onClick={() => toggleFollow(sellerName)}
               >
-                {isFollowing ? "Following" : "Follow"}
+                {following ? "Following" : "Follow"}
               </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
+              <Button
+                variant="outline"
+                size="icon"
                 className="border-secondary/30 text-secondary hover:bg-secondary/10"
                 onClick={() => setIsShareModalOpen(true)}
               >
@@ -128,25 +125,15 @@ const SellerProfileModal = ({
               </Button>
             </div>
 
-            {/* Tabs */}
             <Tabs defaultValue="products" className="w-full">
               <TabsList className="w-full bg-muted">
-                <TabsTrigger 
-                  value="products" 
-                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                >
+                <TabsTrigger value="products" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   Products
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="reviews" 
-                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                >
+                <TabsTrigger value="reviews" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   Reviews
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="about" 
-                  className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
-                >
+                <TabsTrigger value="about" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   About
                 </TabsTrigger>
               </TabsList>
@@ -154,15 +141,8 @@ const SellerProfileModal = ({
               <TabsContent value="products" className="mt-4">
                 <div className="grid grid-cols-3 gap-2">
                   {sellerProducts.map((product) => (
-                    <div 
-                      key={product.id} 
-                      className="relative aspect-square rounded-lg overflow-hidden bg-muted group cursor-pointer"
-                    >
-                      <img 
-                        src={product.image} 
-                        alt="Product" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
+                    <div key={product.id} className="relative aspect-square rounded-lg overflow-hidden bg-muted group cursor-pointer">
+                      <img src={product.image} alt="Product" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
                         <span className="text-white text-xs font-semibold">{product.price}</span>
                       </div>
@@ -190,19 +170,8 @@ const SellerProfileModal = ({
         </DialogContent>
       </Dialog>
 
-      <ShareProfileModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        userName={sellerName}
-      />
-
-      <MessageChatModal
-        isOpen={isChatModalOpen}
-        onClose={() => setIsChatModalOpen(false)}
-        userName={sellerName}
-        userInitial={sellerInitial}
-        userImage={sellerImage}
-      />
+      <ShareProfileModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} userName={sellerName} />
+      <MessageChatModal isOpen={isChatModalOpen} onClose={() => setIsChatModalOpen(false)} userName={sellerName} userInitial={sellerInitial} userImage={sellerImage} />
     </>
   );
 };

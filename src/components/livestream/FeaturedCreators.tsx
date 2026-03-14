@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useFollows } from "@/hooks/useFollows";
 
 interface Creator {
   id: number;
@@ -7,7 +8,7 @@ interface Creator {
   isLive?: boolean;
 }
 
-const creators: Creator[] = [
+const defaultCreators: Creator[] = [
   { id: 1, name: "Sponsored Live", avatar: "", isLive: true },
   { id: 2, name: "Celebrity Corner", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50", isLive: true },
   { id: 3, name: "Bhim Jain", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50", isLive: true },
@@ -21,31 +22,63 @@ const creators: Creator[] = [
 ];
 
 const FeaturedCreators = () => {
+  const { followedSellers, loading } = useFollows();
+
+  // Build followed hosts list from DB
+  const followedCreators: Creator[] = followedSellers.map((name, idx) => ({
+    id: 100 + idx,
+    name,
+    avatar: "",
+    isLive: false,
+  }));
+
   return (
     <div className="bg-card rounded-xl border border-border p-4 h-full overflow-y-auto sticky top-24">
+      {/* Followed Hosts Section */}
       <div className="mb-4">
         <h2 className="font-bold text-foreground text-lg">Following</h2>
-        <p className="text-xs text-muted-foreground">Sign-in to see content from creators you follow.</p>
+        {followedCreators.length === 0 ? (
+          <p className="text-xs text-muted-foreground mt-1">Follow hosts to see them here.</p>
+        ) : (
+          <div className="space-y-3 mt-3">
+            {followedCreators.map((creator) => (
+              <button
+                key={creator.id}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
+              >
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={creator.avatar} />
+                  <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                    {creator.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium truncate text-foreground">
+                  {creator.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-      
+
       <div className="border-t border-border pt-4">
         <h3 className="font-semibold text-foreground text-sm mb-4">Featured Creators</h3>
-        
+
         <div className="space-y-3">
-          {creators.map((creator) => (
+          {defaultCreators.map((creator) => (
             <button
               key={creator.id}
               className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
             >
               <div className="relative">
-                <Avatar className={`h-10 w-10 ${creator.isLive ? 'ring-2 ring-red-500 ring-offset-2 ring-offset-background' : ''}`}>
+                <Avatar className={`h-10 w-10 ${creator.isLive ? "ring-2 ring-red-500 ring-offset-2 ring-offset-background" : ""}`}>
                   <AvatarImage src={creator.avatar} />
                   <AvatarFallback className="bg-primary/20 text-primary text-xs">
                     {creator.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <span className={`text-sm font-medium truncate ${creator.isLive ? 'text-red-500' : 'text-foreground'}`}>
+              <span className={`text-sm font-medium truncate ${creator.isLive ? "text-red-500" : "text-foreground"}`}>
                 {creator.name}
               </span>
             </button>
