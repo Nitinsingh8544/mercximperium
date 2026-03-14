@@ -59,7 +59,7 @@ const ShopLive = () => {
             </div>
 
             <div className="hidden lg:block lg:row-span-2 min-w-0">
-              <ShopLiveChat />
+              <ShopLiveChat streamId={chatStreamId} />
             </div>
           </div>
 
