@@ -111,7 +111,7 @@ const SellerProfileModal = ({
               </Button>
               <Button
                 className={`flex-1 ${following ? "bg-primary/70 hover:bg-primary/80" : "bg-primary hover:bg-primary/90"} text-primary-foreground`}
-                onClick={() => toggleFollow(sellerName)}
+                onClick={() => toggleFollow(sellerName, "auction")}
               >
                 {following ? "Following" : "Follow"}
               </Button>
