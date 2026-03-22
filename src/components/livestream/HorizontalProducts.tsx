@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Share2 } from "lucide-react";
+import { useFollows } from "@/hooks/useFollows";
+import ProductDetailModal from "./ProductDetailModal";
 
 interface Product {
   id: number;
@@ -37,78 +39,101 @@ const HorizontalProducts = ({
   products = defaultProducts,
 }: HorizontalProductsProps) => {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const { isFollowing, toggleFollow } = useFollows();
+
+  const following = isFollowing(hostName);
 
   return (
-    <div className="bg-card rounded-b-xl border-x border-b border-border p-4">
-      {/* Title - First */}
-      <div className="flex items-start justify-between mb-1">
-        <h3 className="font-bold text-foreground text-base">{streamTitle}</h3>
-        <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
-          <Share2 className="h-4 w-4" />
-        </Button>
-      </div>
+    <>
+      <div className="bg-card rounded-b-xl border-x border-b border-border p-4">
+        {/* Title */}
+        <div className="flex items-start justify-between mb-1">
+          <h3 className="font-bold text-foreground text-base">{streamTitle}</h3>
+          <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
 
-      {/* Stream Date - Second */}
-      <p className="text-xs text-muted-foreground mb-3">{streamDate}</p>
+        {/* Stream Date */}
+        <p className="text-xs text-muted-foreground mb-3">{streamDate}</p>
 
-      {/* Channel Name + Sponsored Badge + Follow - Third */}
-      <div className="flex items-center gap-2 mb-4">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src={hostAvatar} />
-          <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-            {hostName.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <span className="font-semibold text-foreground text-sm">{hostName}</span>
-        <Badge variant="outline" className="text-xs px-2 py-0.5 border-amber-500 text-amber-600 bg-amber-50">Sponsored</Badge>
-        <span className="text-xs text-muted-foreground">Earns commissions</span>
-        <Button variant="outline" size="sm" className="ml-auto h-7 text-xs">
-          + Follow
-        </Button>
-      </div>
+        {/* Channel Name + Sponsored Badge + Follow */}
+        <div className="flex items-center gap-2 mb-4">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={hostAvatar} />
+            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+              {hostName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="font-semibold text-foreground text-sm">{hostName}</span>
+          <Badge variant="outline" className="text-xs px-2 py-0.5 border-amber-500 text-amber-600 bg-amber-50">Sponsored</Badge>
+          <span className="text-xs text-muted-foreground">Earns commissions</span>
+          <Button
+            variant={following ? "outline" : "outline"}
+            size="sm"
+            className={`ml-auto h-7 text-xs ${following ? "bg-muted text-muted-foreground" : ""}`}
+            onClick={() => toggleFollow(hostName)}
+          >
+            {following ? "Following" : "+ Follow"}
+          </Button>
+        </div>
 
-      {/* Horizontal Scrollable Products with Navigation */}
-      <div className="relative group/scroll">
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-          onClick={() => {
-            const container = document.getElementById('products-scroll');
-            if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
-          }}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+        {/* Horizontal Scrollable Products */}
+        <div className="relative group/scroll">
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
+            onClick={() => {
+              const container = document.getElementById('products-scroll');
+              if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
+            }}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
-          onClick={() => {
-            const container = document.getElementById('products-scroll');
-            if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
-          }}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-background/90 border-border shadow-md opacity-0 group-hover/scroll:opacity-100 transition-opacity"
+            onClick={() => {
+              const container = document.getElementById('products-scroll');
+              if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
+            }}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
 
-        <div id="products-scroll" className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-1">
-          {products.map((product) => (
-            <div key={product.id} className="shrink-0 w-[140px] sm:w-[150px] cursor-pointer group">
-              <div className="h-[140px] bg-muted rounded-md overflow-hidden mb-2">
-                <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div id="products-scroll" className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-1">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="shrink-0 w-[140px] sm:w-[150px] cursor-pointer group"
+                onClick={() => setSelectedProduct(product)}
+              >
+                <div className="h-[140px] bg-muted rounded-md overflow-hidden mb-2">
+                  <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <p className="text-xs text-foreground line-clamp-2 mb-1 leading-tight h-8">{product.title}</p>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground line-through">{product.currency}{product.originalPrice.toLocaleString()}</span>
+                </div>
               </div>
-              <p className="text-xs text-foreground line-clamp-2 mb-1 leading-tight h-8">{product.title}</p>
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
-                <span className="text-xs text-muted-foreground line-through">{product.currency}{product.originalPrice.toLocaleString()}</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      <ProductDetailModal
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        product={selectedProduct}
+        sellerName={hostName}
+        sellerAvatar={hostAvatar}
+      />
+    </>
   );
 };
 

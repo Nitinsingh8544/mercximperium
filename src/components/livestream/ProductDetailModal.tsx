@@ -1,0 +1,168 @@
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Star, Truck, ShieldCheck, RotateCcw, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface Product {
+  id: number;
+  image: string;
+  title: string;
+  price: number;
+  originalPrice: number;
+  currency: string;
+}
+
+interface ProductDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  product: Product | null;
+  sellerName?: string;
+  sellerAvatar?: string;
+}
+
+const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", sellerAvatar }: ProductDetailModalProps) => {
+  const { toast } = useToast();
+  const [quantity, setQuantity] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  if (!product) return null;
+
+  const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+  const handleAddToCart = () => {
+    toast({ title: "Added to cart!", description: `${product.title} x${quantity} added to your cart.` });
+  };
+
+  const handleBuyNow = () => {
+    toast({ title: "Order placed!", description: `You purchased ${product.title} for ${product.currency}${product.price.toLocaleString()}.` });
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {/* Product Image */}
+          <div className="p-6 flex flex-col items-center bg-muted/30">
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-background">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="w-full h-full object-cover"
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
+                onClick={() => setIsWishlisted(!isWishlisted)}
+              >
+                <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Product Details */}
+          <div className="p-6 space-y-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground leading-tight">{product.title}</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Sold by <span className="text-primary font-medium">{sellerName}</span>
+              </p>
+              <div className="flex items-center gap-1 mt-1">
+                {[1, 2, 3, 4].map((i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                ))}
+                <Star className="h-3.5 w-3.5 fill-muted text-muted" />
+                <span className="text-xs text-muted-foreground ml-1">(128)</span>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Pricing */}
+            <div>
+              {discount > 0 && (
+                <Badge variant="destructive" className="mb-2 text-xs">
+                  Limited time deal
+                </Badge>
+              )}
+              <div className="flex items-baseline gap-2">
+                {discount > 0 && (
+                  <span className="text-destructive font-medium text-sm">-{discount}%</span>
+                )}
+                <span className="text-2xl font-bold text-foreground">
+                  {product.currency}{product.price.toLocaleString()}
+                </span>
+              </div>
+              {discount > 0 && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  M.R.P.: <span className="line-through">{product.currency}{product.originalPrice.toLocaleString()}</span>
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Inclusive of all taxes</p>
+            </div>
+
+            <Separator />
+
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col items-center text-center gap-1 p-2">
+                <Truck className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Free Delivery</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1 p-2">
+                <RotateCcw className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">10 days Returnable</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1 p-2">
+                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Secure Payment</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1 p-2">
+                <Star className="h-5 w-5 text-muted-foreground" />
+                <span className="text-[10px] text-muted-foreground">Top Brand</span>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Quantity */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-foreground font-medium">Quantity:</span>
+              <select
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="border border-border rounded-md px-2 py-1 text-sm bg-background text-foreground"
+              >
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2 pt-2">
+              <Button
+                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </Button>
+              <Button
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                onClick={handleBuyNow}
+              >
+                Buy Now
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default ProductDetailModal;
