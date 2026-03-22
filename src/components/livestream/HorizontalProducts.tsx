@@ -73,7 +73,7 @@ const HorizontalProducts = ({
             variant={following ? "outline" : "outline"}
             size="sm"
             className={`ml-auto h-7 text-xs ${following ? "bg-muted text-muted-foreground" : ""}`}
-            onClick={() => toggleFollow(hostName)}
+            onClick={() => toggleFollow(hostName, "shop_live")}
           >
             {following ? "Following" : "+ Follow"}
           </Button>

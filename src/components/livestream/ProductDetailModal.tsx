@@ -3,8 +3,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Truck, ShieldCheck, RotateCcw, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { Star, Truck, ShieldCheck, RotateCcw, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
 
 interface Product {
   id: number;
@@ -25,6 +26,7 @@ interface ProductDetailModalProps {
 
 const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", sellerAvatar }: ProductDetailModalProps) => {
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -32,8 +34,22 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
-  const handleAddToCart = () => {
-    toast({ title: "Added to cart!", description: `${product.title} x${quantity} added to your cart.` });
+  const handleAddToCart = async () => {
+    const result = await addToCart({
+      product_title: product.title,
+      product_image: product.image,
+      product_price: product.price,
+      product_original_price: product.originalPrice,
+      product_currency: product.currency,
+      quantity,
+      seller_name: sellerName,
+    });
+
+    if (!result.error) {
+      toast({ title: "Added to cart!", description: `${product.title} x${quantity} added to your cart.` });
+    } else {
+      toast({ title: "Error", description: "Please sign in to add items to cart.", variant: "destructive" });
+    }
   };
 
   const handleBuyNow = () => {
@@ -45,14 +61,9 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto p-0">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          {/* Product Image */}
           <div className="p-6 flex flex-col items-center bg-muted/30">
             <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-background">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-full object-cover"
-              />
+              <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
               <Button
                 variant="ghost"
                 size="icon"
@@ -64,7 +75,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             </div>
           </div>
 
-          {/* Product Details */}
           <div className="p-6 space-y-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground leading-tight">{product.title}</h2>
@@ -82,20 +92,13 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
             <Separator />
 
-            {/* Pricing */}
             <div>
               {discount > 0 && (
-                <Badge variant="destructive" className="mb-2 text-xs">
-                  Limited time deal
-                </Badge>
+                <Badge variant="destructive" className="mb-2 text-xs">Limited time deal</Badge>
               )}
               <div className="flex items-baseline gap-2">
-                {discount > 0 && (
-                  <span className="text-destructive font-medium text-sm">-{discount}%</span>
-                )}
-                <span className="text-2xl font-bold text-foreground">
-                  {product.currency}{product.price.toLocaleString()}
-                </span>
+                {discount > 0 && <span className="text-destructive font-medium text-sm">-{discount}%</span>}
+                <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
               </div>
               {discount > 0 && (
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -107,7 +110,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
             <Separator />
 
-            {/* Features */}
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col items-center text-center gap-1 p-2">
                 <Truck className="h-5 w-5 text-muted-foreground" />
@@ -129,7 +131,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
             <Separator />
 
-            {/* Quantity */}
             <div className="flex items-center gap-3">
               <span className="text-sm text-foreground font-medium">Quantity:</span>
               <select
@@ -143,7 +144,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               </select>
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-2 pt-2">
               <Button
                 className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"

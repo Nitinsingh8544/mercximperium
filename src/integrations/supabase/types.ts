@@ -56,21 +56,63 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_currency: string
+          product_image: string | null
+          product_original_price: number | null
+          product_price: number
+          product_title: string
+          quantity: number
+          seller_name: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_currency?: string
+          product_image?: string | null
+          product_original_price?: number | null
+          product_price: number
+          product_title: string
+          quantity?: number
+          seller_name?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_currency?: string
+          product_image?: string | null
+          product_original_price?: number | null
+          product_price?: number
+          product_title?: string
+          quantity?: number
+          seller_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
+          follow_source: string
           id: string
           seller_name: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          follow_source?: string
           id?: string
           seller_name: string
           user_id: string
         }
         Update: {
           created_at?: string
+          follow_source?: string
           id?: string
           seller_name?: string
           user_id?: string

@@ -98,7 +98,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoPro
                 className="ml-2"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleFollow(sellerInfo.name);
+                  toggleFollow(sellerInfo.name, "auction");
                 }}
               >
                 {following ? "Following" : "Follow"}

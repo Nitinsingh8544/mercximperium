@@ -21,49 +21,53 @@ const defaultCreators: Creator[] = [
   { id: 10, name: "Tarun Goel", avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=50" },
 ];
 
-const FeaturedCreators = () => {
-  const { followedSellers, loading } = useFollows();
+const FollowList = ({ title, names }: { title: string; names: string[] }) => (
+  <div className="mb-3">
+    <h3 className="text-sm font-semibold text-muted-foreground mb-2">{title}</h3>
+    {names.length === 0 ? (
+      <p className="text-xs text-muted-foreground/70 pl-2">No followed hosts yet.</p>
+    ) : (
+      <div className="space-y-2">
+        {names.map((name, idx) => (
+          <button
+            key={idx}
+            className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
+          >
+            <Avatar className="h-9 w-9">
+              <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                {name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium truncate text-foreground">{name}</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
-  // Build followed hosts list from DB
-  const followedCreators: Creator[] = followedSellers.map((name, idx) => ({
-    id: 100 + idx,
-    name,
-    avatar: "",
-    isLive: false,
-  }));
+const FeaturedCreators = () => {
+  const { auctionFollows, shopLiveFollows } = useFollows();
+
+  const hasFollows = auctionFollows.length > 0 || shopLiveFollows.length > 0;
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 h-full overflow-y-auto sticky top-24">
       {/* Followed Hosts Section */}
       <div className="mb-4">
-        <h2 className="font-bold text-foreground text-lg">Following</h2>
-        {followedCreators.length === 0 ? (
-          <p className="text-xs text-muted-foreground mt-1">Follow hosts to see them here.</p>
+        <h2 className="font-bold text-foreground text-lg mb-3">Following</h2>
+        {!hasFollows ? (
+          <p className="text-xs text-muted-foreground">Follow hosts to see them here.</p>
         ) : (
-          <div className="space-y-3 mt-3">
-            {followedCreators.map((creator) => (
-              <button
-                key={creator.id}
-                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
-              >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={creator.avatar} />
-                  <AvatarFallback className="bg-primary/20 text-primary text-xs">
-                    {creator.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium truncate text-foreground">
-                  {creator.name}
-                </span>
-              </button>
-            ))}
-          </div>
+          <>
+            <FollowList title="Auction" names={auctionFollows} />
+            <FollowList title="Shop Live" names={shopLiveFollows} />
+          </>
         )}
       </div>
 
       <div className="border-t border-border pt-4">
         <h3 className="font-semibold text-foreground text-sm mb-4">Featured Creators</h3>
-
         <div className="space-y-3">
           {defaultCreators.map((creator) => (
             <button
