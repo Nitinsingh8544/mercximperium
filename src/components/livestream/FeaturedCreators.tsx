@@ -47,22 +47,31 @@ const FollowList = ({ title, names }: { title: string; names: string[] }) => (
 );
 
 const FeaturedCreators = () => {
-  const { auctionFollows, shopLiveFollows } = useFollows();
-
-  const hasFollows = auctionFollows.length > 0 || shopLiveFollows.length > 0;
+  const { followedSellers } = useFollows();
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 h-full overflow-y-auto sticky top-24">
       {/* Followed Hosts Section */}
       <div className="mb-4">
         <h2 className="font-bold text-foreground text-lg mb-3">Following</h2>
-        {!hasFollows ? (
+        {followedSellers.length === 0 ? (
           <p className="text-xs text-muted-foreground">Follow hosts to see them here.</p>
         ) : (
-          <>
-            <FollowList title="Auction" names={auctionFollows} />
-            <FollowList title="Shop Live" names={shopLiveFollows} />
-          </>
+          <div className="space-y-2">
+            {followedSellers.map((name, idx) => (
+              <button
+                key={idx}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                    {name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium truncate text-foreground">{name}</span>
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
