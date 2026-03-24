@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import LiveStreamVideo from "@/components/livestream/LiveStreamVideo";
@@ -7,13 +7,33 @@ import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { allStreams } from "@/data/streamData";
 
 const LiveStream = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [currentBid, setCurrentBid] = useState(79);
-  const currentStreamId = id ? parseInt(id) : undefined;
-  const streamId = `live-${id || "default"}`;
+
+  const [currentStreamIndex, setCurrentStreamIndex] = useState(() => {
+    if (id) {
+      const idx = allStreams.findIndex(s => s.id === parseInt(id));
+      return idx >= 0 ? idx : 0;
+    }
+    return 0;
+  });
+
+  const currentStream = allStreams[currentStreamIndex];
+  const streamChatId = `live-${currentStream.id}`;
+
+  const goNext = useCallback(() => {
+    setCurrentStreamIndex(prev => Math.min(prev + 1, allStreams.length - 1));
+    setCurrentBid(79);
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setCurrentStreamIndex(prev => Math.max(prev - 1, 0));
+    setCurrentBid(79);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,22 +61,26 @@ const LiveStream = () => {
             <LiveStreamVideo 
               currentBid={currentBid} 
               onBid={(amount) => setCurrentBid(amount)} 
-              streamId={currentStreamId}
+              streamId={currentStream.id}
+              onNext={goNext}
+              onPrev={goPrev}
+              hasNext={currentStreamIndex < allStreams.length - 1}
+              hasPrev={currentStreamIndex > 0}
             />
           </div>
 
           <div className="hidden lg:block">
-            <LiveStreamChat streamId={streamId} />
+            <LiveStreamChat streamId={streamChatId} />
           </div>
         </div>
 
         <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
           <LiveStreamShop />
-          <LiveStreamChat streamId={streamId} />
+          <LiveStreamChat streamId={streamChatId} />
         </div>
 
         <div className="max-w-[1600px] mx-auto">
-          <RecommendedStreams currentStreamId={currentStreamId} />
+          <RecommendedStreams currentStreamId={currentStream.id} />
         </div>
       </div>
     </div>

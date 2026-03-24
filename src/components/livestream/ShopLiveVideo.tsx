@@ -1,21 +1,36 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, ChevronRight } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft } from "lucide-react";
 
 interface ShopLiveVideoProps {
   hostName?: string;
   hostAvatar?: string;
   streamImage?: string;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
-const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage }: ShopLiveVideoProps) => {
+const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, onNext, onPrev, hasNext = true, hasPrev = true }: ShopLiveVideoProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  }, []);
 
   return (
-    <div className="relative rounded-t-xl overflow-hidden bg-card border-x border-t border-border">
+    <div ref={containerRef} className="relative rounded-t-xl overflow-hidden bg-card border-x border-t border-border">
       <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
         <div className="absolute top-4 left-4 z-10">
           <Badge className="bg-primary text-primary-foreground">Previously Live</Badge>
@@ -31,17 +46,31 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage }:
           />
         </div>
         {!isPlaying && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
             <Button variant="ghost" size="icon" className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(true)}>
               <Play className="h-8 w-8 text-foreground" />
             </Button>
           </div>
         )}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
-          <Button variant="ghost" size="icon" className="h-10 w-10 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80">
-            <ChevronRight className="h-5 w-5 text-foreground" />
-          </Button>
-        </div>
+        
+        {/* Left Arrow */}
+        {hasPrev && (
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+            <Button variant="ghost" size="icon" className="h-10 w-10 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={onPrev}>
+              <ChevronLeft className="h-5 w-5 text-foreground" />
+            </Button>
+          </div>
+        )}
+
+        {/* Right Arrow */}
+        {hasNext && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+            <Button variant="ghost" size="icon" className="h-10 w-10 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={onNext}>
+              <ChevronRight className="h-5 w-5 text-foreground" />
+            </Button>
+          </div>
+        )}
+
         <div className="absolute bottom-4 left-4 right-4 z-10">
           <div className="flex items-center justify-between">
             <div className="flex-1 mr-4">
@@ -56,8 +85,8 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage }:
               <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsMuted(!isMuted)}>
                 {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80">
-                <Maximize className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={toggleFullscreen}>
+                {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
               </Button>
             </div>
           </div>

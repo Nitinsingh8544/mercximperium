@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, Volume2, Camera, Share2, Grid3X3, Timer } from "lucide-react";
+import { Star, Volume2, VolumeX, Camera, Share2, Grid3X3, Timer, Play, Pause, Maximize, Minimize, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import SellerProfileModal from "@/components/seller/SellerProfileModal";
 import { useFollows } from "@/hooks/useFollows";
@@ -14,15 +14,23 @@ interface LiveStreamVideoProps {
   currentBid: number;
   onBid: (amount: number) => void;
   streamId?: number;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasNext?: boolean;
+  hasPrev?: boolean;
 }
 
-const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoProps) => {
+const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasNext = false, hasPrev = false }: LiveStreamVideoProps) => {
   const [isSellerProfileOpen, setIsSellerProfileOpen] = useState(false);
   const [isCustomBidOpen, setIsCustomBidOpen] = useState(false);
   const [customBidAmount, setCustomBidAmount] = useState("");
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
   const { toast } = useToast();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const sellerInfo = {
     name: "stewsshoes",
@@ -70,9 +78,18 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoPro
     setCustomBidAmount("");
   };
 
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  }, []);
+
   return (
     <>
-      <div className="relative rounded-xl overflow-hidden bg-card border border-border">
+      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-card border border-border">
         {/* Video Area */}
         <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
           {/* Streamer Info Overlay */}
@@ -116,10 +133,31 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoPro
             </div>
           </div>
 
+          {/* Left Arrow */}
+          {hasPrev && (
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+              <Button variant="outline" size="icon" className="h-10 w-10 bg-card/80 backdrop-blur-sm border-border rounded-full" onClick={onPrev}>
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
+          {/* Right Arrow */}
+          {hasNext && (
+            <div className="absolute right-16 top-1/2 -translate-y-1/2 z-10">
+              <Button variant="outline" size="icon" className="h-10 w-10 bg-card/80 backdrop-blur-sm border-border rounded-full" onClick={onNext}>
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
           {/* Video Controls Overlay */}
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-              <Volume2 className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={() => setIsPlaying(!isPlaying)}>
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={() => setIsMuted(!isMuted)}>
+              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </Button>
             <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
               <Camera className="h-4 w-4" />
@@ -127,8 +165,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoPro
             <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-              <Grid3X3 className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
             </Button>
           </div>
 
@@ -140,6 +178,15 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1 }: LiveStreamVideoPro
               className="w-full h-full object-cover"
             />
           </div>
+
+          {/* Paused overlay */}
+          {!isPlaying && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-[5]">
+              <Button variant="ghost" size="icon" className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(true)}>
+                <Play className="h-8 w-8 text-foreground" />
+              </Button>
+            </div>
+          )}
 
           {/* Current Winner Banner */}
           <div className="absolute bottom-20 left-4 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg">
