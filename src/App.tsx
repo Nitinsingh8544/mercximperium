@@ -21,6 +21,7 @@ import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
 import ShopLive from "./pages/ShopLive";
+import FollowedHost from "./pages/FollowedHost";
 import AccountSettings from "./pages/AccountSettings";
 import AccountPayments from "./pages/AccountPayments";
 import Addresses from "./pages/Addresses";
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
             <Route path="/shop-live" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
             <Route path="/shop-live/:streamId" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
+            <Route path="/followed" element={<ProtectedRoute><FollowedHost /></ProtectedRoute>} />
             <Route path="/account-settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             <Route path="/account-settings/payments" element={<ProtectedRoute><AccountPayments /></ProtectedRoute>} />
             <Route path="/addresses" element={<ProtectedRoute><Addresses /></ProtectedRoute>} />
