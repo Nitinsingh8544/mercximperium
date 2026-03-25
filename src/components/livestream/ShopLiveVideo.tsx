@@ -105,6 +105,14 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, o
             <h3 className="font-semibold text-foreground">{hostName}</h3>
             <p className="text-xs text-muted-foreground">View my storefront &gt;</p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className={`h-8 text-xs ${isFollowingHost ? "bg-muted text-muted-foreground" : ""}`}
+            onClick={() => toggleFollow(hostName, "shop_live")}
+          >
+            {isFollowingHost ? "Following" : "+ Follow"}
+          </Button>
         </div>
       </div>
     </div>
