@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft } from "lucide-react";
+import { useFollows } from "@/hooks/useFollows";
 
 interface ShopLiveVideoProps {
   hostName?: string;
@@ -19,6 +20,8 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, o
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isFollowing, toggleFollow } = useFollows();
+  const isFollowingHost = isFollowing(hostName);
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
@@ -105,6 +108,14 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, o
             <h3 className="font-semibold text-foreground">{hostName}</h3>
             <p className="text-xs text-muted-foreground">View my storefront &gt;</p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className={`h-8 text-xs ${isFollowingHost ? "bg-muted text-muted-foreground" : ""}`}
+            onClick={() => toggleFollow(hostName, "shop_live")}
+          >
+            {isFollowingHost ? "Following" : "+ Follow"}
+          </Button>
         </div>
       </div>
     </div>
