@@ -6,6 +6,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, Chevro
 import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
+import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 interface ShopLiveVideoProps {
   hostName?: string;
