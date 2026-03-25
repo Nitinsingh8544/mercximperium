@@ -6,6 +6,7 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, Chevro
 import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
+import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 interface ShopLiveVideoProps {
   hostName?: string;
@@ -27,6 +28,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [disliked, setDisliked] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [sellerProfileOpen, setSellerProfileOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
@@ -119,26 +121,27 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
         {/* Host info bar */}
         <div className="p-3 bg-card">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={hostAvatar} />
-              <AvatarFallback className="bg-muted text-muted-foreground">
-                {hostName.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSellerProfileOpen(true)}>
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={hostAvatar} />
+                <AvatarFallback className="bg-muted text-muted-foreground">
+                  {hostName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
                 <h3 className="font-semibold text-foreground">{hostName}</h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`h-7 text-xs ${isFollowingHost ? "bg-muted text-muted-foreground" : ""}`}
-                  onClick={() => toggleFollow(hostName, "shop_live")}
-                >
-                  {isFollowingHost ? "Following" : "+ Follow"}
-                </Button>
+                <p className="text-xs text-muted-foreground">View my storefront &gt;</p>
               </div>
-              <p className="text-xs text-muted-foreground">View my storefront &gt;</p>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className={`h-8 text-xs ${isFollowingHost ? "bg-muted text-muted-foreground" : ""}`}
+              onClick={() => toggleFollow(hostName, "shop_live")}
+            >
+              {isFollowingHost ? "Following" : "+ Follow"}
+            </Button>
+            <div className="flex-1" />
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShareOpen(true)}>
                 <Share2 className="h-4 w-4" />
@@ -177,6 +180,12 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
 
       <ShareProfileModal isOpen={shareOpen} onClose={() => setShareOpen(false)} userName={hostName} />
       <ReportModal isOpen={reportOpen} onClose={() => setReportOpen(false)} streamName={hostName} />
+      <SellerProfileModal
+        isOpen={sellerProfileOpen}
+        onClose={() => setSellerProfileOpen(false)}
+        sellerName={hostName}
+        sellerImage={hostAvatar}
+      />
     </>
   );
 };
