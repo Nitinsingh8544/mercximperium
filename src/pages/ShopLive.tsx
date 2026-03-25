@@ -4,7 +4,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
-import HorizontalProducts from "@/components/livestream/HorizontalProducts";
+
 import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
@@ -60,17 +60,12 @@ const ShopLive = () => {
                 hostName={currentStream.host}
                 hostAvatar={currentStream.hostAvatar}
                 streamImage={currentStream.image}
+                streamTitle={currentStream.streamTitle}
+                streamDate={currentStream.streamDate}
                 onNext={goNext}
                 onPrev={goPrev}
                 hasNext={currentStreamIndex < allStreams.length - 1}
                 hasPrev={currentStreamIndex > 0}
-              />
-              <HorizontalProducts
-                hostName={currentStream.host}
-                hostAvatar={currentStream.hostAvatar}
-                streamTitle={currentStream.streamTitle}
-                streamDate={currentStream.streamDate}
-                products={currentStream.products}
               />
             </div>
 
