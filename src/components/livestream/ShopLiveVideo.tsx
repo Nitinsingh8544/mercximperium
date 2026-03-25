@@ -20,6 +20,8 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, o
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isFollowing, toggleFollow } = useFollows();
+  const isFollowingHost = isFollowing(hostName);
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
