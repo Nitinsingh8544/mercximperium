@@ -28,6 +28,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [disliked, setDisliked] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [sellerProfileOpen, setSellerProfileOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
