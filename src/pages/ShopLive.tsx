@@ -60,17 +60,12 @@ const ShopLive = () => {
                 hostName={currentStream.host}
                 hostAvatar={currentStream.hostAvatar}
                 streamImage={currentStream.image}
+                streamTitle={currentStream.streamTitle}
+                streamDate={currentStream.streamDate}
                 onNext={goNext}
                 onPrev={goPrev}
                 hasNext={currentStreamIndex < allStreams.length - 1}
                 hasPrev={currentStreamIndex > 0}
-              />
-              <HorizontalProducts
-                hostName={currentStream.host}
-                hostAvatar={currentStream.hostAvatar}
-                streamTitle={currentStream.streamTitle}
-                streamDate={currentStream.streamDate}
-                products={currentStream.products}
               />
             </div>
 
