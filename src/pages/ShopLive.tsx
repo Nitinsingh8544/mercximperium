@@ -4,7 +4,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
-import HorizontalProducts from "@/components/livestream/HorizontalProducts";
+
 import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
