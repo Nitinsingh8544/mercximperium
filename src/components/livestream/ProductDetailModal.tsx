@@ -24,11 +24,22 @@ interface ProductDetailModalProps {
   sellerAvatar?: string;
 }
 
+const sizes = ["S", "M", "L", "XL", "XXL"];
+const colors = [
+  { name: "Black", value: "bg-black" },
+  { name: "White", value: "bg-white border border-border" },
+  { name: "Navy", value: "bg-blue-900" },
+  { name: "Red", value: "bg-red-600" },
+  { name: "Grey", value: "bg-gray-400" },
+];
+
 const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", sellerAvatar }: ProductDetailModalProps) => {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedColor, setSelectedColor] = useState("Black");
 
   if (!product) return null;
 
@@ -106,6 +117,43 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                 </p>
               )}
               <p className="text-xs text-muted-foreground mt-1">Inclusive of all taxes</p>
+            </div>
+
+            <Separator />
+
+            {/* Color selector */}
+            <div>
+              <span className="text-sm font-medium text-foreground">Color: <span className="font-normal text-muted-foreground">{selectedColor}</span></span>
+              <div className="flex items-center gap-2 mt-2">
+                {colors.map((color) => (
+                  <button
+                    key={color.name}
+                    className={`w-7 h-7 rounded-full ${color.value} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
+                    onClick={() => setSelectedColor(color.name)}
+                    title={color.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Size selector */}
+            <div>
+              <span className="text-sm font-medium text-foreground">Size:</span>
+              <div className="flex items-center gap-2 mt-2">
+                {sizes.map((size) => (
+                  <button
+                    key={size}
+                    className={`px-3 py-1.5 text-xs rounded-md border transition-all ${
+                      selectedSize === size
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-foreground hover:border-primary"
+                    }`}
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <Separator />
