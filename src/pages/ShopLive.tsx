@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
@@ -6,30 +6,38 @@ import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 
 import UpcomingStreams from "@/components/livestream/UpcomingStreams";
-import RecommendedStreams from "@/components/livestream/RecommendedStreams";
+import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { allStreams, getStreamById, getDefaultStream } from "@/data/streamData";
 
 const ShopLive = () => {
   const navigate = useNavigate();
   const { streamId } = useParams();
 
-  const initialStream = streamId ? getStreamById(Number(streamId)) : getDefaultStream();
-  const [currentStreamIndex, setCurrentStreamIndex] = useState(() => {
-    const idx = allStreams.findIndex(s => s.id === (initialStream?.id ?? allStreams[1].id));
-    return idx >= 0 ? idx : 1;
+  // Build the navigation sequence from similarStreams
+  const [currentSimilarIndex, setCurrentSimilarIndex] = useState(() => {
+    if (streamId) {
+      const idx = similarStreams.findIndex(s => s.id === Number(streamId));
+      return idx >= 0 ? idx : 0;
+    }
+    return 0;
   });
 
-  const currentStream = allStreams[currentStreamIndex];
+  const currentStream = similarStreams[currentSimilarIndex];
+
   const chatStreamId = `shop-live-${currentStream.id}`;
 
   const goNext = useCallback(() => {
-    setCurrentStreamIndex(prev => Math.min(prev + 1, allStreams.length - 1));
+    setCurrentSimilarIndex(prev => Math.min(prev + 1, similarStreams.length - 1));
   }, []);
 
   const goPrev = useCallback(() => {
-    setCurrentStreamIndex(prev => Math.max(prev - 1, 0));
+    setCurrentSimilarIndex(prev => Math.max(prev - 1, 0));
+  }, []);
+
+  const handleStreamSelect = useCallback((id: number) => {
+    const idx = similarStreams.findIndex(s => s.id === id);
+    if (idx >= 0) setCurrentSimilarIndex(idx);
   }, []);
 
   return (
@@ -58,14 +66,14 @@ const ShopLive = () => {
             <div className="w-full min-w-0 lg:row-span-2">
               <ShopLiveVideo
                 hostName={currentStream.host}
-                hostAvatar={currentStream.hostAvatar}
-                streamImage={currentStream.image}
-                streamTitle={currentStream.streamTitle}
-                streamDate={currentStream.streamDate}
+                hostAvatar={undefined}
+                streamImage={currentStream.image.replace('w=400', 'w=800')}
+                streamTitle={currentStream.title}
+                streamDate={`${currentStream.viewers} viewers`}
                 onNext={goNext}
                 onPrev={goPrev}
-                hasNext={currentStreamIndex < allStreams.length - 1}
-                hasPrev={currentStreamIndex > 0}
+                hasNext={currentSimilarIndex < similarStreams.length - 1}
+                hasPrev={currentSimilarIndex > 0}
               />
             </div>
 
@@ -76,7 +84,7 @@ const ShopLive = () => {
 
           <div className="mt-6">
             <UpcomingStreams />
-            <RecommendedStreams currentStreamId={currentStream.id} />
+            <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           </div>
         </div>
 
@@ -84,7 +92,7 @@ const ShopLive = () => {
           <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators />
           <UpcomingStreams />
-          <RecommendedStreams currentStreamId={currentStream.id} />
+          <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
     </div>
