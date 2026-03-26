@@ -192,9 +192,17 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
           {/* Products list */}
           {products.length > 0 && (
             <div className="mt-3 relative group/products">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                onClick={() => productsScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
               <div
                 ref={productsScrollRef}
-                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
               >
                 {products.map((product) => (
                   <div
@@ -214,6 +222,14 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                   </div>
                 ))}
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                onClick={() => productsScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </div>
