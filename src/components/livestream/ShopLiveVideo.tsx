@@ -7,6 +7,16 @@ import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
 import SellerProfileModal from "@/components/seller/SellerProfileModal";
+import ProductDetailModal from "@/components/livestream/ProductDetailModal";
+
+interface Product {
+  id: number;
+  image: string;
+  title: string;
+  price: number;
+  originalPrice: number;
+  currency: string;
+}
 
 interface ShopLiveVideoProps {
   hostName?: string;
@@ -14,6 +24,7 @@ interface ShopLiveVideoProps {
   streamImage?: string;
   streamTitle?: string;
   streamDate?: string;
+  products?: Product[];
   onNext?: () => void;
   onPrev?: () => void;
   hasNext?: boolean;
