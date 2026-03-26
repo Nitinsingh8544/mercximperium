@@ -188,6 +188,34 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
               {streamDate && <p className="text-xs text-muted-foreground">{streamDate}</p>}
             </div>
           )}
+
+          {/* Products list */}
+          {products.length > 0 && (
+            <div className="mt-3 relative group/products">
+              <div
+                ref={productsScrollRef}
+                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+              >
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="shrink-0 w-[100px] cursor-pointer group/item"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    <div className="w-[100px] h-[100px] rounded-lg overflow-hidden border border-border bg-muted">
+                      <img
+                        src={product.image}
+                        alt={product.title}
+                        className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-200"
+                      />
+                    </div>
+                    <p className="text-[10px] text-foreground mt-1 truncate">{product.title}</p>
+                    <p className="text-[10px] font-semibold text-primary">{product.currency}{product.price.toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -198,6 +226,13 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
         onClose={() => setSellerProfileOpen(false)}
         sellerName={hostName}
         sellerImage={hostAvatar}
+      />
+      <ProductDetailModal
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        product={selectedProduct}
+        sellerName={hostName}
+        sellerAvatar={hostAvatar}
       />
     </>
   );
