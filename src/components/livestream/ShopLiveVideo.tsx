@@ -31,7 +31,7 @@ interface ShopLiveVideoProps {
   hasPrev?: boolean;
 }
 
-const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, streamTitle, streamDate, onNext, onPrev, hasNext = true, hasPrev = true }: ShopLiveVideoProps) => {
+const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, streamTitle, streamDate, products = [], onNext, onPrev, hasNext = true, hasPrev = true }: ShopLiveVideoProps) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -40,7 +40,9 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [sellerProfileOpen, setSellerProfileOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const productsScrollRef = useRef<HTMLDivElement>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
 
