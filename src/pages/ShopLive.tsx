@@ -4,7 +4,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
-
+import { allStreams } from "@/data/streamData";
 import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,11 @@ const ShopLive = () => {
   });
 
   const currentStream = similarStreams[currentSimilarIndex];
+
+  const streamProducts = useMemo(() => {
+    const match = allStreams.find(s => s.host === currentStream.host || s.id === currentStream.id);
+    return match?.products || [];
+  }, [currentStream]);
 
   const chatStreamId = `shop-live-${currentStream.id}`;
 
@@ -70,6 +75,7 @@ const ShopLive = () => {
                 streamImage={currentStream.image.replace('w=400', 'w=800')}
                 streamTitle={currentStream.title}
                 streamDate={`${currentStream.viewers} viewers`}
+                products={streamProducts}
                 onNext={goNext}
                 onPrev={goPrev}
                 hasNext={currentSimilarIndex < similarStreams.length - 1}
