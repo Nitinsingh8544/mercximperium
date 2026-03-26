@@ -15,29 +15,29 @@ interface Stream {
 
 interface RecommendedStreamsProps {
   currentStreamId?: number;
+  onStreamSelect?: (streamId: number) => void;
 }
 
-const RecommendedStreams = ({ currentStreamId }: RecommendedStreamsProps) => {
+export const similarStreams: Stream[] = [
+  { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
+  { id: 2, host: "streetwearking", title: "Limited Edition Streetwear", viewers: 291, image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400" },
+  { id: 3, host: "collectibles_pro", title: "Rare Collectibles + Giveaway", viewers: 122, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400" },
+  { id: 4, host: "fashionfinds", title: "Designer Fashion Sale 🛍️", viewers: 94, image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400" },
+  { id: 5, host: "vintagevault", title: "Vintage Treasures Collection", viewers: 135, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
+  { id: 6, host: "urbanstyle", title: "Urban Style Essentials", viewers: 88, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
+  { id: 7, host: "techgadgets", title: "Latest Tech Gadgets 📱", viewers: 203, image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400" },
+  { id: 8, host: "jewelryqueen", title: "Handmade Jewelry Collection", viewers: 156, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
+  { id: 9, host: "booklover", title: "Rare Book Finds 📚", viewers: 67, image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
+  { id: 10, host: "fitnessgear", title: "Premium Gym Equipment", viewers: 189, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
+  { id: 11, host: "artcollector", title: "Original Art Pieces 🎨", viewers: 112, image: "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400" },
+  { id: 12, host: "gamingzone", title: "Gaming Setup Sale", viewers: 245, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400" },
+];
+
+const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStreamsProps) => {
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const allStreams: Stream[] = [
-    { id: 1, host: "sneakerhub", title: "Premium Sneakers Drop 🔥", viewers: 177, image: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400" },
-    { id: 2, host: "streetwearking", title: "Limited Edition Streetwear", viewers: 291, image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400" },
-    { id: 3, host: "collectibles_pro", title: "Rare Collectibles + Giveaway", viewers: 122, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400" },
-    { id: 4, host: "fashionfinds", title: "Designer Fashion Sale 🛍️", viewers: 94, image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400" },
-    { id: 5, host: "vintagevault", title: "Vintage Treasures Collection", viewers: 135, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
-    { id: 6, host: "urbanstyle", title: "Urban Style Essentials", viewers: 88, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
-    { id: 7, host: "techgadgets", title: "Latest Tech Gadgets 📱", viewers: 203, image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400" },
-    { id: 8, host: "jewelryqueen", title: "Handmade Jewelry Collection", viewers: 156, image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
-    { id: 9, host: "booklover", title: "Rare Book Finds 📚", viewers: 67, image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
-    { id: 10, host: "fitnessgear", title: "Premium Gym Equipment", viewers: 189, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400" },
-    { id: 11, host: "artcollector", title: "Original Art Pieces 🎨", viewers: 112, image: "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400" },
-    { id: 12, host: "gamingzone", title: "Gaming Setup Sale", viewers: 245, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400" },
-  ];
-
-  // Filter out current stream and get 8 recommendations
-  const recommendedStreams = allStreams
+  const recommendedStreams = similarStreams
     .filter(stream => stream.id !== currentStreamId)
     .slice(0, 8);
 
@@ -84,7 +84,7 @@ const RecommendedStreams = ({ currentStreamId }: RecommendedStreamsProps) => {
             <Card 
               key={stream.id} 
               className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group hover:scale-105 shrink-0 w-[160px] sm:w-[180px] md:w-[200px]"
-              onClick={() => navigate(`/shop-live/${stream.id}`)}
+              onClick={() => onStreamSelect ? onStreamSelect(stream.id) : navigate(`/shop-live/${stream.id}`)}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img 
