@@ -26,35 +26,135 @@ interface ProductDetailModalProps {
 
 const sizes = ["S", "M", "L", "XL", "XXL"];
 
-const colorVariants = [
-  {
-    name: "Black",
-    swatch: "bg-black",
-    image: null as string | null,
-  },
-  {
-    name: "White",
-    swatch: "bg-white border border-border",
-    image: null as string | null,
-  },
-  {
-    name: "Navy",
-    swatch: "bg-blue-900",
-    image: null as string | null,
-  },
-  {
-    name: "Red",
-    swatch: "bg-red-600",
-    image: null as string | null,
-  },
-  {
-    name: "Grey",
-    swatch: "bg-gray-400",
-    image: null as string | null,
-  },
-];
+// Multi-angle images per product category (based on keywords in title)
+const getProductImages = (product: Product): string[] => {
+  const t = product.title.toLowerCase();
+  if (t.includes("shoe") || t.includes("sneaker") || t.includes("air max") || t.includes("high top") || t.includes("running")) {
+    return [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500",
+      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=500",
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+    ];
+  }
+  if (t.includes("hoodie") || t.includes("sweat")) {
+    return [
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
+      "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
+      "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
+    ];
+  }
+  if (t.includes("t-shirt") || t.includes("tee")) {
+    return [
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
+    ];
+  }
+  if (t.includes("jacket") || t.includes("windbreaker")) {
+    return [
+      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500",
+      "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
+      "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500",
+    ];
+  }
+  if (t.includes("watch") || t.includes("chronograph")) {
+    return [
+      "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500",
+      "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=500",
+      "https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=500",
+    ];
+  }
+  if (t.includes("necklace") || t.includes("bracelet") || t.includes("jewelry") || t.includes("pearl")) {
+    return [
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500",
+      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500",
+      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500",
+    ];
+  }
+  if (t.includes("book") || t.includes("novel") || t.includes("poetry") || t.includes("vinyl")) {
+    return [
+      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500",
+      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500",
+      "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=500",
+    ];
+  }
+  if (t.includes("dumbbell") || t.includes("resistance") || t.includes("yoga") || t.includes("skipping") || t.includes("gym")) {
+    return [
+      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500",
+      "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=500",
+      "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500",
+    ];
+  }
+  if (t.includes("mouse") || t.includes("keyboard") || t.includes("headset") || t.includes("mousepad") || t.includes("gaming") || t.includes("earbuds")) {
+    return [
+      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500",
+      "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500",
+      "https://images.unsplash.com/photo-1593152167544-085d3b9c4938?w=500",
+    ];
+  }
+  if (t.includes("canvas") || t.includes("art") || t.includes("sculpture") || t.includes("watercolor") || t.includes("print")) {
+    return [
+      "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=500",
+      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500",
+      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500",
+    ];
+  }
+  if (t.includes("pant") || t.includes("jogger") || t.includes("cargo")) {
+    return [
+      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500",
+      "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500",
+      "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500",
+    ];
+  }
+  return [
+    product.image.replace("w=200", "w=500"),
+    product.image.replace("w=200", "w=600"),
+    product.image.replace("w=200", "w=700"),
+  ];
+};
 
-// Simulated stock per variant combo
+// Color variants with actual product-style images
+const getColorVariants = (product: Product) => {
+  const t = product.title.toLowerCase();
+  const base = product.image.replace("w=200", "w=200");
+
+  if (t.includes("shoe") || t.includes("sneaker") || t.includes("air max") || t.includes("high top") || t.includes("running")) {
+    return [
+      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=200" },
+      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=200" },
+      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200" },
+      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200" },
+      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200" },
+    ];
+  }
+  if (t.includes("hoodie") || t.includes("sweat")) {
+    return [
+      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200" },
+      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200" },
+      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=200" },
+      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&sat=-50" },
+      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&bri=20" },
+    ];
+  }
+  if (t.includes("t-shirt") || t.includes("tee")) {
+    return [
+      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200" },
+      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200" },
+      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200" },
+      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200" },
+      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=200" },
+    ];
+  }
+  // Default
+  return [
+    { name: "Black", swatch: "bg-black", image: base },
+    { name: "White", swatch: "bg-white border border-border", image: base },
+    { name: "Navy", swatch: "bg-blue-900", image: base },
+    { name: "Red", swatch: "bg-red-600", image: base },
+    { name: "Grey", swatch: "bg-gray-400", image: base },
+  ];
+};
 const getStockForVariant = (color: string, size: string): number => {
   const hash = (color.length * 7 + size.length * 13) % 20;
   if (hash < 3) return 0;
