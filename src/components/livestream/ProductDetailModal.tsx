@@ -172,18 +172,8 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
   if (!product) return null;
 
-  // Generate multiple product images (simulating different angles)
-  const productImages = [
-    product.image,
-    product.image.replace("w=200", "w=400"),
-    product.image.replace("w=200", "w=600"),
-  ];
-
-  // Generate variant images based on color
-  const variantImages = colorVariants.map((c) => ({
-    ...c,
-    image: product.image + `&sat=${c.name === "Black" ? "-100" : c.name === "Navy" ? "50" : "0"}`,
-  }));
+  const productImages = getProductImages(product);
+  const variantImages = getColorVariants(product);
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
@@ -329,7 +319,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             <div>
               <span className="text-sm font-medium text-foreground">Color: <span className="font-normal text-muted-foreground">{selectedColor}</span></span>
               <div className="flex items-center gap-2 mt-2">
-                {colorVariants.map((color) => (
+                {variantImages.map((color) => (
                   <button
                     key={color.name}
                     className={`w-7 h-7 rounded-full ${color.swatch} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
