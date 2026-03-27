@@ -269,9 +269,8 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                         setQuantity(1);
                       }}
                     >
-                      <div className={`w-full h-full ${v.swatch} flex items-center justify-center`}>
-                        <span className="text-[8px] font-medium" style={{ color: v.name === "Black" || v.name === "Navy" ? "white" : "black" }}>{v.name}</span>
-                      </div>
+                      <img src={v.image} alt={v.name} className="w-full h-full object-cover" />
+                      <span className="absolute bottom-0 inset-x-0 text-[7px] font-medium text-center bg-black/50 text-white py-0.5">{v.name}</span>
                     </button>
                   ))}
                 </div>
