@@ -261,7 +261,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                   {variantImages.map((v, idx) => (
                     <button
                       key={v.name}
-                      className={`shrink-0 w-14 h-14 rounded-md overflow-hidden border-2 transition-all ${
+                      className={`shrink-0 w-14 h-14 rounded-md overflow-hidden border-2 transition-all relative ${
                         selectedColor === v.name ? "border-primary" : "border-border hover:border-muted-foreground"
                       }`}
                       onClick={() => {
