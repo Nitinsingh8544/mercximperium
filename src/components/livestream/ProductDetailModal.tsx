@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -164,6 +165,7 @@ const getStockForVariant = (color: string, size: string): number => {
 const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", sellerAvatar }: ProductDetailModalProps) => {
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedSize, setSelectedSize] = useState("M");
@@ -207,8 +209,20 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
       toast({ title: "Out of stock", description: "This variant is currently unavailable.", variant: "destructive" });
       return;
     }
-    toast({ title: "Order placed!", description: `You purchased ${product.title} for ${product.currency}${product.price.toLocaleString()}.` });
     onClose();
+    navigate("/checkout", {
+      state: {
+        title: product.title,
+        image: product.image,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        currency: product.currency,
+        quantity,
+        sellerName,
+        color: selectedColor,
+        size: selectedSize,
+      },
+    });
   };
 
   const prevImage = () => setCurrentImageIndex((i) => (i > 0 ? i - 1 : productImages.length - 1));
