@@ -246,24 +246,17 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                 <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
               </Button>
               {productImages.length > 1 && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                    onClick={prevImage}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                    onClick={nextImage}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </>
+                <div className="flex justify-center gap-1.5 mt-2">
+                  {productImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                      }`}
+                      onClick={() => setCurrentImageIndex(idx)}
+                    />
+                  ))}
+                </div>
               )}
             </div>
 
