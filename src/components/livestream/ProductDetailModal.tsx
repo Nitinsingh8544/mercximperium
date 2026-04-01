@@ -239,6 +239,21 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               <img src={productImages[currentImageIndex]} alt={product.title} className="w-full h-full object-cover" />
             </div>
 
+            {/* Image dots below main image */}
+            {productImages.length > 1 && (
+              <div className="flex justify-center gap-1.5 mt-3">
+                {productImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                    }`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  />
+                ))}
+              </div>
+            )}
+
             {/* Variant thumbnails */}
             <div className="mt-3 w-full">
               <p className="text-xs text-muted-foreground mb-2">Variants</p>
