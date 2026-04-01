@@ -369,7 +369,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                   <button
                     key={color.name}
                     className={`w-7 h-7 rounded-full ${color.swatch} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
-                    onClick={() => { setSelectedColor(color.name); setQuantity(1); }}
+                    onClick={() => { setSelectedColor(color.name); setQuantity(1); setCurrentImageIndex(0); }}
                     title={color.name}
                   />
                 ))}
