@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Heart, Minus, Plus } from "lucide-react";
+import { Star, Minus, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
 
@@ -167,7 +167,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("Black");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -180,7 +180,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const stock = getStockForVariant(selectedColor, selectedSize);
-  const maxQuantity = Math.min(stock, 5);
+  const maxQuantity = stock;
 
   const handleAddToCart = async () => {
     if (stock === 0) {
@@ -237,28 +237,22 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             {/* Main image with nav arrows */}
             <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-background">
               <img src={productImages[currentImageIndex]} alt={product.title} className="w-full h-full object-cover" />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                onClick={() => setIsWishlisted(!isWishlisted)}
-              >
-                <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
-              </Button>
-              {productImages.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-2">
-                  {productImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
-                      }`}
-                      onClick={() => setCurrentImageIndex(idx)}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
+
+            {/* Image dots below main image */}
+            {productImages.length > 1 && (
+              <div className="flex justify-center gap-1.5 mt-3">
+                {productImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                    }`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Variant thumbnails */}
             <div className="mt-3 w-full">
