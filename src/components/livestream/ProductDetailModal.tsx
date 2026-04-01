@@ -326,6 +326,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                         onClick={() => {
                           setSelectedColor(v.name);
                           setQuantity(1);
+                          setCurrentImageIndex(0);
                           document.getElementById("variant-scroll")?.children[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
                         }}
                       />
