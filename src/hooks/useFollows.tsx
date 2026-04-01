@@ -73,5 +73,5 @@ export const useFollows = () => {
     }
   };
 
-  return { followedSellers, auctionFollows, shopLiveFollows, loading, isFollowing, toggleFollow, refetch: fetchFollows };
+  return { follows, followedSellers, auctionFollows, shopLiveFollows, loading, isFollowing, toggleFollow, refetch: fetchFollows };
 };

@@ -355,15 +355,27 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                 <span className="text-sm text-destructive font-medium">Out of Stock</span>
               ) : (
                 <>
-                  <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="border border-border rounded-md px-2 py-1 text-sm bg-background text-foreground"
-                  >
-                    {Array.from({ length: maxQuantity }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center border border-border rounded-md">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-none"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </Button>
+                    <span className="w-8 text-center text-sm font-medium text-foreground">{quantity}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-none"
+                      onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+                      disabled={quantity >= maxQuantity}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                   <span className="text-xs text-muted-foreground">({stock} available)</span>
                 </>
               )}
