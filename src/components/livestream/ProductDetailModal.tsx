@@ -212,8 +212,9 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
   if (!product) return null;
 
-  const productImages = getProductImages(product);
   const variantImages = getColorVariants(product);
+  const selectedVariant = variantImages.find(v => v.name === selectedColor) || variantImages[0];
+  const productImages = selectedVariant.images;
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
