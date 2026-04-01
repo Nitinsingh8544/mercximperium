@@ -27,133 +27,84 @@ interface ProductDetailModalProps {
 
 const sizes = ["S", "M", "L", "XL", "XXL"];
 
-// Multi-angle images per product category (based on keywords in title)
-const getProductImages = (product: Product): string[] => {
-  const t = product.title.toLowerCase();
-  if (t.includes("shoe") || t.includes("sneaker") || t.includes("air max") || t.includes("high top") || t.includes("running")) {
-    return [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
-      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500",
-      "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=500",
-      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
-    ];
-  }
-  if (t.includes("hoodie") || t.includes("sweat")) {
-    return [
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
-      "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
-      "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
-    ];
-  }
-  if (t.includes("t-shirt") || t.includes("tee")) {
-    return [
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
-      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
-    ];
-  }
-  if (t.includes("jacket") || t.includes("windbreaker")) {
-    return [
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500",
-      "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
-      "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500",
-    ];
-  }
-  if (t.includes("watch") || t.includes("chronograph")) {
-    return [
-      "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500",
-      "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=500",
-      "https://images.unsplash.com/photo-1533139502658-0198f920d8e8?w=500",
-    ];
-  }
-  if (t.includes("necklace") || t.includes("bracelet") || t.includes("jewelry") || t.includes("pearl")) {
-    return [
-      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=500",
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500",
-      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=500",
-    ];
-  }
-  if (t.includes("book") || t.includes("novel") || t.includes("poetry") || t.includes("vinyl")) {
-    return [
-      "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500",
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500",
-      "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=500",
-    ];
-  }
-  if (t.includes("dumbbell") || t.includes("resistance") || t.includes("yoga") || t.includes("skipping") || t.includes("gym")) {
-    return [
-      "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500",
-      "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=500",
-      "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500",
-    ];
-  }
-  if (t.includes("mouse") || t.includes("keyboard") || t.includes("headset") || t.includes("mousepad") || t.includes("gaming") || t.includes("earbuds")) {
-    return [
-      "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500",
-      "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500",
-      "https://images.unsplash.com/photo-1593152167544-085d3b9c4938?w=500",
-    ];
-  }
-  if (t.includes("canvas") || t.includes("art") || t.includes("sculpture") || t.includes("watercolor") || t.includes("print")) {
-    return [
-      "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=500",
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=500",
-      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500",
-    ];
-  }
-  if (t.includes("pant") || t.includes("jogger") || t.includes("cargo")) {
-    return [
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500",
-      "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500",
-      "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500",
-    ];
-  }
-  return [
-    product.image.replace("w=200", "w=500"),
-    product.image.replace("w=200", "w=600"),
-    product.image.replace("w=200", "w=700"),
-  ];
-};
 
-// Color variants with actual product-style images
+// Color variants with multiple images per variant
 const getColorVariants = (product: Product) => {
   const t = product.title.toLowerCase();
-  const base = product.image.replace("w=200", "w=200");
+  const base = product.image.replace("w=200", "w=500");
 
   if (t.includes("shoe") || t.includes("sneaker") || t.includes("air max") || t.includes("high top") || t.includes("running")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=200", images: [
+        "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=500",
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=500",
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=200", images: [
+        "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=500",
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500",
+        "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200", images: [
+        "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500",
+        "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=500",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?w=500",
+      ]},
+      { name: "Red", swatch: "bg-red-600", thumb: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200", images: [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+        "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=500",
+        "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=500",
+      ]},
+      { name: "Grey", swatch: "bg-gray-400", thumb: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200", images: [
+        "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+        "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=500",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500",
+      ]},
     ];
   }
   if (t.includes("hoodie") || t.includes("sweat")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&sat=-50" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&bri=20" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200", images: [
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
+        "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200", images: [
+        "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
+        "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=200", images: [
+        "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
+      ]},
     ];
   }
   if (t.includes("t-shirt") || t.includes("tee")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=200" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200", images: [
+        "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200", images: [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200", images: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
+        "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500",
+      ]},
+      { name: "Red", swatch: "bg-red-600", thumb: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200", images: [
+        "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500",
+        "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500",
+      ]},
     ];
   }
   // Default
   return [
-    { name: "Black", swatch: "bg-black", image: base },
-    { name: "White", swatch: "bg-white border border-border", image: base },
-    { name: "Navy", swatch: "bg-blue-900", image: base },
-    { name: "Red", swatch: "bg-red-600", image: base },
-    { name: "Grey", swatch: "bg-gray-400", image: base },
+    { name: "Black", swatch: "bg-black", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=600")] },
+    { name: "White", swatch: "bg-white border border-border", thumb: base.replace("w=500", "w=200"), images: [base.replace("w=500", "w=600"), base.replace("w=500", "w=700")] },
+    { name: "Navy", swatch: "bg-blue-900", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=700")] },
+    { name: "Red", swatch: "bg-red-600", thumb: base.replace("w=500", "w=200"), images: [base.replace("w=500", "w=700"), base] },
+    { name: "Grey", swatch: "bg-gray-400", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=600")] },
   ];
 };
 const getStockForVariant = (color: string, size: string): number => {
@@ -174,8 +125,9 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
 
   if (!product) return null;
 
-  const productImages = getProductImages(product);
   const variantImages = getColorVariants(product);
+  const selectedVariant = variantImages.find(v => v.name === selectedColor) || variantImages[0];
+  const productImages = selectedVariant.images;
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
@@ -268,9 +220,10 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                       onClick={() => {
                         setSelectedColor(v.name);
                         setQuantity(1);
+                        setCurrentImageIndex(0);
                       }}
                     >
-                      <img src={v.image} alt={v.name} className="w-full h-full object-cover" />
+                      <img src={v.thumb} alt={v.name} className="w-full h-full object-cover" />
                       <span className="absolute bottom-0 inset-x-0 text-[7px] font-medium text-center bg-black/50 text-white py-0.5">{v.name}</span>
                     </button>
                   ))}
@@ -286,6 +239,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                         onClick={() => {
                           setSelectedColor(v.name);
                           setQuantity(1);
+                          setCurrentImageIndex(0);
                           document.getElementById("variant-scroll")?.children[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
                         }}
                       />
@@ -328,7 +282,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                   <button
                     key={color.name}
                     className={`w-7 h-7 rounded-full ${color.swatch} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
-                    onClick={() => { setSelectedColor(color.name); setQuantity(1); }}
+                    onClick={() => { setSelectedColor(color.name); setQuantity(1); setCurrentImageIndex(0); }}
                     title={color.name}
                   />
                 ))}
