@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Truck, ShieldCheck, RotateCcw, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Heart, Minus, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
 
@@ -246,24 +246,17 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                 <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
               </Button>
               {productImages.length > 1 && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                    onClick={prevImage}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                    onClick={nextImage}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </>
+                <div className="flex justify-center gap-1.5 mt-2">
+                  {productImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
+                      }`}
+                      onClick={() => setCurrentImageIndex(idx)}
+                    />
+                  ))}
+                </div>
               )}
             </div>
 
@@ -272,7 +265,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               <p className="text-xs text-muted-foreground mb-2">Variants</p>
               <div className="relative group/variants">
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth pb-1" id="variant-scroll">
-                  {variantImages.map((v, idx) => (
+                  {variantImages.map((v) => (
                     <button
                       key={v.name}
                       className={`shrink-0 w-14 h-14 rounded-md overflow-hidden border-2 transition-all relative ${
@@ -288,6 +281,23 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                     </button>
                   ))}
                 </div>
+                {variantImages.length > 3 && (
+                  <div className="flex justify-center gap-1.5 mt-2">
+                    {variantImages.map((v, idx) => (
+                      <button
+                        key={v.name}
+                        className={`w-1.5 h-1.5 rounded-full transition-all ${
+                          selectedColor === v.name ? "bg-primary scale-125" : "bg-muted-foreground/40"
+                        }`}
+                        onClick={() => {
+                          setSelectedColor(v.name);
+                          setQuantity(1);
+                          document.getElementById("variant-scroll")?.children[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -311,19 +321,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             <Separator />
 
             <div>
-              {discount > 0 && (
-                <Badge variant="destructive" className="mb-2 text-xs">Limited time deal</Badge>
-              )}
-              <div className="flex items-baseline gap-2">
-                {discount > 0 && <span className="text-destructive font-medium text-sm">-{discount}%</span>}
-                <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
-              </div>
-              {discount > 0 && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  M.R.P.: <span className="line-through">{product.currency}{product.originalPrice.toLocaleString()}</span>
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground mt-1">Inclusive of all taxes</p>
+              <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
             </div>
 
             <Separator />
@@ -363,26 +361,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               </div>
             </div>
 
-            <Separator />
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Truck className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Free Delivery</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <RotateCcw className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">10 days Returnable</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Secure Payment</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Star className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Top Brand</span>
-              </div>
-            </div>
+            {/* Removed trust badges section */}
 
             <Separator />
 
@@ -393,15 +372,27 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                 <span className="text-sm text-destructive font-medium">Out of Stock</span>
               ) : (
                 <>
-                  <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="border border-border rounded-md px-2 py-1 text-sm bg-background text-foreground"
-                  >
-                    {Array.from({ length: maxQuantity }, (_, i) => i + 1).map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center border border-border rounded-md">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-none"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="h-3.5 w-3.5" />
+                    </Button>
+                    <span className="w-8 text-center text-sm font-medium text-foreground">{quantity}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-none"
+                      onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+                      disabled={quantity >= maxQuantity}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                   <span className="text-xs text-muted-foreground">({stock} available)</span>
                 </>
               )}
