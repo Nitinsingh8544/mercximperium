@@ -344,26 +344,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               </div>
             </div>
 
-            <Separator />
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Truck className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Free Delivery</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <RotateCcw className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">10 days Returnable</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Secure Payment</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1 p-2">
-                <Star className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground">Top Brand</span>
-              </div>
-            </div>
+            {/* Removed trust badges section */}
 
             <Separator />
 
