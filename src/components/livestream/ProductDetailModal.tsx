@@ -237,27 +237,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             {/* Main image with nav arrows */}
             <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-background">
               <img src={productImages[currentImageIndex]} alt={product.title} className="w-full h-full object-cover" />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 bg-background/80 backdrop-blur-sm rounded-full"
-                onClick={() => setIsWishlisted(!isWishlisted)}
-              >
-                <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
-              </Button>
-              {productImages.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-2">
-                  {productImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        currentImageIndex === idx ? "bg-primary scale-125" : "bg-muted-foreground/40 hover:bg-muted-foreground/60"
-                      }`}
-                      onClick={() => setCurrentImageIndex(idx)}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Variant thumbnails */}
