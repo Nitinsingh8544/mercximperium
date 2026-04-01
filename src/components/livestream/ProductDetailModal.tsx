@@ -180,7 +180,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   const stock = getStockForVariant(selectedColor, selectedSize);
-  const maxQuantity = Math.min(stock, 5);
+  const maxQuantity = stock;
 
   const handleAddToCart = async () => {
     if (stock === 0) {
