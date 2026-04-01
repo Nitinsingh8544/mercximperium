@@ -307,9 +307,10 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                       onClick={() => {
                         setSelectedColor(v.name);
                         setQuantity(1);
+                        setCurrentImageIndex(0);
                       }}
                     >
-                      <img src={v.image} alt={v.name} className="w-full h-full object-cover" />
+                      <img src={v.thumb} alt={v.name} className="w-full h-full object-cover" />
                       <span className="absolute bottom-0 inset-x-0 text-[7px] font-medium text-center bg-black/50 text-white py-0.5">{v.name}</span>
                     </button>
                   ))}
