@@ -265,7 +265,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
               <p className="text-xs text-muted-foreground mb-2">Variants</p>
               <div className="relative group/variants">
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth pb-1" id="variant-scroll">
-                  {variantImages.map((v, idx) => (
+                  {variantImages.map((v) => (
                     <button
                       key={v.name}
                       className={`shrink-0 w-14 h-14 rounded-md overflow-hidden border-2 transition-all relative ${
@@ -281,6 +281,23 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                     </button>
                   ))}
                 </div>
+                {variantImages.length > 3 && (
+                  <div className="flex justify-center gap-1.5 mt-2">
+                    {variantImages.map((v, idx) => (
+                      <button
+                        key={v.name}
+                        className={`w-1.5 h-1.5 rounded-full transition-all ${
+                          selectedColor === v.name ? "bg-primary scale-125" : "bg-muted-foreground/40"
+                        }`}
+                        onClick={() => {
+                          setSelectedColor(v.name);
+                          setQuantity(1);
+                          document.getElementById("variant-scroll")?.children[idx]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
