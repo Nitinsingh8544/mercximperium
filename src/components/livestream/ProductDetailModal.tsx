@@ -304,19 +304,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             <Separator />
 
             <div>
-              {discount > 0 && (
-                <Badge variant="destructive" className="mb-2 text-xs">Limited time deal</Badge>
-              )}
-              <div className="flex items-baseline gap-2">
-                {discount > 0 && <span className="text-destructive font-medium text-sm">-{discount}%</span>}
-                <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
-              </div>
-              {discount > 0 && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  M.R.P.: <span className="line-through">{product.currency}{product.originalPrice.toLocaleString()}</span>
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground mt-1">Inclusive of all taxes</p>
+              <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
             </div>
 
             <Separator />
