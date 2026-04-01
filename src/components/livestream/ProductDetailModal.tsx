@@ -115,45 +115,83 @@ const getProductImages = (product: Product): string[] => {
   ];
 };
 
-// Color variants with actual product-style images
+// Color variants with multiple images per variant
 const getColorVariants = (product: Product) => {
   const t = product.title.toLowerCase();
-  const base = product.image.replace("w=200", "w=200");
+  const base = product.image.replace("w=200", "w=500");
 
   if (t.includes("shoe") || t.includes("sneaker") || t.includes("air max") || t.includes("high top") || t.includes("running")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=200", images: [
+        "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=500",
+        "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=500",
+        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=200", images: [
+        "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=500",
+        "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500",
+        "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=200", images: [
+        "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500",
+        "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=500",
+        "https://images.unsplash.com/photo-1539185441755-769473a23570?w=500",
+      ]},
+      { name: "Red", swatch: "bg-red-600", thumb: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200", images: [
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+        "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=500",
+        "https://images.unsplash.com/photo-1562183241-b937e95585b6?w=500",
+      ]},
+      { name: "Grey", swatch: "bg-gray-400", thumb: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200", images: [
+        "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+        "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=500",
+        "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500",
+      ]},
     ];
   }
   if (t.includes("hoodie") || t.includes("sweat")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&sat=-50" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&bri=20" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200", images: [
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
+        "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=200", images: [
+        "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=500",
+        "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=200", images: [
+        "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500",
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500",
+      ]},
     ];
   }
   if (t.includes("t-shirt") || t.includes("tee")) {
     return [
-      { name: "Black", swatch: "bg-black", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200" },
-      { name: "White", swatch: "bg-white border border-border", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200" },
-      { name: "Navy", swatch: "bg-blue-900", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200" },
-      { name: "Red", swatch: "bg-red-600", image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200" },
-      { name: "Grey", swatch: "bg-gray-400", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=200" },
+      { name: "Black", swatch: "bg-black", thumb: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200", images: [
+        "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+      ]},
+      { name: "White", swatch: "bg-white border border-border", thumb: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200", images: [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
+      ]},
+      { name: "Navy", swatch: "bg-blue-900", thumb: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=200", images: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500",
+        "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500",
+      ]},
+      { name: "Red", swatch: "bg-red-600", thumb: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200", images: [
+        "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500",
+        "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500",
+      ]},
     ];
   }
   // Default
   return [
-    { name: "Black", swatch: "bg-black", image: base },
-    { name: "White", swatch: "bg-white border border-border", image: base },
-    { name: "Navy", swatch: "bg-blue-900", image: base },
-    { name: "Red", swatch: "bg-red-600", image: base },
-    { name: "Grey", swatch: "bg-gray-400", image: base },
+    { name: "Black", swatch: "bg-black", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=600")] },
+    { name: "White", swatch: "bg-white border border-border", thumb: base.replace("w=500", "w=200"), images: [base.replace("w=500", "w=600"), base.replace("w=500", "w=700")] },
+    { name: "Navy", swatch: "bg-blue-900", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=700")] },
+    { name: "Red", swatch: "bg-red-600", thumb: base.replace("w=500", "w=200"), images: [base.replace("w=500", "w=700"), base] },
+    { name: "Grey", swatch: "bg-gray-400", thumb: base.replace("w=500", "w=200"), images: [base, base.replace("w=500", "w=600")] },
   ];
 };
 const getStockForVariant = (color: string, size: string): number => {
