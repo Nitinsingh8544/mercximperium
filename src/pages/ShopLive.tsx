@@ -45,6 +45,13 @@ const ShopLive = () => {
     if (idx >= 0) setCurrentSimilarIndex(idx);
   }, []);
 
+  const handleCreatorSelect = useCallback((streamId: number) => {
+    const idx = similarStreams.findIndex(s => s.id === streamId);
+    if (idx >= 0) {
+      setCurrentSimilarIndex(idx);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
