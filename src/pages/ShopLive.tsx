@@ -14,7 +14,6 @@ const ShopLive = () => {
   const navigate = useNavigate();
   const { streamId } = useParams();
 
-  // Build the navigation sequence from similarStreams
   const [currentSimilarIndex, setCurrentSimilarIndex] = useState(() => {
     if (streamId) {
       const idx = similarStreams.findIndex(s => s.id === Number(streamId));
@@ -70,12 +69,13 @@ const ShopLive = () => {
         </div>
         
         <div className="max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] xl:grid-cols-[220px_1fr] gap-3 sm:gap-4">
-            <div className="hidden lg:block">
+          {/* Main 3-column layout: Following | Stream | Chat - all same height */}
+          <div className="hidden lg:grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4" style={{ height: '600px' }}>
+            <div className="h-full overflow-hidden">
               <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
             </div>
 
-            <div className="w-full min-w-0 space-y-4">
+            <div className="h-full min-w-0">
               <ShopLiveVideo
                 hostName={currentStream.host}
                 hostAvatar={undefined}
@@ -88,6 +88,9 @@ const ShopLive = () => {
                 hasNext={currentSimilarIndex < similarStreams.length - 1}
                 hasPrev={currentSimilarIndex > 0}
               />
+            </div>
+
+            <div className="h-full overflow-hidden">
               <ShopLiveChat streamId={chatStreamId} />
             </div>
           </div>
@@ -98,7 +101,20 @@ const ShopLive = () => {
           </div>
         </div>
 
+        {/* Mobile layout */}
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
+          <ShopLiveVideo
+            hostName={currentStream.host}
+            hostAvatar={undefined}
+            streamImage={currentStream.image.replace('w=400', 'w=800')}
+            streamTitle={currentStream.title}
+            streamDate={`${currentStream.viewers} viewers`}
+            products={streamProducts}
+            onNext={goNext}
+            onPrev={goPrev}
+            hasNext={currentSimilarIndex < similarStreams.length - 1}
+            hasPrev={currentSimilarIndex > 0}
+          />
           <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <UpcomingStreams />

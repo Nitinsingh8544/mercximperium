@@ -12,7 +12,6 @@ interface CreatorStatus {
   streamId?: number;
 }
 
-// Simulate live/upcoming status based on stream data
 const getCreatorStatus = (sellerName: string): { status: "live" | "upcoming" | "offline"; scheduledAt?: Date; avatar?: string; streamId?: number } => {
   const stream = allStreams.find(
     (s) => s.host.toLowerCase() === sellerName.toLowerCase() || s.host === sellerName
@@ -27,7 +26,6 @@ const getCreatorStatus = (sellerName: string): { status: "live" | "upcoming" | "
     return { status: "live", avatar: stream.hostAvatar || stream.image, streamId: stream.id };
   }
   if (isRecent) {
-    // Treat recently streamed as "upcoming" for demo purposes
     const minutesFromNow = Math.random() * 120 + 10;
     return {
       status: "upcoming",
@@ -48,13 +46,11 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
   const { followedSellers } = useFollows();
 
   const creators: CreatorStatus[] = useMemo(() => {
-    // Build creator list from followed sellers + default creators
     const followed = followedSellers.map((name) => {
       const info = getCreatorStatus(name);
       return { name, ...info };
     });
 
-    // Add some default creators that aren't already followed
     const defaultNames = allStreams
       .filter((s) => !followedSellers.some((f) => f.toLowerCase() === s.host.toLowerCase()))
       .slice(0, 6)
@@ -89,10 +85,14 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
     return null;
   };
 
+  const isHighlighted = (status: "live" | "upcoming" | "offline") => {
+    return status === "live" || status === "upcoming";
+  };
+
   return (
-    <div className="bg-card rounded-xl border border-border h-full flex flex-col sticky top-24">
-      <div className="p-3 border-b border-border">
-        <h2 className="font-bold text-foreground text-sm">Creators</h2>
+    <div className="bg-card rounded-xl border border-border h-full flex flex-col">
+      <div className="p-3 border-b border-border flex-shrink-0">
+        <h2 className="font-bold text-foreground text-sm">Following</h2>
       </div>
 
       <ScrollArea className="flex-1">
@@ -105,6 +105,7 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
           {creators.map((creator, idx) => {
             const isActive = creator.streamId === activeStreamId;
             const statusLabel = getStatusLabel(creator.status);
+            const highlighted = isHighlighted(creator.status);
 
             return (
               <button
@@ -112,7 +113,7 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
                 onClick={() => creator.streamId && onCreatorSelect?.(creator.streamId)}
                 className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all duration-200 text-left group hover:bg-muted ${
                   isActive ? "bg-muted" : ""
-                }`}
+                } ${!highlighted && !isActive ? "opacity-50" : ""}`}
               >
                 <div className="relative flex-shrink-0">
                   <Avatar
@@ -142,7 +143,9 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
                         ? "text-red-500"
                         : isActive
                         ? "text-primary"
-                        : "text-foreground group-hover:text-primary"
+                        : highlighted
+                        ? "text-foreground group-hover:text-primary"
+                        : "text-muted-foreground group-hover:text-foreground"
                     }`}
                   >
                     {creator.name}
@@ -154,6 +157,9 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
                   )}
                   {creator.status === "live" && (
                     <p className="text-[10px] text-red-400">Streaming now</p>
+                  )}
+                  {creator.status === "offline" && (
+                    <p className="text-[10px] text-muted-foreground">Offline</p>
                   )}
                 </div>
               </button>
