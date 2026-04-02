@@ -32,7 +32,7 @@ const ShopLiveChat = ({ streamId = "shop-live-default" }: ShopLiveChatProps) => 
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border h-full min-h-[500px] flex flex-col">
+    <div className="bg-card rounded-xl border border-border h-full flex flex-col">
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {comments.length === 0 && (
