@@ -45,6 +45,13 @@ const ShopLive = () => {
     if (idx >= 0) setCurrentSimilarIndex(idx);
   }, []);
 
+  const handleCreatorSelect = useCallback((streamId: number) => {
+    const idx = similarStreams.findIndex(s => s.id === streamId);
+    if (idx >= 0) {
+      setCurrentSimilarIndex(idx);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
@@ -63,12 +70,12 @@ const ShopLive = () => {
         </div>
         
         <div className="max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_300px] xl:grid-cols-[220px_1fr_320px] gap-3 sm:gap-4">
-            <div className="hidden lg:block lg:row-span-2">
-              <FeaturedCreators />
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] xl:grid-cols-[220px_1fr] gap-3 sm:gap-4">
+            <div className="hidden lg:block">
+              <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
             </div>
 
-            <div className="w-full min-w-0 lg:row-span-2">
+            <div className="w-full min-w-0 space-y-4">
               <ShopLiveVideo
                 hostName={currentStream.host}
                 hostAvatar={undefined}
@@ -81,9 +88,6 @@ const ShopLive = () => {
                 hasNext={currentSimilarIndex < similarStreams.length - 1}
                 hasPrev={currentSimilarIndex > 0}
               />
-            </div>
-
-            <div className="hidden lg:block lg:row-span-2 min-w-0">
               <ShopLiveChat streamId={chatStreamId} />
             </div>
           </div>
@@ -96,7 +100,7 @@ const ShopLive = () => {
 
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
           <ShopLiveChat streamId={chatStreamId} />
-          <FeaturedCreators />
+          <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
