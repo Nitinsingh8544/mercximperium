@@ -100,7 +100,7 @@ const ShopLive = () => {
 
         <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
           <ShopLiveChat streamId={chatStreamId} />
-          <FeaturedCreators />
+          <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
