@@ -70,12 +70,12 @@ const ShopLive = () => {
         </div>
         
         <div className="max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_300px] xl:grid-cols-[220px_1fr_320px] gap-3 sm:gap-4">
-            <div className="hidden lg:block lg:row-span-2">
-              <FeaturedCreators />
+          <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] xl:grid-cols-[220px_1fr] gap-3 sm:gap-4">
+            <div className="hidden lg:block">
+              <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
             </div>
 
-            <div className="w-full min-w-0 lg:row-span-2">
+            <div className="w-full min-w-0 space-y-4">
               <ShopLiveVideo
                 hostName={currentStream.host}
                 hostAvatar={undefined}
@@ -88,9 +88,6 @@ const ShopLive = () => {
                 hasNext={currentSimilarIndex < similarStreams.length - 1}
                 hasPrev={currentSimilarIndex > 0}
               />
-            </div>
-
-            <div className="hidden lg:block lg:row-span-2 min-w-0">
               <ShopLiveChat streamId={chatStreamId} />
             </div>
           </div>
