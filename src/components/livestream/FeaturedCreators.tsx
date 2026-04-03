@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFollows } from "@/hooks/useFollows";
 import { allStreams } from "@/data/streamData";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import UpcomingStreamModal from "./UpcomingStreamModal";
+import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 interface CreatorStatus {
   name: string;
@@ -44,6 +46,8 @@ interface FeaturedCreatorsProps {
 
 const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsProps) => {
   const { followedSellers } = useFollows();
+  const [upcomingStream, setUpcomingStream] = useState<{ id: number; host: string; title: string; image: string } | null>(null);
+  const [sellerProfile, setSellerProfile] = useState<{ name: string; image?: string } | null>(null);
 
   const creators: CreatorStatus[] = useMemo(() => {
     const followed = followedSellers.map((name) => {
@@ -61,7 +65,6 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
 
     const all = [...followed, ...defaultNames];
 
-    // Sort: live first, then upcoming (soonest first), then offline
     return all.sort((a, b) => {
       const priority = { live: 0, upcoming: 1, offline: 2 };
       if (priority[a.status] !== priority[b.status]) return priority[a.status] - priority[b.status];
@@ -71,6 +74,22 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
       return 0;
     });
   }, [followedSellers]);
+
+  const handleCreatorClick = (creator: CreatorStatus) => {
+    if (creator.status === "live" && creator.streamId) {
+      onCreatorSelect?.(creator.streamId);
+    } else if (creator.status === "upcoming") {
+      const stream = allStreams.find(s => s.id === creator.streamId);
+      setUpcomingStream({
+        id: creator.streamId || 0,
+        host: creator.name,
+        title: stream?.title || `${creator.name}'s Upcoming Stream`,
+        image: creator.avatar || stream?.image || "",
+      });
+    } else {
+      setSellerProfile({ name: creator.name, image: creator.avatar });
+    }
+  };
 
   const getRingClass = (status: "live" | "upcoming" | "offline", isActive: boolean) => {
     if (isActive) return "ring-2 ring-primary ring-offset-2 ring-offset-background";
@@ -90,84 +109,99 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border h-full flex flex-col">
-      <div className="p-3 border-b border-border flex-shrink-0">
-        <h2 className="font-bold text-foreground text-sm">Following</h2>
-      </div>
+    <>
+      <div className="bg-card rounded-xl border border-border h-full flex flex-col">
+        <div className="p-3 border-b border-border flex-shrink-0">
+          <h2 className="font-bold text-foreground text-sm">Following</h2>
+        </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-2 space-y-1">
-          {creators.length === 0 && (
-            <p className="text-xs text-muted-foreground p-2 text-center">
-              Follow creators to see them here.
-            </p>
-          )}
-          {creators.map((creator, idx) => {
-            const isActive = creator.streamId === activeStreamId;
-            const statusLabel = getStatusLabel(creator.status);
-            const highlighted = isHighlighted(creator.status);
+        <ScrollArea className="flex-1">
+          <div className="p-2 space-y-1">
+            {creators.length === 0 && (
+              <p className="text-xs text-muted-foreground p-2 text-center">
+                Follow creators to see them here.
+              </p>
+            )}
+            {creators.map((creator, idx) => {
+              const isActive = creator.streamId === activeStreamId;
+              const statusLabel = getStatusLabel(creator.status);
+              const highlighted = isHighlighted(creator.status);
 
-            return (
-              <button
-                key={`${creator.name}-${idx}`}
-                onClick={() => creator.streamId && onCreatorSelect?.(creator.streamId)}
-                className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all duration-200 text-left group hover:bg-muted ${
-                  isActive ? "bg-muted" : ""
-                } ${!highlighted && !isActive ? "opacity-50" : ""}`}
-              >
-                <div className="relative flex-shrink-0">
-                  <Avatar
-                    className={`h-10 w-10 transition-all duration-300 ${getRingClass(creator.status, isActive)}`}
-                  >
-                    <AvatarImage src={creator.avatar} />
-                    <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
-                      {creator.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {statusLabel && (
-                    <span
-                      className={`absolute -bottom-1 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
+              return (
+                <button
+                  key={`${creator.name}-${idx}`}
+                  onClick={() => handleCreatorClick(creator)}
+                  className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all duration-200 text-left group hover:bg-muted ${
+                    isActive ? "bg-muted" : ""
+                  } ${!highlighted && !isActive ? "opacity-50" : ""}`}
+                >
+                  <div className="relative flex-shrink-0">
+                    <Avatar
+                      className={`h-10 w-10 transition-all duration-300 ${getRingClass(creator.status, isActive)}`}
+                    >
+                      <AvatarImage src={creator.avatar} />
+                      <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+                        {creator.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {statusLabel && (
+                      <span
+                        className={`absolute -bottom-1 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
+                          creator.status === "live"
+                            ? "bg-red-500 text-white"
+                            : "bg-yellow-400 text-yellow-900"
+                        }`}
+                      >
+                        {statusLabel}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-sm font-medium truncate transition-colors ${
                         creator.status === "live"
-                          ? "bg-red-500 text-white"
-                          : "bg-yellow-400 text-yellow-900"
+                          ? "text-red-500"
+                          : isActive
+                          ? "text-primary"
+                          : highlighted
+                          ? "text-foreground group-hover:text-primary"
+                          : "text-muted-foreground group-hover:text-foreground"
                       }`}
                     >
-                      {statusLabel}
-                    </span>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`text-sm font-medium truncate transition-colors ${
-                      creator.status === "live"
-                        ? "text-red-500"
-                        : isActive
-                        ? "text-primary"
-                        : highlighted
-                        ? "text-foreground group-hover:text-primary"
-                        : "text-muted-foreground group-hover:text-foreground"
-                    }`}
-                  >
-                    {creator.name}
-                  </p>
-                  {creator.status === "upcoming" && creator.scheduledAt && (
-                    <p className="text-[10px] text-muted-foreground">
-                      Starts in {Math.round((creator.scheduledAt.getTime() - Date.now()) / 60000)}m
+                      {creator.name}
                     </p>
-                  )}
-                  {creator.status === "live" && (
-                    <p className="text-[10px] text-red-400">Streaming now</p>
-                  )}
-                  {creator.status === "offline" && (
-                    <p className="text-[10px] text-muted-foreground">Offline</p>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </ScrollArea>
-    </div>
+                    {creator.status === "upcoming" && creator.scheduledAt && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Starts in {Math.round((creator.scheduledAt.getTime() - Date.now()) / 60000)}m
+                      </p>
+                    )}
+                    {creator.status === "live" && (
+                      <p className="text-[10px] text-red-400">Streaming now</p>
+                    )}
+                    {creator.status === "offline" && (
+                      <p className="text-[10px] text-muted-foreground">Offline</p>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      </div>
+
+      <UpcomingStreamModal
+        isOpen={!!upcomingStream}
+        onClose={() => setUpcomingStream(null)}
+        stream={upcomingStream}
+      />
+
+      <SellerProfileModal
+        isOpen={!!sellerProfile}
+        onClose={() => setSellerProfile(null)}
+        sellerName={sellerProfile?.name || ""}
+        sellerImage={sellerProfile?.image}
+      />
+    </>
   );
 };
 
