@@ -70,7 +70,7 @@ const ShopLive = () => {
         
         <div className="max-w-[1600px] mx-auto">
           {/* Main 3-column layout: Following | Stream | Chat - all same height */}
-          <div className="hidden lg:grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4 <div className="hidden lg:grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4 h-[672px]">">
+          <div className="hidden lg:grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4 h-[672px]">
             <div className="h-full overflow-hidden">
               <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
             </div>
