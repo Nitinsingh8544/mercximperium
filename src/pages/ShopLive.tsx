@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import RecommendedSection from "@/components/livestream/RecommendedSection";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";

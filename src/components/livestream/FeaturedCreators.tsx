@@ -115,7 +115,7 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
           <h2 className="font-bold text-foreground text-sm">Following</h2>
         </div>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 [&>div>div]:!block [&_[data-radix-scroll-area-scrollbar]]:!opacity-100 [&_[data-radix-scroll-area-scrollbar]]:w-1.5">
           <div className="p-2 space-y-1">
             {creators.length === 0 && (
               <p className="text-xs text-muted-foreground p-2 text-center">
