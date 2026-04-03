@@ -1,11 +1,11 @@
 import { useState, useCallback, useMemo } from "react";
+import RecommendedSection from "@/components/livestream/RecommendedSection";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 import { allStreams } from "@/data/streamData";
-import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -95,9 +95,9 @@ const ShopLive = () => {
             </div>
           </div>
 
-          <div className="mt-6">
-            <UpcomingStreams />
+          <div className="mt-6 space-y-6">
             <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+            <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           </div>
         </div>
 
@@ -117,8 +117,8 @@ const ShopLive = () => {
           />
           <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
-          <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+          <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
     </div>
