@@ -34,7 +34,7 @@ const ShopLiveChat = ({ streamId = "shop-live-default" }: ShopLiveChatProps) => 
   return (
     <div className="bg-card rounded-xl border border-border h-full flex flex-col">
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/50">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted-foreground) / 0.3) transparent' }}>
         {comments.length === 0 && (
           <p className="text-center text-muted-foreground text-sm py-4">
             No messages yet. Be the first to chat!
