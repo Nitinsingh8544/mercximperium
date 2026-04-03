@@ -116,8 +116,8 @@ const ShopLive = () => {
           />
           <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
-          <UpcomingStreams />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+          <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
     </div>
