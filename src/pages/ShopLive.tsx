@@ -5,7 +5,6 @@ import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 import { allStreams } from "@/data/streamData";
-import UpcomingStreams from "@/components/livestream/UpcomingStreams";
 import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
