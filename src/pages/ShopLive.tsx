@@ -99,6 +99,7 @@ const ShopLive = () => {
           <div className="mt-6 space-y-6">
             <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
             <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+            <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           </div>
         </div>
 
