@@ -4,40 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-interface Stream {
-  id: number;
-  host: string;
-  title: string;
-  viewers: number;
-  image: string;
-}
+import { getRecommendedStreams } from "@/lib/streamRanking";
 
 interface RecommendedSectionProps {
   currentStreamId?: number;
   onStreamSelect?: (streamId: number) => void;
 }
 
-const recommendedItems: Stream[] = [
-  { id: 101, host: "luxuryfinds", title: "Luxury Bags & Accessories 👜", viewers: 312, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400" },
-  { id: 102, host: "plantparadise", title: "Indoor Plants Collection 🌿", viewers: 145, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400" },
-  { id: 103, host: "audiophile", title: "Premium Headphones Sale 🎧", viewers: 198, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-  { id: 104, host: "watchcollector", title: "Vintage Watch Showcase ⌚", viewers: 267, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
-  { id: 105, host: "homechef", title: "Kitchen Essentials Deal 🍳", viewers: 89, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400" },
-  { id: 106, host: "skateshop", title: "Skateboard Gear Drop 🛹", viewers: 176, image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=400" },
-  { id: 107, host: "perfumery", title: "Fragrance Collection 🌸", viewers: 134, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400" },
-  { id: 108, host: "cameragear", title: "Photography Equipment 📷", viewers: 221, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400" },
-  { id: 109, host: "vinylshop", title: "Rare Vinyl Records 🎵", viewers: 93, image: "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=400" },
-  { id: 110, host: "sneakerhead", title: "Exclusive Sneaker Drops 👟", viewers: 345, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
-];
-
 const RecommendedSection = ({ currentStreamId, onStreamSelect }: RecommendedSectionProps) => {
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const streams = recommendedItems
-    .filter(stream => stream.id !== currentStreamId)
-    .slice(0, 8);
+  const streams = getRecommendedStreams(currentStreamId || 0, 8);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

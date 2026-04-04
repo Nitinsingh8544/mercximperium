@@ -7,6 +7,7 @@ import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 import { allStreams } from "@/data/streamData";
 import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
+import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -98,6 +99,7 @@ const ShopLive = () => {
           <div className="mt-6 space-y-6">
             <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
             <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+            <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           </div>
         </div>
 
@@ -119,6 +121,7 @@ const ShopLive = () => {
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+          <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
     </div>
