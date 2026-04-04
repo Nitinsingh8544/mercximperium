@@ -7,6 +7,7 @@ import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 import { allStreams } from "@/data/streamData";
 import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
+import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
