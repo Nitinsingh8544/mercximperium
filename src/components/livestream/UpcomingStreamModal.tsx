@@ -92,28 +92,31 @@ const UpcomingStreamModal = ({ isOpen, onClose, stream }: UpcomingStreamModalPro
               </div>
             </div>
 
-            {/* Title & Host */}
-            <div>
-              <h3 className="font-bold text-foreground text-lg">{stream.title}</h3>
-              <p className="text-sm text-muted-foreground">
-                Hosted by <span className="font-medium text-foreground">{stream.host}</span>
-              </p>
-            </div>
-
-            {/* Seller Profile Button */}
-            <Button
-              variant="outline"
-              className="w-full gap-2 border-border hover:bg-muted"
-              onClick={() => setShowSellerProfile(true)}
-            >
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="bg-primary/20 text-primary text-xs">
+            {/* Title & Host with Seller Avatar */}
+            <div className="flex items-center gap-3">
+              <Avatar
+                className="h-12 w-12 shrink-0 cursor-pointer border-2 border-border hover:border-primary transition-colors"
+                onClick={() => setShowSellerProfile(true)}
+              >
+                <AvatarFallback className="bg-primary/20 text-primary">
                   {stream.host.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium text-foreground">View Seller Profile</span>
-              <User className="h-4 w-4 text-muted-foreground ml-auto" />
-            </Button>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-foreground text-lg">{stream.title} 🏷️</h3>
+                <p className="text-sm text-muted-foreground">
+                  Hosted by <span className="font-medium text-foreground">{stream.host}</span>
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 text-xs"
+                onClick={() => setShowSellerProfile(true)}
+              >
+                + Follow
+              </Button>
+            </div>
 
             {/* Products description */}
             <div className="bg-muted rounded-lg p-3 space-y-2">
