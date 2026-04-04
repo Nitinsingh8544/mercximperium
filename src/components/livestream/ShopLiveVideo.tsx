@@ -78,7 +78,10 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
             </Badge>
             <Badge variant="destructive" className="bg-red-600 text-white">LIVE</Badge>
           </div>
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div
+            className="absolute inset-0 flex items-center justify-center cursor-pointer"
+            onClick={() => setIsPlaying(!isPlaying)}
+          >
             <img
               src={streamImage || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800"}
               alt="Live shopping stream"
@@ -86,10 +89,13 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
             />
           </div>
           {!isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-              <Button variant="ghost" size="icon" className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(true)}>
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
+              onClick={() => setIsPlaying(true)}
+            >
+              <div className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full flex items-center justify-center">
                 <Play className="h-8 w-8 text-foreground" />
-              </Button>
+              </div>
             </div>
           )}
 
