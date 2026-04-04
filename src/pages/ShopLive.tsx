@@ -121,6 +121,7 @@ const ShopLive = () => {
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
+          <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
     </div>

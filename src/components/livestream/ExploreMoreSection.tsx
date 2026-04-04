@@ -4,27 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getSimilarStreams, streamsWithMeta } from "@/lib/streamRanking";
+import { getExploreStreams } from "@/lib/streamRanking";
 
-// Re-export for backward compatibility
-export const similarStreams = streamsWithMeta.map(s => ({
-  id: s.id,
-  host: s.host,
-  title: s.title,
-  viewers: s.viewers,
-  image: s.image,
-}));
-
-interface RecommendedStreamsProps {
+interface ExploreMoreSectionProps {
   currentStreamId?: number;
   onStreamSelect?: (streamId: number) => void;
 }
 
-const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStreamsProps) => {
+const ExploreMoreSection = ({ currentStreamId, onStreamSelect }: ExploreMoreSectionProps) => {
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const recommendedStreams = getSimilarStreams(currentStreamId || 0, 8);
+  const streams = getExploreStreams(currentStreamId || 0, 8);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -36,9 +27,9 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   };
 
   return (
-    <div className="mt-6 sm:mt-8 pb-6 sm:pb-8">
-      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Similar Streams</h2>
-      
+    <div className="pb-6 sm:pb-8">
+      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Explore more livestreams</h2>
+
       <div className="relative group/scroll">
         <Button
           variant="outline"
@@ -58,39 +49,42 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
           <ChevronRight className="h-4 w-4" />
         </Button>
 
-        <div 
+        <div
           ref={scrollRef}
-          className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
+          className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
         >
-          {recommendedStreams.map((stream) => (
-            <Card 
-              key={stream.id} 
-              className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group hover:scale-105 shrink-0 w-[160px] sm:w-[180px] md:w-[200px]"
+          {streams.map((stream) => (
+            <Card
+              key={stream.id}
+              className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02] shrink-0 w-[240px] sm:w-[280px] md:w-[300px]"
               onClick={() => onStreamSelect ? onStreamSelect(stream.id) : navigate(`/shop-live/${stream.id}`)}
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img 
-                  src={stream.image} 
+              <div className="relative aspect-video overflow-hidden">
+                <img
+                  src={stream.image}
                   alt={stream.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <Badge className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-[10px] sm:text-xs px-1 sm:px-1.5">
+                <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-xs px-2">
                   Live · {stream.viewers}
                 </Badge>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
+                  <p className="text-white text-sm font-semibold truncate">{stream.title}</p>
+                </div>
               </div>
-              <CardContent className="p-2 sm:p-2.5">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <span className="text-[9px] sm:text-xs font-semibold text-primary">
+              <CardContent className="p-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-semibold text-primary">
                       {stream.host.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[10px] sm:text-xs text-foreground truncate">
+                    <p className="font-medium text-sm text-foreground truncate">
                       {stream.host}
                     </p>
-                    <p className="text-[9px] sm:text-xs text-muted-foreground truncate">
-                      {stream.title}
+                    <p className="text-xs text-muted-foreground truncate">
+                      {stream.category} · {stream.viewers} watching
                     </p>
                   </div>
                 </div>
@@ -103,4 +97,4 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   );
 };
 
-export default RecommendedStreams;
+export default ExploreMoreSection;
