@@ -5,7 +5,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
-import { allStreams } from "@/data/streamData";
+import { getStreamById as getStreamDataById } from "@/data/streamData";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ const ShopLive = () => {
   }, [currentStreamId]);
 
   const streamProducts = useMemo(() => {
-    const match = allStreams.find(s => s.host === currentStream.host || s.id === currentStream.id);
+    const match = getStreamDataById(currentStream.id);
     return match?.products || [];
   }, [currentStream]);
 

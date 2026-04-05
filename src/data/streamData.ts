@@ -193,8 +193,91 @@ export const allStreams: StreamData[] = [
   },
 ];
 
+// Product data for recommended streams
+export const recommendedStreamData: StreamData[] = [
+  { id: 101, host: "luxuryfinds", title: "Luxury Bags & Accessories 👜", streamTitle: "Luxury Bags: Designer Collection", streamDate: "Live now", viewers: 312, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=200", title: "Designer Leather Tote", price: 4999, originalPrice: 9999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=200", title: "Premium Crossbody Bag", price: 2999, originalPrice: 5999, currency: "₹" },
+  ]},
+  { id: 102, host: "plantparadise", title: "Indoor Plants Collection 🌿", streamTitle: "Green Living: Indoor Plant Guide", streamDate: "Live now", viewers: 145, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=200", title: "Monstera Deliciosa", price: 799, originalPrice: 1499, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1463936575829-25148e1db1b8?w=200", title: "Snake Plant - Large", price: 599, originalPrice: 1199, currency: "₹" },
+  ]},
+  { id: 103, host: "audiophile", title: "Premium Headphones Sale 🎧", streamTitle: "Audio Gear: Premium Headphones", streamDate: "Live now", viewers: 198, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200", title: "Studio Monitor Headphones", price: 3499, originalPrice: 6999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200", title: "Wireless ANC Earbuds", price: 1999, originalPrice: 3999, currency: "₹" },
+  ]},
+  { id: 104, host: "watchcollector", title: "Vintage Watch Showcase ⌚", streamTitle: "Watch Showcase: Vintage & Luxury", streamDate: "Live now", viewers: 267, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=200", title: "Vintage Chronograph", price: 7999, originalPrice: 14999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=200", title: "Classic Dress Watch", price: 4999, originalPrice: 9999, currency: "₹" },
+  ]},
+  { id: 105, host: "homechef", title: "Kitchen Essentials Deal 🍳", streamTitle: "Kitchen Deals: Chef's Essentials", streamDate: "Live now", viewers: 89, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200", title: "Cast Iron Skillet Set", price: 1999, originalPrice: 3999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=200", title: "Chef's Knife - Japanese Steel", price: 2499, originalPrice: 4999, currency: "₹" },
+  ]},
+  { id: 106, host: "skateshop", title: "Skateboard Gear Drop 🛹", streamTitle: "Skate Gear: Boards & Accessories", streamDate: "Live now", viewers: 176, image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=200", title: "Pro Skateboard Complete", price: 2999, originalPrice: 5999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1564429238961-441ea5765924?w=200", title: "Skateboard Wheels Set", price: 799, originalPrice: 1499, currency: "₹" },
+  ]},
+  { id: 107, host: "perfumery", title: "Fragrance Collection 🌸", streamTitle: "Fragrances: Luxury & Niche Scents", streamDate: "Live now", viewers: 134, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=200", title: "Luxury Eau de Parfum", price: 3999, originalPrice: 7999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1594035910387-fea081da28f5?w=200", title: "Niche Fragrance Set", price: 2499, originalPrice: 4999, currency: "₹" },
+  ]},
+  { id: 108, host: "cameragear", title: "Photography Equipment 📷", streamTitle: "Camera Gear: Pro Equipment Sale", streamDate: "Live now", viewers: 221, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200", title: "Mirrorless Camera Body", price: 49999, originalPrice: 79999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?w=200", title: "50mm Prime Lens", price: 12999, originalPrice: 24999, currency: "₹" },
+  ]},
+  { id: 109, host: "vinylshop", title: "Rare Vinyl Records 🎵", streamTitle: "Vinyl Shop: Rare & Classic Records", streamDate: "Live now", viewers: 93, image: "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=200", title: "Classic Rock Vinyl LP", price: 1499, originalPrice: 2999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=200", title: "Jazz Collection Box Set", price: 2999, originalPrice: 5999, currency: "₹" },
+  ]},
+  { id: 110, host: "sneakerhead", title: "Exclusive Sneaker Drops 👟", streamTitle: "Sneaker Drops: Exclusive Releases", streamDate: "Live now", viewers: 345, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200", title: "Limited Edition Runner", price: 5999, originalPrice: 11999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200", title: "Retro Basketball Shoes", price: 3999, originalPrice: 7999, currency: "₹" },
+  ]},
+];
+
+// Product data for explore streams
+export const exploreStreamData: StreamData[] = [
+  { id: 201, host: "beautybliss", title: "Skincare Routine Essentials 💄", streamTitle: "Skincare Live: Glow Up Routine", streamDate: "Live now", viewers: 234, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200", title: "Vitamin C Serum", price: 899, originalPrice: 1799, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1570194065650-d99fb4d8a609?w=200", title: "Hydrating Face Mask Set", price: 599, originalPrice: 1199, currency: "₹" },
+  ]},
+  { id: 202, host: "outdooradv", title: "Camping Gear Mega Sale ⛺", streamTitle: "Outdoor Adventure: Camping Essentials", streamDate: "Live now", viewers: 178, image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200", title: "4-Person Tent Pro", price: 4999, originalPrice: 9999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1510672981848-a1c4f1cb5ccf?w=200", title: "Camping Stove Portable", price: 1499, originalPrice: 2999, currency: "₹" },
+  ]},
+  { id: 203, host: "petparadise", title: "Pet Accessories Showcase 🐕", streamTitle: "Pet Paradise: Accessories & Toys", streamDate: "Live now", viewers: 145, image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=200", title: "Premium Dog Harness", price: 999, originalPrice: 1999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1583337130417-13104dec14a3?w=200", title: "Interactive Pet Toy Set", price: 699, originalPrice: 1399, currency: "₹" },
+  ]},
+  { id: 204, host: "homedesign", title: "Home Decor Inspiration 🏠", streamTitle: "Home Decor: Interior Design Ideas", streamDate: "Live now", viewers: 198, image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=200", title: "Modern Table Lamp", price: 1499, originalPrice: 2999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200", title: "Decorative Throw Pillows Set", price: 899, originalPrice: 1799, currency: "₹" },
+  ]},
+  { id: 205, host: "musicstore", title: "Guitar Collection Sale 🎸", streamTitle: "Music Store: Guitar Collection", streamDate: "Live now", viewers: 167, image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200", title: "Acoustic Guitar - Beginner", price: 3999, originalPrice: 7999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=200", title: "Guitar Strings Premium Set", price: 499, originalPrice: 999, currency: "₹" },
+  ]},
+  { id: 206, host: "coffeelover", title: "Specialty Coffee Beans ☕", streamTitle: "Coffee Corner: Specialty Beans", streamDate: "Live now", viewers: 89, image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=200", title: "Single Origin Coffee Beans", price: 699, originalPrice: 1299, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200", title: "Pour Over Coffee Kit", price: 1499, originalPrice: 2999, currency: "₹" },
+  ]},
+  { id: 207, host: "toyworld", title: "Collectible Figures Drop 🎮", streamTitle: "Toy World: Collectible Figures", streamDate: "Live now", viewers: 312, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200", title: "Anime Figure - Limited Edition", price: 2499, originalPrice: 4999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=200", title: "Action Figure Box Set", price: 1999, originalPrice: 3999, currency: "₹" },
+  ]},
+  { id: 208, host: "plantmom", title: "Rare Plant Collection 🌱", streamTitle: "Plant Mom: Rare Indoor Plants", streamDate: "Live now", viewers: 134, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=800", products: [
+    { id: 1, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=200", title: "Rare Philodendron", price: 1999, originalPrice: 3999, currency: "₹" },
+    { id: 2, image: "https://images.unsplash.com/photo-1463936575829-25148e1db1b8?w=200", title: "Ceramic Plant Pot Set", price: 799, originalPrice: 1599, currency: "₹" },
+  ]},
+];
+
+// Combined lookup across all stream data
+const allStreamData = [...allStreams, ...recommendedStreamData, ...exploreStreamData];
+
 export const getStreamById = (id: number): StreamData | undefined => {
-  return allStreams.find((stream) => stream.id === id);
+  return allStreamData.find((stream) => stream.id === id);
 };
 
 export const getDefaultStream = (): StreamData => {
