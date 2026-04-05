@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Clock, Package, User } from "lucide-react";
-import SellerProfileModal from "@/components/seller/SellerProfileModal";
+import { Clock, Package } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useFollows } from "@/hooks/useFollows";
 
 interface UpcomingStreamModalProps {
   isOpen: boolean;
@@ -19,7 +20,8 @@ interface UpcomingStreamModalProps {
 
 const UpcomingStreamModal = ({ isOpen, onClose, stream }: UpcomingStreamModalProps) => {
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [showSellerProfile, setShowSellerProfile] = useState(false);
+  const navigate = useNavigate();
+  const { isFollowing, toggleFollow } = useFollows();
 
   const [scheduledTime] = useState(() => {
     const ms = (Math.floor(Math.random() * 3) + 1) * 3600000 + Math.floor(Math.random() * 60) * 60000;
@@ -96,7 +98,7 @@ const UpcomingStreamModal = ({ isOpen, onClose, stream }: UpcomingStreamModalPro
             <div className="flex items-center gap-3">
               <Avatar
                 className="h-12 w-12 shrink-0 cursor-pointer border-2 border-border hover:border-primary transition-colors"
-                onClick={() => setShowSellerProfile(true)}
+                onClick={() => { onClose(); navigate(`/seller/${encodeURIComponent(stream.host)}`); }}
               >
                 <AvatarFallback className="bg-primary/20 text-primary">
                   {stream.host.charAt(0).toUpperCase()}
@@ -105,16 +107,22 @@ const UpcomingStreamModal = ({ isOpen, onClose, stream }: UpcomingStreamModalPro
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-foreground text-lg">{stream.title} 🏷️</h3>
                 <p className="text-sm text-muted-foreground">
-                  Hosted by <span className="font-medium text-foreground">{stream.host}</span>
+                  Hosted by{" "}
+                  <span
+                    className="font-medium text-foreground cursor-pointer hover:underline"
+                    onClick={() => { onClose(); navigate(`/seller/${encodeURIComponent(stream.host)}`); }}
+                  >
+                    {stream.host}
+                  </span>
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="shrink-0 text-xs"
-                onClick={() => setShowSellerProfile(true)}
+                className={`shrink-0 text-xs ${isFollowing(stream.host) ? "bg-muted text-muted-foreground" : ""}`}
+                onClick={() => toggleFollow(stream.host, "shop_live")}
               >
-                + Follow
+                {isFollowing(stream.host) ? "Following" : "+ Follow"}
               </Button>
             </div>
 
@@ -137,11 +145,6 @@ const UpcomingStreamModal = ({ isOpen, onClose, stream }: UpcomingStreamModalPro
         </DialogContent>
       </Dialog>
 
-      <SellerProfileModal
-        isOpen={showSellerProfile}
-        onClose={() => setShowSellerProfile(false)}
-        sellerName={stream.host}
-      />
     </>
   );
 };
