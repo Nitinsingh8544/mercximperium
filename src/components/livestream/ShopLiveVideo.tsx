@@ -7,7 +7,6 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, Chevro
 import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
-import SellerProfileModal from "@/components/seller/SellerProfileModal";
 import ProductDetailModal from "@/components/livestream/ProductDetailModal";
 
 interface Product {
@@ -41,7 +40,6 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [disliked, setDisliked] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [sellerProfileOpen, setSellerProfileOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const productsScrollRef = useRef<HTMLDivElement>(null);
