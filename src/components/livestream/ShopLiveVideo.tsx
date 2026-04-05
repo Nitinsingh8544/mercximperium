@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ interface ShopLiveVideoProps {
 }
 
 const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, streamTitle, streamDate, products = [], onNext, onPrev, hasNext = true, hasPrev = true }: ShopLiveVideoProps) => {
+  const navigate = useNavigate();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -140,7 +142,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
         {/* Host info bar */}
         <div className="p-3 bg-card">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSellerProfileOpen(true)}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/seller/${encodeURIComponent(hostName)}`)}>
               <Avatar className="h-10 w-10">
                 <AvatarImage src={hostAvatar} />
                 <AvatarFallback className="bg-muted text-muted-foreground">
@@ -227,6 +229,15 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                     <p className="text-[10px] font-semibold text-primary">{product.currency}{product.price.toLocaleString()}</p>
                   </div>
                 ))}
+                {/* View More button */}
+                <div
+                  className="shrink-0 w-[100px] cursor-pointer flex items-center justify-center"
+                  onClick={() => navigate(`/seller/${encodeURIComponent(hostName)}`)}
+                >
+                  <div className="w-[100px] h-[100px] rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center hover:bg-accent transition-colors">
+                    <span className="text-xs font-medium text-muted-foreground text-center px-2">View More →</span>
+                  </div>
+                </div>
               </div>
               <Button
                 variant="ghost"
@@ -243,12 +254,6 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
 
       <ShareProfileModal isOpen={shareOpen} onClose={() => setShareOpen(false)} userName={hostName} />
       <ReportModal isOpen={reportOpen} onClose={() => setReportOpen(false)} streamName={hostName} />
-      <SellerProfileModal
-        isOpen={sellerProfileOpen}
-        onClose={() => setSellerProfileOpen(false)}
-        sellerName={hostName}
-        sellerImage={hostAvatar}
-      />
       <ProductDetailModal
         isOpen={!!selectedProduct}
         onClose={() => setSelectedProduct(null)}
