@@ -6,24 +6,31 @@ import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
 import { allStreams } from "@/data/streamData";
-import RecommendedStreams, { similarStreams } from "@/components/livestream/RecommendedStreams";
+import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { findStreamById, streamsWithMeta } from "@/lib/streamRanking";
 
 const ShopLive = () => {
   const navigate = useNavigate();
   const { streamId } = useParams();
 
-  const [currentSimilarIndex, setCurrentSimilarIndex] = useState(() => {
-    if (streamId) {
-      const idx = similarStreams.findIndex(s => s.id === Number(streamId));
-      return idx >= 0 ? idx : 0;
-    }
-    return 0;
+  // History stack: array of stream IDs the user has viewed
+  const [history, setHistory] = useState<number[]>(() => {
+    const initialId = streamId ? Number(streamId) : streamsWithMeta[0]?.id || 1;
+    return [initialId];
   });
+  // Pointer into the history stack (current position)
+  const [historyIndex, setHistoryIndex] = useState(0);
 
-  const currentStream = similarStreams[currentSimilarIndex];
+  const currentStreamId = history[historyIndex];
+  const currentStream = useMemo(() => {
+    const found = findStreamById(currentStreamId);
+    if (found) return found;
+    // Fallback to first stream
+    return streamsWithMeta[0];
+  }, [currentStreamId]);
 
   const streamProducts = useMemo(() => {
     const match = allStreams.find(s => s.host === currentStream.host || s.id === currentStream.id);
@@ -32,25 +39,32 @@ const ShopLive = () => {
 
   const chatStreamId = `shop-live-${currentStream.id}`;
 
-  const goNext = useCallback(() => {
-    setCurrentSimilarIndex(prev => Math.min(prev + 1, similarStreams.length - 1));
-  }, []);
-
-  const goPrev = useCallback(() => {
-    setCurrentSimilarIndex(prev => Math.max(prev - 1, 0));
-  }, []);
-
+  // Navigate to a new stream: truncate forward history and push new entry
   const handleStreamSelect = useCallback((id: number) => {
-    const idx = similarStreams.findIndex(s => s.id === id);
-    if (idx >= 0) setCurrentSimilarIndex(idx);
+    setHistory(prev => {
+      // Avoid pushing duplicate of current
+      const currentIdx = prev.length - 1; // we'll use the latest historyIndex
+      return [...prev.slice(0, historyIndex + 1), id];
+    });
+    setHistoryIndex(prev => prev + 1);
+  }, [historyIndex]);
+
+  // Go back in history
+  const goPrev = useCallback(() => {
+    setHistoryIndex(prev => Math.max(prev - 1, 0));
   }, []);
+
+  // Go forward in history
+  const goNext = useCallback(() => {
+    setHistoryIndex(prev => Math.min(prev + 1, history.length - 1));
+  }, [history.length]);
+
+  const hasPrev = historyIndex > 0;
+  const hasNext = historyIndex < history.length - 1;
 
   const handleCreatorSelect = useCallback((streamId: number) => {
-    const idx = similarStreams.findIndex(s => s.id === streamId);
-    if (idx >= 0) {
-      setCurrentSimilarIndex(idx);
-    }
-  }, []);
+    handleStreamSelect(streamId);
+  }, [handleStreamSelect]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,8 +100,8 @@ const ShopLive = () => {
                 products={streamProducts}
                 onNext={goNext}
                 onPrev={goPrev}
-                hasNext={currentSimilarIndex < similarStreams.length - 1}
-                hasPrev={currentSimilarIndex > 0}
+                hasNext={hasNext}
+                hasPrev={hasPrev}
               />
             </div>
 
@@ -114,8 +128,8 @@ const ShopLive = () => {
             products={streamProducts}
             onNext={goNext}
             onPrev={goPrev}
-            hasNext={currentSimilarIndex < similarStreams.length - 1}
-            hasPrev={currentSimilarIndex > 0}
+            hasNext={hasNext}
+            hasPrev={hasPrev}
           />
           <ShopLiveChat streamId={chatStreamId} />
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
