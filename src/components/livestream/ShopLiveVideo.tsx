@@ -46,7 +46,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
 
-  const viewerCount = Math.floor(Math.random() * 500) + 50;
+  const viewerCount = streamDate ? parseInt(streamDate) || 549 : 549;
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
