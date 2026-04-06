@@ -229,12 +229,14 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                 ))}
                 {/* View More button */}
                 <div
-                  className="shrink-0 w-[100px] cursor-pointer flex items-center justify-center"
+                  className="shrink-0 w-[100px] cursor-pointer"
                   onClick={() => navigate(`/seller/${encodeURIComponent(hostName)}`)}
                 >
                   <div className="w-[100px] h-[100px] rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center hover:bg-accent transition-colors">
                     <span className="text-xs font-medium text-muted-foreground text-center px-2">View More →</span>
                   </div>
+                  <p className="text-[10px] text-transparent mt-1">&nbsp;</p>
+                  <p className="text-[10px] text-transparent">&nbsp;</p>
                 </div>
               </div>
               <Button

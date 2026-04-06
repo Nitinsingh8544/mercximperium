@@ -89,7 +89,7 @@ const FollowedHost = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {follows.map((follow, idx) => (
-                  <Card key={idx} className="overflow-hidden hover:shadow-lg transition-shadow group">
+                  <Card key={idx} className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer" onClick={() => navigate(`/seller/${encodeURIComponent(follow.seller_name)}`)}>
                     <CardContent className="p-4 flex items-center gap-3">
                       <Avatar className="h-12 w-12">
                         <AvatarFallback className="bg-primary/20 text-primary font-semibold">
@@ -106,7 +106,7 @@ const FollowedHost = () => {
                         variant="ghost"
                         size="icon"
                         className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleUnfollow(follow.seller_name, follow.follow_source)}
+                        onClick={(e) => { e.stopPropagation(); handleUnfollow(follow.seller_name, follow.follow_source); }}
                         title="Unfollow"
                       >
                         <UserMinus className="h-4 w-4" />
