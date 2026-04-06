@@ -152,12 +152,28 @@ const Checkout = () => {
     toast({ title: "Address added" });
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       toast({ title: "Please select a delivery address", variant: "destructive" });
       return;
     }
-    toast({ title: "Order placed successfully!", description: `Your order for ${item.title} will be delivered soon.` });
+
+    // Apply credits if any were selected
+    if (appliedCredits > 0) {
+      const success = await applyCredits(appliedCredits);
+      if (!success) {
+        toast({ title: "Failed to apply credits", variant: "destructive" });
+        return;
+      }
+    }
+
+    // Earn credits based on the final order amount (1 credit per ₹5 spent)
+    const earned = await earnCredits(orderTotal);
+
+    toast({
+      title: "Order placed successfully!",
+      description: `Your order for ${item.title} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
+    });
     navigate("/dashboard");
   };
 
