@@ -414,6 +414,12 @@ const Checkout = () => {
                   <span className="text-muted-foreground">Delivery:</span>
                   <span className="text-primary font-medium">FREE</span>
                 </div>
+                {appliedCredits > 0 && (
+                  <div className="flex justify-between text-primary">
+                    <span>Credits ({appliedCredits}):</span>
+                    <span>-{item.currency}{creditDiscount.toLocaleString()}</span>
+                  </div>
+                )}
                 <Separator />
                 <div className="flex justify-between font-bold text-base">
                   <span className="text-foreground">Order Total:</span>
