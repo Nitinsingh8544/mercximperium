@@ -118,8 +118,26 @@ const Checkout = () => {
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const itemTotal = item.price * item.quantity;
   const deliveryCharge = 0;
-  const orderTotal = itemTotal + deliveryCharge;
-  const availableCredit = 500;
+  const creditDiscount = creditsToRupees(appliedCredits);
+  const orderTotal = itemTotal + deliveryCharge - creditDiscount;
+  const hasCredits = credits > 0;
+
+  const handleApplyCredits = () => {
+    const requestedCredits = parseInt(creditInput);
+    if (isNaN(requestedCredits) || requestedCredits <= 0) {
+      toast({ title: "Please enter a valid credit amount", variant: "destructive" });
+      return;
+    }
+    const maxCreditsForOrder = Math.min(requestedCredits, credits, itemTotal * 5); // can't exceed order total
+    setAppliedCredits(maxCreditsForOrder);
+    toast({ title: `${maxCreditsForOrder} credits applied`, description: `You save ₹${creditsToRupees(maxCreditsForOrder).toLocaleString()}` });
+  };
+
+  const handleRemoveCredits = () => {
+    setAppliedCredits(0);
+    setCreditInput("");
+    toast({ title: "Credits removed" });
+  };
 
   const handleAddAddress = () => {
     if (!newAddr.name || !newAddr.addressLine1 || !newAddr.city || !newAddr.state || !newAddr.postalCode) {
