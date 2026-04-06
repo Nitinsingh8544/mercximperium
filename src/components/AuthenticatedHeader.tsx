@@ -275,7 +275,7 @@ const AuthenticatedHeader = () => {
               className="h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground"
             >
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-              <span className="text-xs sm:text-sm font-medium">0</span>
+              <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString()}</span>
             </Button>
 
             <Button 
