@@ -72,6 +72,7 @@ const Checkout = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
 
   const item = location.state as {
     title: string;
