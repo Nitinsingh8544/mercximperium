@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useCredits } from "@/hooks/useCredits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
