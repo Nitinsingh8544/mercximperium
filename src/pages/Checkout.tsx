@@ -223,18 +223,41 @@ const Checkout = () => {
               <h2 className="text-lg font-semibold text-foreground mb-4">Payment Method</h2>
 
               {/* Available Credit */}
-              <div className="bg-muted/50 rounded-lg p-4 mb-4">
+              <div className={`rounded-lg p-4 mb-4 ${hasCredits ? 'bg-muted/50' : 'bg-muted/30 opacity-60'}`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-foreground">Your available balance</p>
-                    <p className="text-xs text-muted-foreground">Store credit & gift cards</p>
+                    <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      <Coins className="w-4 h-4 text-primary" /> Your available credits
+                    </p>
+                    <p className="text-xs text-muted-foreground">5 credits = ₹1</p>
                   </div>
-                  <span className="text-lg font-bold text-primary">{item.currency}{availableCredit}</span>
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-primary">{credits.toLocaleString()}</span>
+                    <p className="text-xs text-muted-foreground">≈ ₹{creditsToRupees(credits).toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <Input placeholder="Enter Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} className="max-w-[200px] h-9 text-sm" />
-                  <Button variant="outline" size="sm">Apply</Button>
-                </div>
+                {hasCredits ? (
+                  appliedCredits > 0 ? (
+                    <div className="flex items-center justify-between mt-3 bg-primary/10 rounded-md px-3 py-2">
+                      <span className="text-sm text-foreground">{appliedCredits} credits applied (-₹{creditDiscount.toLocaleString()})</span>
+                      <Button variant="ghost" size="sm" className="text-destructive h-auto p-0 text-xs" onClick={handleRemoveCredits}>Remove</Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-3">
+                      <Input
+                        placeholder="Enter credits to use"
+                        type="number"
+                        value={creditInput}
+                        onChange={(e) => setCreditInput(e.target.value)}
+                        className="max-w-[200px] h-9 text-sm"
+                        max={credits}
+                      />
+                      <Button variant="outline" size="sm" onClick={handleApplyCredits}>Apply</Button>
+                    </div>
+                  )
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-2">No credits available</p>
+                )}
               </div>
 
               <p className="text-sm font-medium text-foreground mb-3">Another payment method</p>
