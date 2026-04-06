@@ -20,9 +20,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Banknote } from "lucide-react";
+import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Banknote, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useCredits } from "@/hooks/useCredits";
 
 interface Address {
   id: string;
@@ -71,6 +72,7 @@ const Checkout = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
 
   const item = location.state as {
     title: string;
@@ -88,6 +90,8 @@ const Checkout = () => {
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [promoCode, setPromoCode] = useState("");
+  const [appliedCredits, setAppliedCredits] = useState(0);
+  const [creditInput, setCreditInput] = useState("");
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState("");
@@ -114,8 +118,26 @@ const Checkout = () => {
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const itemTotal = item.price * item.quantity;
   const deliveryCharge = 0;
-  const orderTotal = itemTotal + deliveryCharge;
-  const availableCredit = 500;
+  const creditDiscount = creditsToRupees(appliedCredits);
+  const orderTotal = itemTotal + deliveryCharge - creditDiscount;
+  const hasCredits = credits > 0;
+
+  const handleApplyCredits = () => {
+    const requestedCredits = parseInt(creditInput);
+    if (isNaN(requestedCredits) || requestedCredits <= 0) {
+      toast({ title: "Please enter a valid credit amount", variant: "destructive" });
+      return;
+    }
+    const maxCreditsForOrder = Math.min(requestedCredits, credits, itemTotal * 5); // can't exceed order total
+    setAppliedCredits(maxCreditsForOrder);
+    toast({ title: `${maxCreditsForOrder} credits applied`, description: `You save ₹${creditsToRupees(maxCreditsForOrder).toLocaleString()}` });
+  };
+
+  const handleRemoveCredits = () => {
+    setAppliedCredits(0);
+    setCreditInput("");
+    toast({ title: "Credits removed" });
+  };
 
   const handleAddAddress = () => {
     if (!newAddr.name || !newAddr.addressLine1 || !newAddr.city || !newAddr.state || !newAddr.postalCode) {
@@ -130,12 +152,28 @@ const Checkout = () => {
     toast({ title: "Address added" });
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       toast({ title: "Please select a delivery address", variant: "destructive" });
       return;
     }
-    toast({ title: "Order placed successfully!", description: `Your order for ${item.title} will be delivered soon.` });
+
+    // Apply credits if any were selected
+    if (appliedCredits > 0) {
+      const success = await applyCredits(appliedCredits);
+      if (!success) {
+        toast({ title: "Failed to apply credits", variant: "destructive" });
+        return;
+      }
+    }
+
+    // Earn credits based on the final order amount (1 credit per ₹5 spent)
+    const earned = await earnCredits(orderTotal);
+
+    toast({
+      title: "Order placed successfully!",
+      description: `Your order for ${item.title} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
+    });
     navigate("/dashboard");
   };
 
@@ -185,18 +223,41 @@ const Checkout = () => {
               <h2 className="text-lg font-semibold text-foreground mb-4">Payment Method</h2>
 
               {/* Available Credit */}
-              <div className="bg-muted/50 rounded-lg p-4 mb-4">
+              <div className={`rounded-lg p-4 mb-4 ${hasCredits ? 'bg-muted/50' : 'bg-muted/30 opacity-60'}`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-foreground">Your available balance</p>
-                    <p className="text-xs text-muted-foreground">Store credit & gift cards</p>
+                    <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                      <Coins className="w-4 h-4 text-primary" /> Your available credits
+                    </p>
+                    <p className="text-xs text-muted-foreground">5 credits = ₹1</p>
                   </div>
-                  <span className="text-lg font-bold text-primary">{item.currency}{availableCredit}</span>
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-primary">{credits.toLocaleString()}</span>
+                    <p className="text-xs text-muted-foreground">≈ ₹{creditsToRupees(credits).toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <Input placeholder="Enter Code" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} className="max-w-[200px] h-9 text-sm" />
-                  <Button variant="outline" size="sm">Apply</Button>
-                </div>
+                {hasCredits ? (
+                  appliedCredits > 0 ? (
+                    <div className="flex items-center justify-between mt-3 bg-primary/10 rounded-md px-3 py-2">
+                      <span className="text-sm text-foreground">{appliedCredits} credits applied (-₹{creditDiscount.toLocaleString()})</span>
+                      <Button variant="ghost" size="sm" className="text-destructive h-auto p-0 text-xs" onClick={handleRemoveCredits}>Remove</Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-3">
+                      <Input
+                        placeholder="Enter credits to use"
+                        type="number"
+                        value={creditInput}
+                        onChange={(e) => setCreditInput(e.target.value)}
+                        className="max-w-[200px] h-9 text-sm"
+                        max={credits}
+                      />
+                      <Button variant="outline" size="sm" onClick={handleApplyCredits}>Apply</Button>
+                    </div>
+                  )
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-2">No credits available</p>
+                )}
               </div>
 
               <p className="text-sm font-medium text-foreground mb-3">Another payment method</p>
@@ -353,6 +414,12 @@ const Checkout = () => {
                   <span className="text-muted-foreground">Delivery:</span>
                   <span className="text-primary font-medium">FREE</span>
                 </div>
+                {appliedCredits > 0 && (
+                  <div className="flex justify-between text-primary">
+                    <span>Credits ({appliedCredits}):</span>
+                    <span>-{item.currency}{creditDiscount.toLocaleString()}</span>
+                  </div>
+                )}
                 <Separator />
                 <div className="flex justify-between font-bold text-base">
                   <span className="text-foreground">Order Total:</span>
