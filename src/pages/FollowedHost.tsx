@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ const FollowedHost = () => {
   const { profile } = useProfile();
   const { follows, loading, toggleFollow } = useFollows();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fullName = profile?.name || profile?.username || "there";
   const firstName = fullName.split(" ")[0];
