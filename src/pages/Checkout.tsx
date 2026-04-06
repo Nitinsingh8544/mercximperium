@@ -20,9 +20,10 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Banknote } from "lucide-react";
+import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Banknote, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useCredits } from "@/hooks/useCredits";
 
 interface Address {
   id: string;
