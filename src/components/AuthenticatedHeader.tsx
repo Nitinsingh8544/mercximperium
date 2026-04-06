@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useCredits } from "@/hooks/useCredits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
@@ -18,6 +19,7 @@ const AuthenticatedHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { credits } = useCredits();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -273,7 +275,7 @@ const AuthenticatedHeader = () => {
               className="h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground"
             >
               <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-              <span className="text-xs sm:text-sm font-medium">0</span>
+              <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString()}</span>
             </Button>
 
             <Button 
