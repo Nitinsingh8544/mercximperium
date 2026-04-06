@@ -90,6 +90,8 @@ const Checkout = () => {
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [promoCode, setPromoCode] = useState("");
+  const [appliedCredits, setAppliedCredits] = useState(0);
+  const [creditInput, setCreditInput] = useState("");
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState("");
