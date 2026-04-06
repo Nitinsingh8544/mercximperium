@@ -18,6 +18,7 @@ import {
 const AuthenticatedHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { credits } = useCredits();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
