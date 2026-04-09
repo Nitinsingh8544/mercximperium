@@ -121,7 +121,7 @@ const ShopLive = () => {
                 streamImage={currentStream.image.replace('w=400', 'w=800')}
                 streamTitle={currentStream.title}
                 streamDate={`${currentStream.viewers} viewers`}
-                products={streamProducts}
+                products={mode === "sales" ? streamProducts : []}
                 onNext={goNext}
                 onPrev={goPrev}
                 hasNext={hasNext}
@@ -130,7 +130,11 @@ const ShopLive = () => {
             </div>
 
             <div className="h-full overflow-hidden">
-              <ShopLiveChat streamId={chatStreamId} />
+              {mode === "sales" ? (
+                <ShopLiveChat streamId={chatStreamId} />
+              ) : (
+                <AuctionPanel streamId={currentStream.id} sellerName={currentStream.host} />
+              )}
             </div>
           </div>
 
