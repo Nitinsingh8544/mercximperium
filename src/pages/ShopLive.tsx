@@ -153,13 +153,17 @@ const ShopLive = () => {
             streamImage={currentStream.image.replace('w=400', 'w=800')}
             streamTitle={currentStream.title}
             streamDate={`${currentStream.viewers} viewers`}
-            products={streamProducts}
+            products={mode === "sales" ? streamProducts : []}
             onNext={goNext}
             onPrev={goPrev}
             hasNext={hasNext}
             hasPrev={hasPrev}
           />
-          <ShopLiveChat streamId={chatStreamId} />
+          {mode === "sales" ? (
+            <ShopLiveChat streamId={chatStreamId} />
+          ) : (
+            <AuctionPanel streamId={currentStream.id} sellerName={currentStream.host} />
+          )}
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
