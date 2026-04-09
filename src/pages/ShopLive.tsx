@@ -5,16 +5,18 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
+import AuctionPanel from "@/components/livestream/AuctionPanel";
 import { getStreamById as getStreamDataById } from "@/data/streamData";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Gavel } from "lucide-react";
 import { findStreamById, streamsWithMeta } from "@/lib/streamRanking";
 
 const ShopLive = () => {
   const navigate = useNavigate();
   const { streamId } = useParams();
+  const [mode, setMode] = useState<"sales" | "auction">("sales");
 
   // History stack: array of stream IDs the user has viewed
   const [history, setHistory] = useState<number[]>(() => {
