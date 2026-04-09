@@ -56,6 +56,104 @@ export type Database = {
         }
         Relationships: []
       }
+      auction_items: {
+        Row: {
+          auction_duration_seconds: number
+          auction_ends_at: string | null
+          auction_started_at: string | null
+          created_at: string
+          current_price: number
+          id: string
+          item_description: string | null
+          item_image: string | null
+          item_name: string
+          item_order: number
+          min_increment: number
+          seller_image: string | null
+          seller_name: string | null
+          starting_price: number
+          status: string
+          stream_id: number
+          updated_at: string
+          winner_user_id: string | null
+        }
+        Insert: {
+          auction_duration_seconds?: number
+          auction_ends_at?: string | null
+          auction_started_at?: string | null
+          created_at?: string
+          current_price?: number
+          id?: string
+          item_description?: string | null
+          item_image?: string | null
+          item_name: string
+          item_order?: number
+          min_increment?: number
+          seller_image?: string | null
+          seller_name?: string | null
+          starting_price?: number
+          status?: string
+          stream_id: number
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Update: {
+          auction_duration_seconds?: number
+          auction_ends_at?: string | null
+          auction_started_at?: string | null
+          created_at?: string
+          current_price?: number
+          id?: string
+          item_description?: string | null
+          item_image?: string | null
+          item_name?: string
+          item_order?: number
+          min_increment?: number
+          seller_image?: string | null
+          seller_name?: string | null
+          starting_price?: number
+          status?: string
+          stream_id?: number
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Relationships: []
+      }
+      bid_history: {
+        Row: {
+          auction_item_id: string
+          bid_amount: number
+          created_at: string
+          id: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          auction_item_id: string
+          bid_amount: number
+          created_at?: string
+          id?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          auction_item_id?: string
+          bid_amount?: number
+          created_at?: string
+          id?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_history_auction_item_id_fkey"
+            columns: ["auction_item_id"]
+            isOneToOne: false
+            referencedRelation: "auction_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cart_items: {
         Row: {
           created_at: string

@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Star, Share, MessageCircle, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Star, Share, MessageCircle, ShoppingBag, Gavel } from "lucide-react";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import MessageChatModal from "@/components/seller/MessageChatModal";
+import AuctionHistoryTab from "@/components/seller/AuctionHistoryTab";
 import { useFollows } from "@/hooks/useFollows";
 import ProductDetailModal from "@/components/livestream/ProductDetailModal";
 
@@ -141,6 +142,10 @@ const SellerProfile = () => {
                   <Star className="w-4 h-4 mr-2" />
                   Reviews
                 </TabsTrigger>
+                <TabsTrigger value="auctions" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                  <Gavel className="w-4 h-4 mr-2" />
+                  Auctions
+                </TabsTrigger>
                 <TabsTrigger value="about" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   About
                 </TabsTrigger>
@@ -225,6 +230,10 @@ const SellerProfile = () => {
                     </div>
                   ))}
                 </div>
+              </TabsContent>
+
+              <TabsContent value="auctions">
+                <AuctionHistoryTab sellerName={decodedName} />
               </TabsContent>
 
               <TabsContent value="about">

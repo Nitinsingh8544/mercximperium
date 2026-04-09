@@ -5,16 +5,18 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import FeaturedCreators from "@/components/livestream/FeaturedCreators";
 import ShopLiveVideo from "@/components/livestream/ShopLiveVideo";
 import ShopLiveChat from "@/components/livestream/ShopLiveChat";
+import AuctionPanel from "@/components/livestream/AuctionPanel";
 import { getStreamById as getStreamDataById } from "@/data/streamData";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Gavel } from "lucide-react";
 import { findStreamById, streamsWithMeta } from "@/lib/streamRanking";
 
 const ShopLive = () => {
   const navigate = useNavigate();
   const { streamId } = useParams();
+  const [mode, setMode] = useState<"sales" | "auction">("sales");
 
   // History stack: array of stream IDs the user has viewed
   const [history, setHistory] = useState<number[]>(() => {
@@ -71,7 +73,7 @@ const ShopLive = () => {
       <AuthenticatedHeader />
       
       <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6 pb-24 lg:pb-8">
-        <div className="max-w-[1600px] mx-auto mb-3">
+        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
@@ -81,6 +83,28 @@ const ShopLive = () => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
+
+          {/* Mode toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <Button
+              variant={mode === "sales" ? "default" : "ghost"}
+              size="sm"
+              className={`h-8 text-xs gap-1.5 ${mode === "sales" ? "bg-primary text-primary-foreground" : ""}`}
+              onClick={() => setMode("sales")}
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Live Sales
+            </Button>
+            <Button
+              variant={mode === "auction" ? "default" : "ghost"}
+              size="sm"
+              className={`h-8 text-xs gap-1.5 ${mode === "auction" ? "bg-secondary text-secondary-foreground" : ""}`}
+              onClick={() => setMode("auction")}
+            >
+              <Gavel className="h-3.5 w-3.5" />
+              Auction
+            </Button>
+          </div>
         </div>
         
         <div className="max-w-[1600px] mx-auto">
@@ -97,7 +121,7 @@ const ShopLive = () => {
                 streamImage={currentStream.image.replace('w=400', 'w=800')}
                 streamTitle={currentStream.title}
                 streamDate={`${currentStream.viewers} viewers`}
-                products={streamProducts}
+                products={mode === "sales" ? streamProducts : []}
                 onNext={goNext}
                 onPrev={goPrev}
                 hasNext={hasNext}
@@ -106,7 +130,11 @@ const ShopLive = () => {
             </div>
 
             <div className="h-full overflow-hidden">
-              <ShopLiveChat streamId={chatStreamId} />
+              {mode === "sales" ? (
+                <ShopLiveChat streamId={chatStreamId} />
+              ) : (
+                <AuctionPanel streamId={currentStream.id} sellerName={currentStream.host} />
+              )}
             </div>
           </div>
 
@@ -125,13 +153,17 @@ const ShopLive = () => {
             streamImage={currentStream.image.replace('w=400', 'w=800')}
             streamTitle={currentStream.title}
             streamDate={`${currentStream.viewers} viewers`}
-            products={streamProducts}
+            products={mode === "sales" ? streamProducts : []}
             onNext={goNext}
             onPrev={goPrev}
             hasNext={hasNext}
             hasPrev={hasPrev}
           />
-          <ShopLiveChat streamId={chatStreamId} />
+          {mode === "sales" ? (
+            <ShopLiveChat streamId={chatStreamId} />
+          ) : (
+            <AuctionPanel streamId={currentStream.id} sellerName={currentStream.host} />
+          )}
           <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
           <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
