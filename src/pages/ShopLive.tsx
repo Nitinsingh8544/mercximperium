@@ -73,7 +73,7 @@ const ShopLive = () => {
       <AuthenticatedHeader />
       
       <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6 pb-24 lg:pb-8">
-        <div className="max-w-[1600px] mx-auto mb-3">
+        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
@@ -83,6 +83,28 @@ const ShopLive = () => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
+
+          {/* Mode toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <Button
+              variant={mode === "sales" ? "default" : "ghost"}
+              size="sm"
+              className={`h-8 text-xs gap-1.5 ${mode === "sales" ? "bg-primary text-primary-foreground" : ""}`}
+              onClick={() => setMode("sales")}
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Live Sales
+            </Button>
+            <Button
+              variant={mode === "auction" ? "default" : "ghost"}
+              size="sm"
+              className={`h-8 text-xs gap-1.5 ${mode === "auction" ? "bg-secondary text-secondary-foreground" : ""}`}
+              onClick={() => setMode("auction")}
+            >
+              <Gavel className="h-3.5 w-3.5" />
+              Auction
+            </Button>
+          </div>
         </div>
         
         <div className="max-w-[1600px] mx-auto">
