@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useFollows } from "@/hooks/useFollows";
 import { allStreams } from "@/data/streamData";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UpcomingStreamModal from "./UpcomingStreamModal";
-import SellerProfileModal from "@/components/seller/SellerProfileModal";
 
 interface CreatorStatus {
   name: string;
@@ -87,7 +87,7 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
         image: creator.avatar || stream?.image || "",
       });
     } else {
-      setSellerProfile({ name: creator.name, image: creator.avatar });
+      navigate(`/seller/${encodeURIComponent(creator.name)}`);
     }
   };
 
@@ -195,12 +195,6 @@ const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsP
         stream={upcomingStream}
       />
 
-      <SellerProfileModal
-        isOpen={!!sellerProfile}
-        onClose={() => setSellerProfile(null)}
-        sellerName={sellerProfile?.name || ""}
-        sellerImage={sellerProfile?.image}
-      />
     </>
   );
 };

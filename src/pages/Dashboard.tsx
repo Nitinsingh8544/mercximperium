@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import SellerProfileModal from "@/components/seller/SellerProfileModal";
+
 import { useProfile } from "@/hooks/useProfile";
 
 
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   const handleSellerClick = (e: React.MouseEvent, host: string) => {
     e.stopPropagation();
-    setSelectedSeller({ name: host });
+    navigate(`/seller/${encodeURIComponent(host)}`);
   };
 
   return (
@@ -148,15 +148,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Seller Profile Modal */}
-      {selectedSeller && (
-        <SellerProfileModal
-          isOpen={!!selectedSeller}
-          onClose={() => setSelectedSeller(null)}
-          sellerName={selectedSeller.name}
-          sellerImage={selectedSeller.image}
-        />
-      )}
     </div>
   );
 };

@@ -1,11 +1,11 @@
 import { useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Star, Volume2, VolumeX, Camera, Share2, Grid3X3, Timer, Play, Pause, Maximize, Minimize, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import SellerProfileModal from "@/components/seller/SellerProfileModal";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useToast } from "@/hooks/use-toast";
@@ -96,7 +96,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <div
               className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => setIsSellerProfileOpen(true)}
+              onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}
             >
               <Avatar className="h-10 w-10 border-2 border-secondary">
                 <AvatarImage src={sellerInfo.image} />
@@ -268,13 +268,6 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         </DialogContent>
       </Dialog>
 
-      <SellerProfileModal
-        isOpen={isSellerProfileOpen}
-        onClose={() => setIsSellerProfileOpen(false)}
-        sellerName={sellerInfo.name}
-        sellerImage={sellerInfo.image}
-        sellerRating={sellerInfo.rating}
-      />
     </>
   );
 };
