@@ -240,18 +240,22 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
 
           {/* Products list */}
           {products.length > 0 && (
-            <div className="mt-3 relative group/products">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
-                onClick={() => productsScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            <div className="mt-3 relative group/products flex items-center gap-1">
+              {showScrollButtons && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                  onClick={() => productsScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              )}
               <div
                 ref={productsScrollRef}
-                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
+                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth flex-1 min-w-0"
+                onLoad={checkScrollOverflow}
+                onResize={checkScrollOverflow}
               >
                 {products.map((product) => (
                   <div
@@ -264,6 +268,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                         src={product.image}
                         alt={product.title}
                         className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-200"
+                        onLoad={checkScrollOverflow}
                       />
                     </div>
                     <p className="text-[10px] text-foreground mt-1 truncate">{product.title}</p>
@@ -282,14 +287,16 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                   <p className="text-[10px] text-transparent">&nbsp;</p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
-                onClick={() => productsScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {showScrollButtons && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                  onClick={() => productsScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           )}
         </div>
