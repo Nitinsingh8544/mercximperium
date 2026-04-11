@@ -18,11 +18,15 @@ const ShopLive = () => {
   const { streamId } = useParams();
   const [mode, setMode] = useState<"sales" | "auction">("sales");
 
+  // Redirect to landing if no streamId
+  if (!streamId) {
+    navigate("/shop-live", { replace: true });
+  }
+
+  const initialId = streamId ? Number(streamId) : streamsWithMeta[0]?.id || 1;
+
   // History stack: array of stream IDs the user has viewed
-  const [history, setHistory] = useState<number[]>(() => {
-    const initialId = streamId ? Number(streamId) : streamsWithMeta[0]?.id || 1;
-    return [initialId];
-  });
+  const [history, setHistory] = useState<number[]>([initialId]);
   // Pointer into the history stack (current position)
   const [historyIndex, setHistoryIndex] = useState(0);
 
@@ -30,7 +34,6 @@ const ShopLive = () => {
   const currentStream = useMemo(() => {
     const found = findStreamById(currentStreamId);
     if (found) return found;
-    // Fallback to first stream
     return streamsWithMeta[0];
   }, [currentStreamId]);
 
