@@ -41,12 +41,13 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [progressPct, setProgressPct] = useState(33);
+  const [isLive, setIsLive] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const productsScrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollButtons, setShowScrollButtons] = useState(false);
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
-
-  const viewerCount = streamDate ? parseInt(streamDate) || 549 : 549;
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
