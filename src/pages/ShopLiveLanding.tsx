@@ -1,8 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { useProfile } from "@/hooks/useProfile";
 import { useFollows } from "@/hooks/useFollows";
 import { streamsWithMeta, exploreStreams, recommendedPool, StreamMeta } from "@/lib/streamRanking";
 import { useMemo, useState } from "react";
@@ -17,7 +16,6 @@ const allAvailableStreams: StreamMeta[] = [
   ...exploreStreams,
 ];
 
-// Deduplicate by id
 const uniqueStreams = allAvailableStreams.filter(
   (s, i, arr) => arr.findIndex((x) => x.id === s.id) === i
 );
@@ -36,18 +34,14 @@ const ShopLiveLanding = () => {
     [follows]
   );
 
-  // Extract unique categories and product types
   const categories = useMemo(() => {
-    const cats = [...new Set(uniqueStreams.map((s) => s.category))].sort();
-    return cats;
+    return [...new Set(uniqueStreams.map((s) => s.category))].sort();
   }, []);
 
   const productTypes = useMemo(() => {
-    const types = [...new Set(uniqueStreams.map((s) => s.productType))].sort();
-    return types;
+    return [...new Set(uniqueStreams.map((s) => s.productType))].sort();
   }, []);
 
-  // Filter and sort streams
   const { followedStreams, otherStreams } = useMemo(() => {
     let filtered = uniqueStreams.filter((s) => {
       const matchesSearch =
@@ -60,7 +54,6 @@ const ShopLiveLanding = () => {
       return matchesSearch && matchesCategory && matchesType;
     });
 
-    // Sort
     if (sortBy === "viewers") {
       filtered.sort((a, b) => b.viewers - a.viewers);
     } else if (sortBy === "az") {
@@ -142,151 +135,127 @@ const ShopLiveLanding = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
-        {/* Mobile nav */}
-        <div className="flex overflow-x-auto gap-2 pb-3 mb-4 lg:hidden scrollbar-hide -mx-3 px-3">
-          <Link to="/dashboard" className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80">Auction</Link>
-          <Link to="/shop-live" className="shrink-0 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap">Shop Live</Link>
-          <Link to="/followed" className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80">Followed Host</Link>
-          <Link to="/browse" className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80">Browse Categories</Link>
+        {/* Search & Filter Bar */}
+        <div className="mb-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search streams by name, seller, or tags..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-card border-border"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              )}
+            </div>
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="gap-1.5 shrink-0"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span className="hidden sm:inline">Filters</span>
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+          </div>
+
+          {showFilters && (
+            <div className="flex flex-wrap items-center gap-2 p-3 bg-card rounded-lg border border-border">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-[150px] sm:w-[180px] h-9 text-xs sm:text-sm">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat} className="capitalize">
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedProductType} onValueChange={setSelectedProductType}>
+                <SelectTrigger className="w-[150px] sm:w-[180px] h-9 text-xs sm:text-sm">
+                  <SelectValue placeholder="Item Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Items</SelectItem>
+                  {productTypes.map((type) => (
+                    <SelectItem key={type} value={type} className="capitalize">
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[140px] sm:w-[160px] h-9 text-xs sm:text-sm">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewers">Most Viewers</SelectItem>
+                  <SelectItem value="az">A–Z</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {activeFilterCount > 0 && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs h-9 text-muted-foreground hover:text-foreground">
+                  <X className="w-3.5 h-3.5 mr-1" />
+                  Clear all
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-          {/* Sidebar - Desktop */}
-          <aside className="hidden lg:block lg:w-56 xl:w-64 shrink-0">
-            <div className="space-y-2 sticky top-24">
-              <Link to="/dashboard" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">Auction</Link>
-              <Link to="/shop-live" className="block px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm">Shop Live</Link>
-              <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">Followed Host</Link>
-              <Link to="/browse" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">Browse Categories</Link>
-            </div>
-          </aside>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Search & Filter Bar */}
-            <div className="mb-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search streams by name, seller, or tags..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-card border-border"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2"
-                    >
-                      <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-                    </button>
-                  )}
-                </div>
-                <Button
-                  variant={showFilters ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="gap-1.5 shrink-0"
-                >
-                  <SlidersHorizontal className="w-4 h-4" />
-                  <span className="hidden sm:inline">Filters</span>
-                  {activeFilterCount > 0 && (
-                    <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
-                      {activeFilterCount}
-                    </Badge>
-                  )}
-                </Button>
-              </div>
-
-              {/* Expandable Filters */}
-              {showFilters && (
-                <div className="flex flex-wrap items-center gap-2 p-3 bg-card rounded-lg border border-border">
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="w-[150px] sm:w-[180px] h-9 text-xs sm:text-sm">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat} className="capitalize">
-                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={selectedProductType} onValueChange={setSelectedProductType}>
-                    <SelectTrigger className="w-[150px] sm:w-[180px] h-9 text-xs sm:text-sm">
-                      <SelectValue placeholder="Item Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Items</SelectItem>
-                      {productTypes.map((type) => (
-                        <SelectItem key={type} value={type} className="capitalize">
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-[140px] sm:w-[160px] h-9 text-xs sm:text-sm">
-                      <SelectValue placeholder="Sort by" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="viewers">Most Viewers</SelectItem>
-                      <SelectItem value="az">A–Z</SelectItem>
-                      <SelectItem value="newest">Newest</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {activeFilterCount > 0 && (
-                    <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs h-9 text-muted-foreground hover:text-foreground">
-                      <X className="w-3.5 h-3.5 mr-1" />
-                      Clear all
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Followed Sellers' Streams */}
-            {followedStreams.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
-                  From Sellers You Follow
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-                  {followedStreams.map((stream) => (
-                    <StreamCard key={stream.id} stream={stream} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* All Live Streams */}
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
-                {followedStreams.length > 0 ? "Discover More" : "Live Now"}
-              </h2>
-              {otherStreams.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
-                  {otherStreams.map((stream) => (
-                    <StreamCard key={stream.id} stream={stream} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Filter className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">No streams match your filters.</p>
-                  <Button variant="link" size="sm" onClick={clearFilters} className="mt-1">
-                    Clear filters
-                  </Button>
-                </div>
-              )}
+        {/* Followed Sellers' Streams */}
+        {followedStreams.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
+              From Sellers You Follow
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+              {followedStreams.map((stream) => (
+                <StreamCard key={stream.id} stream={stream} />
+              ))}
             </div>
           </div>
+        )}
+
+        {/* All Live Streams */}
+        <div>
+          <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
+            {followedStreams.length > 0 ? "Discover More" : "Live Now"}
+          </h2>
+          {otherStreams.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
+              {otherStreams.map((stream) => (
+                <StreamCard key={stream.id} stream={stream} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <Filter className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p className="text-sm">No streams match your filters.</p>
+              <Button variant="link" size="sm" onClick={clearFilters} className="mt-1">
+                Clear filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
