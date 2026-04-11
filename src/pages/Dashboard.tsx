@@ -10,7 +10,7 @@ import { useProfile } from "@/hooks/useProfile";
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
-  const [selectedSeller, setSelectedSeller] = useState<{ name: string; image?: string } | null>(null);
+  
   
   // Extract first name only
   const fullName = profile?.name || profile?.username || "there";
