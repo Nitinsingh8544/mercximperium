@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, Volume2, VolumeX, Camera, Share2, Grid3X3, Timer, Play, Pause, Maximize, Minimize, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Volume2, VolumeX, Share2, Play, Pause, Maximize, Minimize, ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
@@ -42,9 +42,13 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     name: "RB CRIMSON JORDAN RETRO 3 SZ: 14",
     description: "USED REP BOX AS-482",
     image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+    itemNumber: "03",
   };
 
   const following = isFollowing(sellerInfo.name);
+  const estimatedINR = (currentBid * 93.1).toFixed(2);
+  const nextBid = currentBid + 5;
+  const nextBidINR = (nextBid * 93.1).toFixed(2);
 
   const handleBid = async (amount: number) => {
     const result = await placeBid({
@@ -89,30 +93,42 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
   return (
     <>
-      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-card border border-border">
-        {/* Video Area */}
-        <div className="relative aspect-video bg-gradient-to-br from-muted to-card">
-          {/* Streamer Info Overlay */}
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-black flex flex-col h-full">
+        {/* Video Area - fills available space */}
+        <div className="relative flex-1 min-h-0 bg-black">
+          {/* Video/Image */}
+          <div className="absolute inset-0">
+            <img
+              src={itemInfo.image}
+              alt="Product showcase"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Streamer Info Overlay - top left */}
+          <div className="absolute top-4 left-4 z-10">
             <div
               className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}
             >
-              <Avatar className="h-10 w-10 border-2 border-secondary">
+              <Avatar className="h-10 w-10 border-2 border-yellow-400">
                 <AvatarImage src={sellerInfo.image} />
                 <AvatarFallback>SS</AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-foreground">{sellerInfo.name}</p>
+                <p className="font-semibold text-white text-sm">{sellerInfo.name}</p>
                 <div className="flex items-center gap-1 text-sm">
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  <span className="text-muted-foreground">{sellerInfo.rating}</span>
+                  <span className="text-white/80">{sellerInfo.rating}</span>
                 </div>
               </div>
               <Button
-                variant={following ? "outline" : "secondary"}
                 size="sm"
-                className="ml-2"
+                className={`ml-2 rounded-full text-xs font-semibold ${
+                  following
+                    ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
+                    : "bg-yellow-400 text-black hover:bg-yellow-500"
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleFollow(sellerInfo.name, "auction");
@@ -121,22 +137,19 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                 {following ? "Following" : "Follow"}
               </Button>
             </div>
+          </div>
 
-            {/* Live Badge & Viewers */}
-            <div className="flex items-center gap-3">
-              <Badge variant="destructive" className="animate-pulse">
-                🔴 LIVE
-              </Badge>
-              <div className="bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
-                👁 1,055
-              </div>
+          {/* Viewers count - top right */}
+          <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5">
+              👍 38
             </div>
           </div>
 
           {/* Left Arrow */}
           {hasPrev && (
             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-              <Button variant="outline" size="icon" className="h-10 w-10 bg-card/80 backdrop-blur-sm border-border rounded-full" onClick={onPrev}>
+              <Button variant="ghost" size="icon" className="h-10 w-10 bg-black/40 backdrop-blur-sm rounded-full text-white hover:bg-black/60 hover:text-white" onClick={onPrev}>
                 <ChevronLeft className="h-5 w-5" />
               </Button>
             </div>
@@ -144,92 +157,92 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
           {/* Right Arrow */}
           {hasNext && (
-            <div className="absolute right-16 top-1/2 -translate-y-1/2 z-10">
-              <Button variant="outline" size="icon" className="h-10 w-10 bg-card/80 backdrop-blur-sm border-border rounded-full" onClick={onNext}>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+              <Button variant="ghost" size="icon" className="h-10 w-10 bg-black/40 backdrop-blur-sm rounded-full text-white hover:bg-black/60 hover:text-white" onClick={onNext}>
                 <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
           )}
 
-          {/* Video Controls Overlay */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2">
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={() => setIsPlaying(!isPlaying)}>
-              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          {/* Video Controls - right side vertical */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full" onClick={() => setIsMuted(!isMuted)}>
+              {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
             </Button>
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={() => setIsMuted(!isMuted)}>
-              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full">
+              <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-              <Camera className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full">
+              <Copy className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border">
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm border-border" onClick={toggleFullscreen}>
-              {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-            </Button>
-          </div>
-
-          {/* Placeholder for video */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img
-              src={itemInfo.image}
-              alt="Product showcase"
-              className="w-full h-full object-cover"
-            />
           </div>
 
           {/* Paused overlay */}
           {!isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-[5]">
-              <Button variant="ghost" size="icon" className="h-16 w-16 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(true)}>
-                <Play className="h-8 w-8 text-foreground" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-[5]">
+              <Button variant="ghost" size="icon" className="h-16 w-16 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 text-white hover:text-white" onClick={() => setIsPlaying(true)}>
+                <Play className="h-8 w-8" />
               </Button>
             </div>
           )}
 
           {/* Current Winner Banner */}
-          <div className="absolute bottom-20 left-4 bg-card/90 backdrop-blur-sm px-3 py-1 rounded-lg">
-            <span className="text-sm">
-              <span className="font-semibold text-foreground">kingd72</span>
-              <span className="text-secondary font-bold ml-1">is Winning!</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Product Info Bar */}
-        <div className="p-4 bg-gradient-to-r from-card to-muted border-t border-border">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex-1">
-              <h3 className="font-bold text-foreground text-lg">{itemInfo.name}</h3>
-              <p className="text-muted-foreground text-sm">{itemInfo.description}</p>
-              <p className="text-muted-foreground text-sm">34 Bids</p>
+          <div className="absolute bottom-[120px] left-4 z-10">
+            <div className="flex items-center gap-2 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+              <Avatar className="h-6 w-6">
+                <AvatarFallback className="text-xs bg-purple-500 text-white">K</AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-white">
+                <span className="font-semibold">kingd72</span>
+                <span className="text-yellow-400 font-bold ml-1">is Winning!</span>
+              </span>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-bold text-secondary">${currentBid}</p>
-              <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <Timer className="h-3 w-3" />
-                <span>00:00</span>
+          </div>
+
+          {/* Product Info Overlay - bottom of video */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8">
+            <div className="flex items-end gap-3 px-4 pb-2">
+              {/* Product thumbnail */}
+              <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
+                <img src={itemInfo.image} alt={itemInfo.name} className="w-full h-full object-cover" />
+              </div>
+              {/* Product details */}
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-semibold text-sm leading-tight">
+                  {itemInfo.itemNumber}. {itemInfo.name}
+                </p>
+                <p className="text-white/60 text-xs">{itemInfo.description}</p>
+                <p className="text-white/50 text-xs">34 Bids</p>
+                <p className="text-white/40 text-xs">Shipping + Taxes are extra</p>
+              </div>
+              {/* Price */}
+              <div className="text-right flex-shrink-0">
+                <p className="text-white font-bold text-lg">${currentBid}</p>
+                <p className="text-white/60 text-xs">est. ₹{estimatedINR}</p>
+                <p className="text-yellow-400 text-xs font-medium">00:09</p>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-shrink-0"
-              onClick={() => setIsCustomBidOpen(true)}
-            >
-              Custom
-            </Button>
-            <Button
-              className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg"
-              onClick={() => handleBid(currentBid + 5)}
-            >
-              Bid: ${currentBid + 5}
-            </Button>
-          </div>
+        {/* Bid Buttons - outside video, at bottom */}
+        <div className="flex gap-2 p-3 bg-black">
+          <Button
+            variant="outline"
+            className="flex-shrink-0 border-white/20 text-white bg-transparent hover:bg-white/10 hover:text-white rounded-full px-5"
+            onClick={() => setIsCustomBidOpen(true)}
+          >
+            Custom
+          </Button>
+          <Button
+            className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-base rounded-full"
+            onClick={() => handleBid(nextBid)}
+          >
+            <span className="flex flex-col items-center leading-tight">
+              <span>Bid: ${nextBid}</span>
+              <span className="text-[10px] font-normal opacity-70">est. ₹{nextBidINR}</span>
+            </span>
+          </Button>
         </div>
       </div>
 
@@ -241,7 +254,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Current highest bid: <span className="font-bold text-secondary">${currentBid}</span>
+              Current highest bid: <span className="font-bold text-yellow-400">${currentBid}</span>
             </p>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Your bid amount ($)</label>
@@ -261,13 +274,12 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+            <Button onClick={handleCustomBidSubmit} className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold">
               Place Bid
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </>
   );
 };
