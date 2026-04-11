@@ -9,7 +9,7 @@ import { Star, Minus, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
 import { useSellerReviews } from "@/hooks/useSellerReviews";
-import ReviewForm from "@/components/seller/ReviewForm";
+
 import { formatDistanceToNow } from "date-fns";
 
 interface Product {
