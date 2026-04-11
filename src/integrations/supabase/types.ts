@@ -277,6 +277,36 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          rating: number
+          review_text: string
+          seller_name: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating: number
+          review_text: string
+          seller_name: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: number
+          review_text?: string
+          seller_name?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           balance: number
