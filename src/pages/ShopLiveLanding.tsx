@@ -5,7 +5,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { useFollows } from "@/hooks/useFollows";
 import { streamsWithMeta, exploreStreams, recommendedPool, StreamMeta } from "@/lib/streamRanking";
 import { useMemo, useState } from "react";
-import { Search, Filter, X, SlidersHorizontal } from "lucide-react";
+import { Search, Filter, X, SlidersHorizontal, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -135,6 +135,19 @@ const ShopLiveLanding = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
+        {/* Back button */}
+        <div className="mb-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2 text-foreground hover:bg-muted"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+        </div>
+
         {/* Search & Filter Bar */}
         <div className="mb-4 space-y-3">
           <div className="flex items-center gap-2">
