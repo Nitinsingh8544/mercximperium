@@ -11,6 +11,9 @@ import MessageChatModal from "@/components/seller/MessageChatModal";
 import AuctionHistoryTab from "@/components/seller/AuctionHistoryTab";
 import { useFollows } from "@/hooks/useFollows";
 import ProductDetailModal from "@/components/livestream/ProductDetailModal";
+import { useSellerReviews } from "@/hooks/useSellerReviews";
+import ReviewForm from "@/components/seller/ReviewForm";
+import { formatDistanceToNow } from "date-fns";
 
 const sellerProducts = [
   { id: 1, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", title: "Premium Running Sneakers", price: 120, originalPrice: 160, currency: "$" },
@@ -41,6 +44,7 @@ const SellerProfile = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<typeof sellerProducts[0] | null>(null);
+  const { reviews, submitting, submitReview, avgRating, ratingDistribution, totalReviews } = useSellerReviews(decodedName);
 
   const sellerInitial = decodedName.charAt(0).toUpperCase();
 
@@ -182,22 +186,16 @@ const SellerProfile = () => {
                   {/* Summary */}
                   <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
                     <div className="text-center">
-                      <p className="text-3xl font-bold text-foreground">4.8</p>
+                      <p className="text-3xl font-bold text-foreground">{avgRating || "0"}</p>
                       <div className="flex items-center gap-0.5 mt-1">
                         {[1, 2, 3, 4, 5].map((s) => (
-                          <Star key={s} className={`h-4 w-4 ${s <= 4 ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
+                          <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">256 reviews</p>
+                      <p className="text-xs text-muted-foreground mt-1">{totalReviews} reviews</p>
                     </div>
                     <div className="flex-1 space-y-1">
-                      {[
-                        { stars: 5, pct: 78 },
-                        { stars: 4, pct: 15 },
-                        { stars: 3, pct: 5 },
-                        { stars: 2, pct: 1 },
-                        { stars: 1, pct: 1 },
-                      ].map((r) => (
+                      {ratingDistribution.map((r) => (
                         <div key={r.stars} className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground w-3">{r.stars}</span>
                           <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
@@ -209,26 +207,33 @@ const SellerProfile = () => {
                     </div>
                   </div>
 
+                  {/* Review Form */}
+                  <ReviewForm onSubmit={submitReview} submitting={submitting} />
+
                   {/* Individual reviews */}
-                  {sellerReviews.map((review) => (
+                  {reviews.map((review) => (
                     <div key={review.id} className="p-4 border border-border rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <Avatar className="h-8 w-8">
-                            <AvatarFallback className="bg-muted text-muted-foreground text-xs">{review.user.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="bg-muted text-muted-foreground text-xs">{(review.username || "U").charAt(0)}</AvatarFallback>
                           </Avatar>
-                          <span className="font-medium text-foreground text-sm">{review.user}</span>
+                          <span className="font-medium text-foreground text-sm">{review.username || "User"}</span>
                         </div>
-                        <span className="text-xs text-muted-foreground">{review.date}</span>
+                        <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}</span>
                       </div>
                       <div className="flex items-center gap-0.5 mb-2">
                         {[1, 2, 3, 4, 5].map((s) => (
                           <Star key={s} className={`h-3 w-3 ${s <= review.rating ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground">{review.text}</p>
+                      <p className="text-sm text-muted-foreground">{review.review_text}</p>
                     </div>
                   ))}
+
+                  {reviews.length === 0 && (
+                    <p className="text-center text-muted-foreground text-sm py-8">No reviews yet. Be the first to review!</p>
+                  )}
                 </div>
               </TabsContent>
 
