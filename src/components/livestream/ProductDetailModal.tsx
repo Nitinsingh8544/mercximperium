@@ -4,9 +4,13 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Minus, Plus } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Star, Minus, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
+import { useSellerReviews } from "@/hooks/useSellerReviews";
+import ReviewForm from "@/components/seller/ReviewForm";
+import { formatDistanceToNow } from "date-fns";
 
 interface Product {
   id: number;
@@ -118,10 +122,11 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("Black");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showReviews, setShowReviews] = useState(false);
+  const { reviews, submitting, submitReview, avgRating, ratingDistribution, totalReviews } = useSellerReviews(sellerName);
 
   if (!product) return null;
 
@@ -250,118 +255,168 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
             </div>
           </div>
 
-          {/* Right: Details */}
-          <div className="p-6 space-y-4">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground leading-tight">{product.title}</h2>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sold by <span className="text-primary font-medium">{sellerName}</span>
-              </p>
-              <div className="flex items-center gap-1 mt-1">
-                {[1, 2, 3, 4].map((i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                ))}
-                <Star className="h-3.5 w-3.5 fill-muted text-muted" />
-                <span className="text-xs text-muted-foreground ml-1">(128)</span>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div>
-              <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
-            </div>
-
-            <Separator />
-
-            {/* Color selector */}
-            <div>
-              <span className="text-sm font-medium text-foreground">Color: <span className="font-normal text-muted-foreground">{selectedColor}</span></span>
-              <div className="flex items-center gap-2 mt-2">
-                {variantImages.map((color) => (
-                  <button
-                    key={color.name}
-                    className={`w-7 h-7 rounded-full ${color.swatch} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
-                    onClick={() => { setSelectedColor(color.name); setQuantity(1); setCurrentImageIndex(0); }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Size selector */}
-            <div>
-              <span className="text-sm font-medium text-foreground">Size:</span>
-              <div className="flex items-center gap-2 mt-2">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    className={`px-3 py-1.5 text-xs rounded-md border transition-all ${
-                      selectedSize === size
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-foreground hover:border-primary"
-                    }`}
-                    onClick={() => { setSelectedSize(size); setQuantity(1); }}
-                  >
-                    {size}
+          {/* Right: Details or Reviews */}
+          <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+            {showReviews ? (
+              <>
+                <div className="flex items-center gap-2 mb-2">
+                  <button onClick={() => setShowReviews(false)} className="text-muted-foreground hover:text-foreground">
+                    <ArrowLeft className="h-4 w-4" />
                   </button>
-                ))}
-              </div>
-            </div>
+                  <h3 className="text-lg font-semibold text-foreground">Reviews</h3>
+                </div>
 
-            {/* Removed trust badges section */}
-
-            <Separator />
-
-            {/* Quantity - dynamic based on stock */}
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-foreground font-medium">Quantity:</span>
-              {stock === 0 ? (
-                <span className="text-sm text-destructive font-medium">Out of Stock</span>
-              ) : (
-                <>
-                  <div className="flex items-center border border-border rounded-md">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-none"
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </Button>
-                    <span className="w-8 text-center text-sm font-medium text-foreground">{quantity}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-none"
-                      onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
-                      disabled={quantity >= maxQuantity}
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </Button>
+                {/* Rating summary */}
+                <div className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-foreground">{avgRating || "0"}</p>
+                    <div className="flex items-center gap-0.5 mt-1">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className={`h-3 w-3 ${s <= Math.round(avgRating) ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{totalReviews} reviews</p>
                   </div>
-                  <span className="text-xs text-muted-foreground">({stock} available)</span>
-                </>
-              )}
-            </div>
+                  <div className="flex-1 space-y-0.5">
+                    {ratingDistribution.map((r) => (
+                      <div key={r.stars} className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-muted-foreground w-2">{r.stars}</span>
+                        <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
+                          <div className="h-full bg-secondary rounded-full" style={{ width: `${r.pct}%` }} />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground w-6">{r.pct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-            <div className="space-y-2 pt-2">
-              <Button
-                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold"
-                onClick={handleAddToCart}
-                disabled={stock === 0}
-              >
-                Add to Cart
-              </Button>
-              <Button
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-                onClick={handleBuyNow}
-                disabled={stock === 0}
-              >
-                Buy Now
-              </Button>
-            </div>
+                {/* Review Form */}
+                <ReviewForm onSubmit={submitReview} submitting={submitting} />
+
+                {/* Reviews list */}
+                <div className="space-y-3">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="p-3 border border-border rounded-lg">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">{(review.username || "U").charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium text-foreground text-xs">{review.username || "User"}</span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">{formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}</span>
+                      </div>
+                      <div className="flex items-center gap-0.5 mb-1">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} className={`h-2.5 w-2.5 ${s <= review.rating ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{review.review_text}</p>
+                    </div>
+                  ))}
+                  {reviews.length === 0 && (
+                    <p className="text-center text-muted-foreground text-xs py-6">No reviews yet. Be the first!</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground leading-tight">{product.title}</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Sold by <span className="text-primary font-medium">{sellerName}</span>
+                  </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                    <Star className="h-3.5 w-3.5 fill-muted text-muted" />
+                    <span className="text-xs text-muted-foreground ml-1">({totalReviews})</span>
+                    <button
+                      onClick={() => setShowReviews(true)}
+                      className="text-xs text-primary font-medium ml-1 hover:underline"
+                    >
+                      Reviews
+                    </button>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <span className="text-2xl font-bold text-foreground">{product.currency}{product.price.toLocaleString()}</span>
+                </div>
+
+                <Separator />
+
+                {/* Color selector */}
+                <div>
+                  <span className="text-sm font-medium text-foreground">Color: <span className="font-normal text-muted-foreground">{selectedColor}</span></span>
+                  <div className="flex items-center gap-2 mt-2">
+                    {variantImages.map((color) => (
+                      <button
+                        key={color.name}
+                        className={`w-7 h-7 rounded-full ${color.swatch} ${selectedColor === color.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""} transition-all`}
+                        onClick={() => { setSelectedColor(color.name); setQuantity(1); setCurrentImageIndex(0); }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Size selector */}
+                <div>
+                  <span className="text-sm font-medium text-foreground">Size:</span>
+                  <div className="flex items-center gap-2 mt-2">
+                    {sizes.map((size) => (
+                      <button
+                        key={size}
+                        className={`px-3 py-1.5 text-xs rounded-md border transition-all ${
+                          selectedSize === size
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background text-foreground hover:border-primary"
+                        }`}
+                        onClick={() => { setSelectedSize(size); setQuantity(1); }}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Quantity */}
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-foreground font-medium">Quantity:</span>
+                  {stock === 0 ? (
+                    <span className="text-sm text-destructive font-medium">Out of Stock</span>
+                  ) : (
+                    <>
+                      <div className="flex items-center border border-border rounded-md">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1}>
+                          <Minus className="h-3.5 w-3.5" />
+                        </Button>
+                        <span className="w-8 text-center text-sm font-medium text-foreground">{quantity}</span>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none" onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))} disabled={quantity >= maxQuantity}>
+                          <Plus className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      <span className="text-xs text-muted-foreground">({stock} available)</span>
+                    </>
+                  )}
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold" onClick={handleAddToCart} disabled={stock === 0}>
+                    Add to Cart
+                  </Button>
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={handleBuyNow} disabled={stock === 0}>
+                    Buy Now
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </DialogContent>
