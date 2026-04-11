@@ -40,7 +40,7 @@ export const exploreStreams: StreamMeta[] = [
   { id: 204, host: "homedesign", title: "Home Decor Inspiration 🏠", viewers: 198, image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400", category: "home", tags: ["decor", "interior", "home"], productType: "decor", sellerNiche: "home" },
   { id: 205, host: "musicstore", title: "Guitar Collection Sale 🎸", viewers: 167, image: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400", category: "music", tags: ["guitars", "instruments", "music"], productType: "instruments", sellerNiche: "music" },
   { id: 206, host: "coffeelover", title: "Specialty Coffee Beans ☕", viewers: 89, image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400", category: "food", tags: ["coffee", "specialty", "beans"], productType: "beverages", sellerNiche: "coffee" },
-  { id: 207, host: "toyworld", title: "Collectible Figures Drop 🎮", viewers: 312, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400", category: "toys", tags: ["collectible", "figures", "toys"], productType: "toys", sellerNiche: "toys" },
+  { id: 207, host: "toyworld", title: "Collectible Figures Drop 🎮", viewers: 312, image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400", category: "toys", tags: ["collectible", "figures", "toys"], productType: "toys", sellerNiche: "toys" },
   { id: 208, host: "plantmom", title: "Rare Plant Collection 🌱", viewers: 134, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400", category: "plants", tags: ["plants", "rare", "indoor"], productType: "plants", sellerNiche: "plants" },
 ];
 

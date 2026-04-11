@@ -6,13 +6,14 @@ import LiveStreamShop from "@/components/livestream/LiveStreamShop";
 import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Gavel } from "lucide-react";
 import { allStreams } from "@/data/streamData";
 
 const LiveStream = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [currentBid, setCurrentBid] = useState(79);
+  const [mode, setMode] = useState<"live" | "shopLive">("live");
 
   const [currentStreamIndex, setCurrentStreamIndex] = useState(() => {
     if (id) {
@@ -35,12 +36,20 @@ const LiveStream = () => {
     setCurrentBid(79);
   }, []);
 
+  const handleModeSwitch = (newMode: "live" | "shopLive") => {
+    if (newMode === "shopLive") {
+      navigate("/shop-live");
+    } else {
+      setMode("live");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
-      <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6">
-        <div className="max-w-[1600px] mx-auto mb-3">
+      <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6 pb-8">
+        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
@@ -50,36 +59,70 @@ const LiveStream = () => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
+
+          {/* Mode toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <Button
+              variant={mode === "live" ? "default" : "ghost"}
+              size="sm"
+              className={`h-8 text-xs gap-1.5 ${mode === "live" ? "bg-primary text-primary-foreground" : ""}`}
+              onClick={() => handleModeSwitch("live")}
+            >
+              <Gavel className="h-3.5 w-3.5" />
+              Auction
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs gap-1.5"
+              onClick={() => handleModeSwitch("shopLive")}
+            >
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Shop Live
+            </Button>
+          </div>
         </div>
         
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4">
-          <div className="hidden lg:block">
-            <LiveStreamShop />
-          </div>
+        <div className="max-w-[1600px] mx-auto">
+          {/* Desktop 3-column layout with matched heights */}
+          <div className="hidden lg:grid lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4 h-[672px]">
+            <div className="h-full overflow-hidden">
+              <LiveStreamShop />
+            </div>
 
-          <div className="w-full">
-            <LiveStreamVideo 
-              currentBid={currentBid} 
-              onBid={(amount) => setCurrentBid(amount)} 
-              streamId={currentStream.id}
-              onNext={goNext}
-              onPrev={goPrev}
-              hasNext={currentStreamIndex < allStreams.length - 1}
-              hasPrev={currentStreamIndex > 0}
-            />
-          </div>
+            <div className="h-full min-w-0 overflow-hidden">
+              <LiveStreamVideo 
+                currentBid={currentBid} 
+                onBid={(amount) => setCurrentBid(amount)} 
+                streamId={currentStream.id}
+                onNext={goNext}
+                onPrev={goPrev}
+                hasNext={currentStreamIndex < allStreams.length - 1}
+                hasPrev={currentStreamIndex > 0}
+              />
+            </div>
 
-          <div className="hidden lg:block">
-            <LiveStreamChat streamId={streamChatId} />
+            <div className="h-full overflow-hidden">
+              <LiveStreamChat streamId={streamChatId} />
+            </div>
           </div>
         </div>
 
         <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
+          <LiveStreamVideo 
+            currentBid={currentBid} 
+            onBid={(amount) => setCurrentBid(amount)} 
+            streamId={currentStream.id}
+            onNext={goNext}
+            onPrev={goPrev}
+            hasNext={currentStreamIndex < allStreams.length - 1}
+            hasPrev={currentStreamIndex > 0}
+          />
           <LiveStreamShop />
           <LiveStreamChat streamId={streamChatId} />
         </div>
 
-        <div className="max-w-[1600px] mx-auto">
+        <div className="max-w-[1600px] mx-auto mt-6">
           <RecommendedStreams currentStreamId={currentStream.id} />
         </div>
       </div>
