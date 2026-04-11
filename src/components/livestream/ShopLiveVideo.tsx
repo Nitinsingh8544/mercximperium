@@ -49,12 +49,37 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
 
+  const viewerCount = streamDate ? parseInt(streamDate) || 549 : 549;
+
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
     } else {
       document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  }, []);
+
+  const handleSeekBackward = () => {
+    setProgressPct((p) => Math.max(0, p - 10));
+    setIsLive(false);
+  };
+
+  const handleSeekForward = () => {
+    setProgressPct((p) => Math.min(100, p + 10));
+    setIsLive(false);
+  };
+
+  const handleGoLive = () => {
+    setProgressPct(100);
+    setIsLive(true);
+  };
+
+  // Check if products overflow the container
+  const checkScrollOverflow = useCallback(() => {
+    const el = productsScrollRef.current;
+    if (el) {
+      setShowScrollButtons(el.scrollWidth > el.clientWidth);
     }
   }, []);
 
