@@ -21,6 +21,7 @@ import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
 import ShopLive from "./pages/ShopLive";
+import ShopLiveLanding from "./pages/ShopLiveLanding";
 import SellerProfile from "./pages/SellerProfile";
 import FollowedHost from "./pages/FollowedHost";
 import AccountSettings from "./pages/AccountSettings";
