@@ -21,6 +21,7 @@ import ProfileView from "./pages/ProfileView";
 import Notifications from "./pages/Notifications";
 import LiveStream from "./pages/LiveStream";
 import ShopLive from "./pages/ShopLive";
+import ShopLiveLanding from "./pages/ShopLiveLanding";
 import SellerProfile from "./pages/SellerProfile";
 import FollowedHost from "./pages/FollowedHost";
 import AccountSettings from "./pages/AccountSettings";
@@ -53,7 +54,7 @@ const App = () => (
             <Route path="/profile-view" element={<ProtectedRoute><ProfileView /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
-            <Route path="/shop-live" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
+            <Route path="/shop-live" element={<ProtectedRoute><ShopLiveLanding /></ProtectedRoute>} />
             <Route path="/shop-live/:streamId" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
             <Route path="/seller/:sellerName" element={<ProtectedRoute><SellerProfile /></ProtectedRoute>} />
             <Route path="/followed" element={<ProtectedRoute><FollowedHost /></ProtectedRoute>} />
