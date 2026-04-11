@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft, Share2, ThumbsUp, ThumbsDown, Flag, Eye } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft, Share2, ThumbsUp, ThumbsDown, Flag, Eye, RotateCcw, RotateCw, Radio } from "lucide-react";
 import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
@@ -41,8 +41,11 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
   const [shareOpen, setShareOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [progressPct, setProgressPct] = useState(33);
+  const [isLive, setIsLive] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const productsScrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollButtons, setShowScrollButtons] = useState(false);
   const { isFollowing, toggleFollow } = useFollows();
   const isFollowingHost = isFollowing(hostName);
 
@@ -56,6 +59,36 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
       document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
     }
   }, []);
+
+  const handleSeekBackward = () => {
+    setProgressPct((p) => Math.max(0, p - 10));
+    setIsLive(false);
+  };
+
+  const handleSeekForward = () => {
+    setProgressPct((p) => Math.min(100, p + 10));
+    setIsLive(false);
+  };
+
+  const handleGoLive = () => {
+    setProgressPct(100);
+    setIsLive(true);
+  };
+
+  // Check if products overflow the container
+  const checkScrollOverflow = useCallback(() => {
+    const el = productsScrollRef.current;
+    if (el) {
+      setShowScrollButtons(el.scrollWidth > el.clientWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkScrollOverflow();
+    window.addEventListener('resize', checkScrollOverflow);
+    return () => window.removeEventListener('resize', checkScrollOverflow);
+  }, [checkScrollOverflow, products]);
+
 
   const handleLike = () => {
     setLiked(!liked);
@@ -119,12 +152,18 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
             <div className="flex items-center justify-between">
               <div className="flex-1 mr-4">
                 <div className="h-1 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full w-1/3 bg-secondary rounded-full" />
+                  <div className="h-full bg-secondary rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={handleSeekBackward} title="10s backward">
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(!isPlaying)}>
                   {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={handleSeekForward} title="10s forward">
+                  <RotateCw className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsMuted(!isMuted)}>
                   {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -132,6 +171,17 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={toggleFullscreen}>
                   {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                 </Button>
+                {!isLive && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-3 bg-destructive/80 hover:bg-destructive text-destructive-foreground backdrop-blur-sm rounded-full text-xs font-semibold gap-1"
+                    onClick={handleGoLive}
+                  >
+                    <Radio className="h-3 w-3" />
+                    LIVE
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -197,18 +247,20 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
 
           {/* Products list */}
           {products.length > 0 && (
-            <div className="mt-3 relative group/products">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
-                onClick={() => productsScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+            <div className="mt-3 relative group/products flex items-center gap-1">
+              {showScrollButtons && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                  onClick={() => productsScrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' })}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              )}
               <div
                 ref={productsScrollRef}
-                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
+                className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth flex-1 min-w-0"
               >
                 {products.map((product) => (
                   <div
@@ -221,6 +273,7 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                         src={product.image}
                         alt={product.title}
                         className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-200"
+                        onLoad={checkScrollOverflow}
                       />
                     </div>
                     <p className="text-[10px] text-foreground mt-1 truncate">{product.title}</p>
@@ -239,14 +292,16 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                   <p className="text-[10px] text-transparent">&nbsp;</p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
-                onClick={() => productsScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              {showScrollButtons && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="shrink-0 h-7 w-7 bg-card/80 backdrop-blur-sm rounded-full border border-border shadow-sm opacity-0 group-hover/products:opacity-100 transition-opacity"
+                  onClick={() => productsScrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' })}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           )}
         </div>

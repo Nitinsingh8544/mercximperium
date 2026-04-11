@@ -80,9 +80,18 @@ const SellerProfile = () => {
                 </Avatar>
                 <div className="flex-1 min-w-0 sm:pb-1">
                   <h1 className="text-2xl font-bold text-foreground">{decodedName}</h1>
-                  <div className="flex items-center gap-1 text-secondary mt-1">
-                    <Star className="h-4 w-4 fill-secondary" />
-                    <span className="text-sm font-medium">4.8 Rating</span>
+                  <div className="flex items-center gap-1 mt-1">
+                    {totalReviews > 0 ? (
+                      <>
+                        <Star className="h-4 w-4 fill-secondary text-secondary" />
+                        <span className="text-sm font-medium text-secondary">{avgRating} Rating</span>
+                      </>
+                    ) : (
+                      <>
+                        <Star className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-muted-foreground">Rating</span>
+                      </>
+                    )}
                   </div>
                   <p className="text-muted-foreground text-sm mt-1">
                     Premium seller | Authentic products only | Fast shipping 📦
