@@ -46,8 +46,8 @@ interface FeaturedCreatorsProps {
 
 const FeaturedCreators = ({ onCreatorSelect, activeStreamId }: FeaturedCreatorsProps) => {
   const { followedSellers } = useFollows();
+  const navigate = useNavigate();
   const [upcomingStream, setUpcomingStream] = useState<{ id: number; host: string; title: string; image: string } | null>(null);
-  const [sellerProfile, setSellerProfile] = useState<{ name: string; image?: string } | null>(null);
 
   const creators: CreatorStatus[] = useMemo(() => {
     const followed = followedSellers.map((name) => {
