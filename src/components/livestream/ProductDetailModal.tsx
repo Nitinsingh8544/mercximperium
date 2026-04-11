@@ -290,8 +290,6 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                   </div>
                 </div>
 
-                {/* Review Form */}
-                <ReviewForm onSubmit={submitReview} submitting={submitting} />
 
                 {/* Reviews list */}
                 <div className="space-y-3">

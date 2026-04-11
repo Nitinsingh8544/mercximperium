@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft, Share2, ThumbsUp, ThumbsDown, Flag, Eye } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, ChevronRight, ChevronLeft, Share2, ThumbsUp, ThumbsDown, Flag, Eye, RotateCcw, RotateCw, Radio } from "lucide-react";
 import { useFollows } from "@/hooks/useFollows";
 import ShareProfileModal from "@/components/seller/ShareProfileModal";
 import ReportModal from "@/components/livestream/ReportModal";
