@@ -267,7 +267,13 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
                   <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                 ))}
                 <Star className="h-3.5 w-3.5 fill-muted text-muted" />
-                <span className="text-xs text-muted-foreground ml-1">(128)</span>
+                <span className="text-xs text-muted-foreground ml-1">({totalReviews})</span>
+                <button
+                  onClick={() => setShowReviews(true)}
+                  className="text-xs text-primary font-medium ml-1 hover:underline"
+                >
+                  Reviews
+                </button>
               </div>
             </div>
 
