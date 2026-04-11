@@ -54,7 +54,7 @@ const App = () => (
             <Route path="/profile-view" element={<ProtectedRoute><ProfileView /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             <Route path="/live/:id" element={<ProtectedRoute><LiveStream /></ProtectedRoute>} />
-            <Route path="/shop-live" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
+            <Route path="/shop-live" element={<ProtectedRoute><ShopLiveLanding /></ProtectedRoute>} />
             <Route path="/shop-live/:streamId" element={<ProtectedRoute><ShopLive /></ProtectedRoute>} />
             <Route path="/seller/:sellerName" element={<ProtectedRoute><SellerProfile /></ProtectedRoute>} />
             <Route path="/followed" element={<ProtectedRoute><FollowedHost /></ProtectedRoute>} />
