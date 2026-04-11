@@ -23,7 +23,6 @@ interface LiveStreamVideoProps {
 const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasNext = false, hasPrev = false }: LiveStreamVideoProps) => {
   const navigate = useNavigate();
   const [isCustomBidOpen, setIsCustomBidOpen] = useState(false);
-  const [isCustomBidOpen, setIsCustomBidOpen] = useState(false);
   const [customBidAmount, setCustomBidAmount] = useState("");
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
