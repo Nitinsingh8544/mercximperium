@@ -122,10 +122,11 @@ const ProductDetailModal = ({ isOpen, onClose, product, sellerName = "Seller", s
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("Black");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showReviews, setShowReviews] = useState(false);
+  const { reviews, submitting, submitReview, avgRating, ratingDistribution, totalReviews } = useSellerReviews(sellerName);
 
   if (!product) return null;
 
