@@ -44,6 +44,7 @@ const SellerProfile = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<typeof sellerProducts[0] | null>(null);
+  const { reviews, submitting, submitReview, avgRating, ratingDistribution, totalReviews } = useSellerReviews(decodedName);
 
   const sellerInitial = decodedName.charAt(0).toUpperCase();
 
