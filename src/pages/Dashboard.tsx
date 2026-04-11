@@ -63,12 +63,14 @@ const Dashboard = () => {
           >
             Auction
           </Link>
-          <Link 
-            to="/shop-live" 
+          <a 
+            href="/shop-live" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
           >
             Shop Live
-          </Link>
+          </a>
           <Link 
             to="/followed" 
             className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
@@ -90,9 +92,9 @@ const Dashboard = () => {
               <Link to="/dashboard" className="block px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-medium text-sm">
                 Auction
               </Link>
-              <Link to="/shop-live" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
+              <a href="/shop-live" target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Shop Live
-              </Link>
+              </a>
               <Link to="/followed" className="block px-4 py-2.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-sm">
                 Followed Host
               </Link>
