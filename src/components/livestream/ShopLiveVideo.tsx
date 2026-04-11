@@ -145,12 +145,18 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
             <div className="flex items-center justify-between">
               <div className="flex-1 mr-4">
                 <div className="h-1 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full w-1/3 bg-secondary rounded-full" />
+                  <div className="h-full bg-secondary rounded-full transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={handleSeekBackward} title="10s backward">
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsPlaying(!isPlaying)}>
                   {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={handleSeekForward} title="10s forward">
+                  <RotateCw className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={() => setIsMuted(!isMuted)}>
                   {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -158,6 +164,17 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
                 <Button variant="ghost" size="icon" className="h-8 w-8 bg-card/60 backdrop-blur-sm rounded-full hover:bg-card/80" onClick={toggleFullscreen}>
                   {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                 </Button>
+                {!isLive && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-3 bg-destructive/80 hover:bg-destructive text-destructive-foreground backdrop-blur-sm rounded-full text-xs font-semibold gap-1"
+                    onClick={handleGoLive}
+                  >
+                    <Radio className="h-3 w-3" />
+                    LIVE
+                  </Button>
+                )}
               </div>
             </div>
           </div>
