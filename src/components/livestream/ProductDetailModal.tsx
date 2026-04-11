@@ -4,9 +4,13 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, Minus, Plus } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Star, Minus, Plus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/useCart";
+import { useSellerReviews } from "@/hooks/useSellerReviews";
+import ReviewForm from "@/components/seller/ReviewForm";
+import { formatDistanceToNow } from "date-fns";
 
 interface Product {
   id: number;
