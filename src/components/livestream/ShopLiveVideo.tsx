@@ -83,6 +83,13 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
     }
   }, []);
 
+  useEffect(() => {
+    checkScrollOverflow();
+    window.addEventListener('resize', checkScrollOverflow);
+    return () => window.removeEventListener('resize', checkScrollOverflow);
+  }, [checkScrollOverflow, products]);
+
+
   const handleLike = () => {
     setLiked(!liked);
     if (disliked) setDisliked(false);
@@ -254,8 +261,6 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
               <div
                 ref={productsScrollRef}
                 className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth flex-1 min-w-0"
-                onLoad={checkScrollOverflow}
-                onResize={checkScrollOverflow}
               >
                 {products.map((product) => (
                   <div
