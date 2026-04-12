@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -24,7 +23,7 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const recommendedStreams = getSimilarStreams(currentStreamId || 0, 8);
+  const recommendedStreams = getSimilarStreams(currentStreamId || 0, 10);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -35,9 +34,17 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
     }
   };
 
+  const handleClick = (streamId: number) => {
+    if (onStreamSelect) {
+      onStreamSelect(streamId);
+    } else {
+      navigate(`/live/${streamId}`);
+    }
+  };
+
   return (
     <div className="mt-6 sm:mt-8 pb-6 sm:pb-8">
-      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Similar Streams</h2>
+      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Explore more shows</h2>
       
       <div className="relative group/scroll">
         <Button
@@ -60,42 +67,48 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
 
         <div 
           ref={scrollRef}
-          className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
+          className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth px-2"
         >
           {recommendedStreams.map((stream) => (
-            <Card 
-              key={stream.id} 
-              className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group hover:scale-105 shrink-0 w-[160px] sm:w-[180px] md:w-[200px]"
-              onClick={() => onStreamSelect ? onStreamSelect(stream.id) : navigate(`/shop-live/${stream.id}`)}
+            <div
+              key={stream.id}
+              className="shrink-0 w-[200px] sm:w-[220px] md:w-[240px] cursor-pointer group"
+              onClick={() => handleClick(stream.id)}
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
+              {/* Host avatar + name above card */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-border">
+                  <span className="text-[10px] font-semibold text-primary">
+                    {stream.host.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-foreground truncate">
+                  {stream.host}
+                </span>
+              </div>
+
+              {/* Image card */}
+              <div className="relative aspect-[4/5] rounded-lg overflow-hidden border border-border">
                 <img 
                   src={stream.image} 
                   alt={stream.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <Badge className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-[10px] sm:text-xs px-1 sm:px-1.5">
+                <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-600 text-white border-0 text-xs px-2 py-0.5">
                   Live · {stream.viewers}
                 </Badge>
               </div>
-              <CardContent className="p-2 sm:p-2.5">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <span className="text-[9px] sm:text-xs font-semibold text-primary">
-                      {stream.host.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[10px] sm:text-xs text-foreground truncate">
-                      {stream.host}
-                    </p>
-                    <p className="text-[9px] sm:text-xs text-muted-foreground truncate">
-                      {stream.title}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+
+              {/* Title + category below card */}
+              <div className="mt-2 px-0.5">
+                <p className="text-sm font-medium text-foreground line-clamp-2 leading-tight">
+                  {stream.title}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {stream.category}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
       </div>
