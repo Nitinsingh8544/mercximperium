@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Bookmark } from "lucide-react";
+import { Search, Bookmark, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type ItemStatus = "auction" | "sold" | "buynow";
+type SortOption = "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest";
 
 const shopProducts = [
   {
@@ -13,7 +22,7 @@ const shopProducts = [
     estInr: "₹13,034.50",
     qty: 118,
     bids: 0,
-    type: "buy"
+    status: "buynow" as ItemStatus,
   },
   {
     id: 2,
@@ -23,7 +32,7 @@ const shopProducts = [
     estInr: "₹4,655.18",
     qty: 170,
     bids: 0,
-    type: "buy"
+    status: "sold" as ItemStatus,
   },
   {
     id: 3,
@@ -33,7 +42,7 @@ const shopProducts = [
     estInr: "₹465.45",
     qty: 1,
     bids: 1,
-    type: "bid"
+    status: "auction" as ItemStatus,
   },
   {
     id: 4,
@@ -43,36 +52,48 @@ const shopProducts = [
     estInr: "₹279.27",
     qty: 1,
     bids: 0,
-    type: "bid"
+    status: "auction" as ItemStatus,
   },
 ];
 
-type FilterType = "filter" | "sort" | "auction" | "sold";
+type FilterType = "auction" | "buynow" | "sold";
 
 const LiveStreamShop = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   const filters: { label: string; value: FilterType }[] = [
-    { label: "Filter", value: "filter" },
-    { label: "Sort", value: "sort" },
     { label: "Auction", value: "auction" },
+    { label: "Buy Now", value: "buynow" },
     { label: "Sold", value: "sold" },
   ];
 
-  const filteredProducts = shopProducts.filter((p) => {
-    const matchesSearch =
-      !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter =
-      !activeFilter ||
-      (activeFilter === "auction" && p.type === "bid") ||
-      (activeFilter !== "auction");
-    return matchesSearch && matchesFilter;
-  });
+  const sortLabels: Record<SortOption, string> = {
+    "newest": "Newest",
+    "price-asc": "Price: Low → High",
+    "price-desc": "Price: High → Low",
+    "name-asc": "Name: A → Z",
+    "name-desc": "Name: Z → A",
+  };
 
-  // Separate auction items from results
-  const auctionItems = filteredProducts.filter((p) => p.type === "bid");
-  const resultItems = filteredProducts.filter((p) => p.type === "buy");
+  const filteredProducts = shopProducts
+    .filter((p) => {
+      const matchesSearch =
+        !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter =
+        !activeFilter || p.status === activeFilter;
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "price-asc": return a.price - b.price;
+        case "price-desc": return b.price - a.price;
+        case "name-asc": return a.title.localeCompare(b.title);
+        case "name-desc": return b.title.localeCompare(a.title);
+        default: return 0;
+      }
+    });
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 h-full overflow-y-auto">
@@ -90,14 +111,38 @@ const LiveStreamShop = () => {
       </div>
 
       {/* Filter Badges */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
+        {/* Sort Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Badge
+              variant="outline"
+              className="cursor-pointer transition-colors px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"
+            >
+              <ArrowUpDown className="h-3 w-3" />
+              Sort
+            </Badge>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {(Object.keys(sortLabels) as SortOption[]).map((key) => (
+              <DropdownMenuItem
+                key={key}
+                onClick={() => setSortOption(key)}
+                className={sortOption === key ? "bg-muted font-semibold" : ""}
+              >
+                {sortLabels[key]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {filters.map((filter) => (
           <Badge
             key={filter.value}
             variant={activeFilter === filter.value ? "default" : "outline"}
             className={`cursor-pointer transition-colors px-3 py-1.5 text-xs font-medium rounded-md ${
               activeFilter === filter.value
-                ? "bg-foreground text-background hover:bg-foreground/90"
+                ? "bg-secondary text-secondary-foreground hover:bg-secondary/90"
                 : "bg-background text-foreground border-border hover:bg-muted"
             }`}
             onClick={() =>
@@ -109,28 +154,12 @@ const LiveStreamShop = () => {
         ))}
       </div>
 
-      {/* Auction items */}
-      {auctionItems.length > 0 && (
-        <div className="space-y-3 mb-4">
-          {auctionItems.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
-
-      {/* Results */}
-      {resultItems.length > 0 && (
-        <>
-          <p className="font-semibold text-foreground mb-3 text-sm">
-            Results ({resultItems.length})
-          </p>
-          <div className="space-y-3">
-            {resultItems.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </>
-      )}
+      {/* Products */}
+      <div className="space-y-3">
+        {filteredProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
 
       {filteredProducts.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6">
@@ -150,48 +179,60 @@ interface ProductCardProps {
     estInr?: string;
     qty: number;
     bids?: number;
-    type: string;
+    status: ItemStatus;
   };
 }
 
-const ProductCard = ({ product }: ProductCardProps) => (
-  <div className="flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors">
-    <div className="relative flex-shrink-0">
-      <img
-        src={product.image}
-        alt={product.title}
-        className="w-16 h-16 rounded-lg object-cover"
-      />
-      <button className="absolute top-1 left-1 p-0.5 bg-card/80 rounded">
-        <Bookmark className="h-3 w-3 text-muted-foreground" />
-      </button>
-    </div>
-    <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">
-        {product.title}
-      </p>
-      <div className="flex items-center gap-1.5 text-sm">
-        <span className="font-bold text-foreground">${product.price}</span>
-        {product.estInr && (
-          <span className="text-muted-foreground text-xs">(est. {product.estInr})</span>
-        )}
-        {product.bids !== undefined && product.bids > 0 && (
-          <span className="text-destructive text-xs">{product.bids} bid</span>
-        )}
-        {product.bids !== undefined && product.bids === 0 && product.type === "bid" && (
-          <span className="text-muted-foreground text-xs">0 bids</span>
-        )}
+const ProductCard = ({ product }: ProductCardProps) => {
+  const statusLabel = product.status === "auction" ? "Pre-bid" : product.status === "sold" ? "Sold" : "Buy Now";
+  const isSold = product.status === "sold";
+
+  return (
+    <div className={`flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors ${isSold ? "opacity-60" : ""}`}>
+      <div className="relative flex-shrink-0">
+        <img
+          src={product.image}
+          alt={product.title}
+          className="w-16 h-16 rounded-lg object-cover"
+        />
+        <button className="absolute top-1 left-1 p-0.5 bg-card/80 rounded">
+          <Bookmark className="h-3 w-3 text-muted-foreground" />
+        </button>
       </div>
-      <p className="text-xs text-muted-foreground">Qty. {product.qty}</p>
-      <Button
-        size="sm"
-        variant="outline"
-        className="w-full mt-1.5 text-xs h-8 rounded-full"
-      >
-        {product.type === "buy" ? "Buy Now" : "Pre-bid"}
-      </Button>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">
+          {product.title}
+        </p>
+        <div className="flex items-center gap-1.5 text-sm">
+          <span className="font-bold text-foreground">${product.price}</span>
+          {product.estInr && (
+            <span className="text-muted-foreground text-xs">(est. {product.estInr})</span>
+          )}
+          {product.bids !== undefined && product.bids > 0 && (
+            <span className="text-destructive text-xs">{product.bids} bid{product.bids > 1 ? "s" : ""}</span>
+          )}
+          {product.bids !== undefined && product.bids === 0 && product.status === "auction" && (
+            <span className="text-muted-foreground text-xs">0 bids</span>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">Qty. {product.qty}</p>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={isSold}
+          className={`w-full mt-1.5 text-xs h-8 rounded-full ${
+            isSold
+              ? "border-muted-foreground/30 text-muted-foreground"
+              : product.status === "auction"
+              ? "border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
+              : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+          }`}
+        >
+          {statusLabel}
+        </Button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default LiveStreamShop;

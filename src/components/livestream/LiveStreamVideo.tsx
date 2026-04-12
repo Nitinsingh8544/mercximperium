@@ -2,13 +2,13 @@ import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Star, Volume2, VolumeX, Share2, Play, Pause, Maximize, Minimize, ChevronLeft, ChevronRight, Copy } from "lucide-react";
+import { Star, Volume2, VolumeX, Share2, Play, StickyNote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface LiveStreamVideoProps {
   currentBid: number;
@@ -26,7 +26,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [customBidAmount, setCustomBidAmount] = useState("");
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isNoteOpen, setIsNoteOpen] = useState(false);
+  const [noteText, setNoteText] = useState("");
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
   const { toast } = useToast();
@@ -82,27 +84,45 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setCustomBidAmount("");
   };
 
-  const toggleFullscreen = useCallback(() => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+  const shareUrl = `${window.location.origin}/live/${streamId}`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Live Auction - ${itemInfo.name}`,
+          text: `Check out this live auction by ${sellerInfo.name}!`,
+          url: shareUrl,
+        });
+      } catch {
+        setIsShareOpen(true);
+      }
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      setIsShareOpen(true);
     }
-  }, []);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    toast({ title: "Link copied!", description: "Stream link copied to clipboard." });
+    setIsShareOpen(false);
+  };
+
+  const handleSaveNote = () => {
+    if (noteText.trim()) {
+      toast({ title: "Note saved!", description: "Your note has been saved." });
+      setNoteText("");
+      setIsNoteOpen(false);
+    }
+  };
 
   return (
     <>
-      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-black flex flex-col h-full">
-        {/* Video Area - fills available space */}
-        <div className="relative flex-1 min-h-0 bg-black">
-          {/* Video/Image */}
+      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-foreground flex flex-col h-full">
+        {/* Video Area */}
+        <div className="relative flex-1 min-h-0 bg-foreground">
           <div className="absolute inset-0">
-            <img
-              src={itemInfo.image}
-              alt="Product showcase"
-              className="w-full h-full object-cover"
-            />
+            <img src={itemInfo.image} alt="Product showcase" className="w-full h-full object-cover" />
           </div>
 
           {/* Streamer Info Overlay - top left */}
@@ -111,14 +131,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}
             >
-              <Avatar className="h-10 w-10 border-2 border-yellow-400">
+              <Avatar className="h-10 w-10 border-2 border-secondary">
                 <AvatarImage src={sellerInfo.image} />
-                <AvatarFallback>SS</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground">SS</AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-semibold text-white text-sm">{sellerInfo.name}</p>
                 <div className="flex items-center gap-1 text-sm">
-                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  <Star className="h-3 w-3 fill-secondary text-secondary" />
                   <span className="text-white/80">{sellerInfo.rating}</span>
                 </div>
               </div>
@@ -127,7 +147,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                 className={`ml-2 rounded-full text-xs font-semibold ${
                   following
                     ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
-                    : "bg-yellow-400 text-black hover:bg-yellow-500"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -140,8 +160,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
 
           {/* Viewers count - top right */}
-          <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-            <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5">
+          <div className="absolute top-4 right-4 z-10">
+            <div className="bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5">
               👍 38
             </div>
           </div>
@@ -149,7 +169,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           {/* Left Arrow */}
           {hasPrev && (
             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-              <Button variant="ghost" size="icon" className="h-10 w-10 bg-black/40 backdrop-blur-sm rounded-full text-white hover:bg-black/60 hover:text-white" onClick={onPrev}>
+              <Button variant="ghost" size="icon" className="h-10 w-10 bg-primary/40 backdrop-blur-sm rounded-full text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground" onClick={onPrev}>
                 <ChevronLeft className="h-5 w-5" />
               </Button>
             </div>
@@ -158,7 +178,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           {/* Right Arrow */}
           {hasNext && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
-              <Button variant="ghost" size="icon" className="h-10 w-10 bg-black/40 backdrop-blur-sm rounded-full text-white hover:bg-black/60 hover:text-white" onClick={onNext}>
+              <Button variant="ghost" size="icon" className="h-10 w-10 bg-primary/40 backdrop-blur-sm rounded-full text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground" onClick={onNext}>
                 <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
@@ -166,20 +186,20 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
           {/* Video Controls - right side vertical */}
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
-            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full" onClick={() => setIsMuted(!isMuted)}>
+            <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={() => setIsMuted(!isMuted)}>
               {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full">
+            <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={handleShare}>
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 hover:text-white rounded-full">
-              <Copy className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={() => setIsNoteOpen(true)}>
+              <StickyNote className="h-5 w-5" />
             </Button>
           </div>
 
           {/* Paused overlay */}
           {!isPlaying && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 z-[5]">
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground/40 z-[5]">
               <Button variant="ghost" size="icon" className="h-16 w-16 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 text-white hover:text-white" onClick={() => setIsPlaying(true)}>
                 <Play className="h-8 w-8" />
               </Button>
@@ -188,25 +208,23 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
           {/* Current Winner Banner */}
           <div className="absolute bottom-[120px] left-4 z-10">
-            <div className="flex items-center gap-2 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+            <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
               <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-xs bg-purple-500 text-white">K</AvatarFallback>
+                <AvatarFallback className="text-xs bg-secondary text-secondary-foreground">K</AvatarFallback>
               </Avatar>
               <span className="text-sm text-white">
                 <span className="font-semibold">kingd72</span>
-                <span className="text-yellow-400 font-bold ml-1">is Winning!</span>
+                <span className="text-secondary font-bold ml-1">is Winning!</span>
               </span>
             </div>
           </div>
 
           {/* Product Info Overlay - bottom of video */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-8">
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-primary/90 via-primary/70 to-transparent pt-8">
             <div className="flex items-end gap-3 px-4 pb-2">
-              {/* Product thumbnail */}
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
                 <img src={itemInfo.image} alt={itemInfo.name} className="w-full h-full object-cover" />
               </div>
-              {/* Product details */}
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm leading-tight">
                   {itemInfo.itemNumber}. {itemInfo.name}
@@ -215,27 +233,26 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                 <p className="text-white/50 text-xs">34 Bids</p>
                 <p className="text-white/40 text-xs">Shipping + Taxes are extra</p>
               </div>
-              {/* Price */}
               <div className="text-right flex-shrink-0">
                 <p className="text-white font-bold text-lg">${currentBid}</p>
                 <p className="text-white/60 text-xs">est. ₹{estimatedINR}</p>
-                <p className="text-yellow-400 text-xs font-medium">00:09</p>
+                <p className="text-secondary text-xs font-medium">00:09</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bid Buttons - outside video, at bottom */}
-        <div className="flex gap-2 p-3 bg-black">
+        {/* Bid Buttons */}
+        <div className="flex gap-2 p-3 bg-primary">
           <Button
             variant="outline"
-            className="flex-shrink-0 border-white/20 text-white bg-transparent hover:bg-white/10 hover:text-white rounded-full px-5"
+            className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
             onClick={() => setIsCustomBidOpen(true)}
           >
             Custom
           </Button>
           <Button
-            className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-base rounded-full"
+            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full"
             onClick={() => handleBid(nextBid)}
           >
             <span className="flex flex-col items-center leading-tight">
@@ -254,7 +271,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Current highest bid: <span className="font-bold text-yellow-400">${currentBid}</span>
+              Current highest bid: <span className="font-bold text-secondary">${currentBid}</span>
             </p>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Your bid amount ($)</label>
@@ -274,9 +291,49 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCustomBidSubmit} className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold">
+            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold">
               Place Bid
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Dialog */}
+      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Share this stream</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">Share this live auction with friends:</p>
+            <div className="flex gap-2">
+              <Input value={shareUrl} readOnly className="flex-1" />
+              <Button onClick={handleCopyLink} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Copy
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Note Dialog */}
+      <Dialog open={isNoteOpen} onOpenChange={setIsNoteOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Seller Note</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">Add a note for your customers about this item:</p>
+            <Textarea
+              placeholder="e.g. Condition details, sizing notes, bundle deals..."
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              rows={4}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNoteOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveNote} className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold">Save Note</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
