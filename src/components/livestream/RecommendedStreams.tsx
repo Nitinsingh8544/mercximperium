@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getSimilarStreams, streamsWithMeta } from "@/lib/streamRanking";
+import { auctionStreams, streamsWithMeta } from "@/lib/streamRanking";
 
 // Re-export for backward compatibility
 export const similarStreams = streamsWithMeta.map(s => ({
@@ -23,7 +23,8 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const recommendedStreams = getSimilarStreams(currentStreamId || 0, 10);
+  // Use auction-specific streams, excluding current
+  const recommendedStreams = auctionStreams.filter(s => s.id !== currentStreamId);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -44,7 +45,7 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
 
   return (
     <div className="mt-6 sm:mt-8 pb-6 sm:pb-8">
-      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Explore more shows</h2>
+      <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">Explore more auctions</h2>
       
       <div className="relative group/scroll">
         <Button

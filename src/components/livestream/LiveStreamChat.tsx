@@ -133,14 +133,6 @@ const LiveStreamChat = ({ streamId = "live-default" }: LiveStreamChatProps) => {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            {/* Emoji bar */}
-            <div className="flex items-center gap-2 mt-2 justify-center">
-              <button className="text-lg hover:scale-110 transition-transform">🔥</button>
-              <button className="text-lg hover:scale-110 transition-transform">✏️</button>
-              <button className="text-lg hover:scale-110 transition-transform">🎯</button>
-              <button className="text-lg hover:scale-110 transition-transform">💰</button>
-              <button className="text-lg hover:scale-110 transition-transform">⚙️</button>
-            </div>
           </div>
         </>
       ) : (

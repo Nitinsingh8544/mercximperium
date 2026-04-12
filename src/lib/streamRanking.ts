@@ -44,6 +44,20 @@ export const exploreStreams: StreamMeta[] = [
   { id: 208, host: "plantmom", title: "Rare Plant Collection 🌱", viewers: 134, image: "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400", category: "plants", tags: ["plants", "rare", "indoor"], productType: "plants", sellerNiche: "plants" },
 ];
 
+// Auction-specific streams for Explore More Auctions section
+export const auctionStreams: StreamMeta[] = [
+  { id: 301, host: "antiqueauctions", title: "Antique Furniture Bidding War 🪑", viewers: 342, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400", category: "antiques", tags: ["antique", "furniture", "auction", "vintage"], productType: "furniture", sellerNiche: "antiques" },
+  { id: 302, host: "cardkingz", title: "Rare Sports Cards Auction 🏆", viewers: 478, image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400", category: "collectibles", tags: ["cards", "sports", "rare", "auction"], productType: "collectibles", sellerNiche: "trading-cards" },
+  { id: 303, host: "gemdealer", title: "Precious Gemstone Auction 💎", viewers: 256, image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400", category: "jewelry", tags: ["gems", "precious", "auction", "luxury"], productType: "gemstones", sellerNiche: "gems" },
+  { id: 304, host: "retrorides", title: "Classic Car Parts Bidding 🚗", viewers: 189, image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=400", category: "automotive", tags: ["cars", "classic", "parts", "auction"], productType: "automotive", sellerNiche: "cars" },
+  { id: 305, host: "artbidhouse", title: "Fine Art Auction Night 🖼️", viewers: 367, image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400", category: "art", tags: ["art", "fine-art", "painting", "auction"], productType: "art", sellerNiche: "fine-art" },
+  { id: 306, host: "winebidder", title: "Vintage Wine Collection Auction 🍷", viewers: 145, image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=400", category: "wine", tags: ["wine", "vintage", "collection", "auction"], productType: "wine", sellerNiche: "wine" },
+  { id: 307, host: "signedstuff", title: "Celebrity Memorabilia Auction ✍️", viewers: 423, image: "https://images.unsplash.com/photo-1594897030264-ab7d87efc473?w=400", category: "memorabilia", tags: ["celebrity", "signed", "memorabilia", "auction"], productType: "memorabilia", sellerNiche: "memorabilia" },
+  { id: 308, host: "coinmaster", title: "Rare Coin & Currency Auction 🪙", viewers: 211, image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400", category: "numismatics", tags: ["coins", "currency", "rare", "auction"], productType: "coins", sellerNiche: "numismatics" },
+  { id: 309, host: "luxurywatchbid", title: "Luxury Timepiece Auction ⌚", viewers: 534, image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400", category: "accessories", tags: ["watches", "luxury", "timepiece", "auction"], productType: "watches", sellerNiche: "luxury-watches" },
+  { id: 310, host: "sneakervault", title: "Deadstock Sneaker Auction 👟", viewers: 612, image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400", category: "footwear", tags: ["sneakers", "deadstock", "rare", "auction"], productType: "shoes", sellerNiche: "sneakers" },
+];
+
 // Recommended items pool
 export const recommendedPool: StreamMeta[] = [
   { id: 101, host: "luxuryfinds", title: "Luxury Bags & Accessories 👜", viewers: 312, image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400", category: "fashion", tags: ["luxury", "bags", "accessories"], productType: "bags", sellerNiche: "luxury" },
