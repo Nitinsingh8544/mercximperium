@@ -198,5 +198,6 @@ export function getExploreStreams(currentStreamId: number, count = 8): StreamMet
 export function findStreamById(id: number): StreamMeta | undefined {
   return streamsWithMeta.find(s => s.id === id)
     || recommendedPool.find(s => s.id === id)
-    || exploreStreams.find(s => s.id === id);
+    || exploreStreams.find(s => s.id === id)
+    || auctionStreams.find(s => s.id === id);
 }
