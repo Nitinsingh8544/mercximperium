@@ -11,15 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type ItemStatus = "auction" | "sold" | "buynow";
-type SortOption = "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest";
+type SortOption = "none" | "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest";
 
 const shopProducts = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=100",
     title: "BLESS THE CHAT WITH A BRAND NEW TRAVIS SCOTT!!!!",
-    price: 140,
-    estInr: "₹13,034.50",
+    price: 13034,
     qty: 118,
     bids: 0,
     status: "buynow" as ItemStatus,
@@ -28,8 +27,7 @@ const shopProducts = [
     id: 2,
     image: "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=100",
     title: "BLESS THE CHAT WITH A DS JORDAN!!!!!!",
-    price: 50,
-    estInr: "₹4,655.18",
+    price: 4655,
     qty: 170,
     bids: 0,
     status: "sold" as ItemStatus,
@@ -38,8 +36,7 @@ const shopProducts = [
     id: 3,
     image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100",
     title: "Vintage Boston Red Sox Mesh Snapback Hat...",
-    price: 5,
-    estInr: "₹465.45",
+    price: 465,
     qty: 1,
     bids: 1,
     status: "auction" as ItemStatus,
@@ -48,8 +45,7 @@ const shopProducts = [
     id: 4,
     image: "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=100",
     title: "Rider Cup New Era Strap",
-    price: 3,
-    estInr: "₹279.27",
+    price: 279,
     qty: 1,
     bids: 0,
     status: "auction" as ItemStatus,
@@ -61,7 +57,7 @@ type FilterType = "auction" | "buynow" | "sold";
 const LiveStreamShop = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
-  const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [sortOption, setSortOption] = useState<SortOption>("none");
 
   const filters: { label: string; value: FilterType }[] = [
     { label: "Auction", value: "auction" },
@@ -70,6 +66,7 @@ const LiveStreamShop = () => {
   ];
 
   const sortLabels: Record<SortOption, string> = {
+    "none": "None (Show All)",
     "newest": "Newest",
     "price-asc": "Price: Low → High",
     "price-desc": "Price: High → Low",
@@ -79,10 +76,8 @@ const LiveStreamShop = () => {
 
   const filteredProducts = shopProducts
     .filter((p) => {
-      const matchesSearch =
-        !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter =
-        !activeFilter || p.status === activeFilter;
+      const matchesSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = !activeFilter || p.status === activeFilter;
       return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
@@ -102,12 +97,7 @@ const LiveStreamShop = () => {
       {/* Search */}
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search shop..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 bg-muted border-border"
-        />
+        <Input placeholder="Search shop..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 bg-muted border-border" />
       </div>
 
       {/* Filter Badges */}
@@ -115,21 +105,14 @@ const LiveStreamShop = () => {
         {/* Sort Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Badge
-              variant="outline"
-              className="cursor-pointer transition-colors px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1"
-            >
+            <Badge variant="outline" className="cursor-pointer transition-colors px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1">
               <ArrowUpDown className="h-3 w-3" />
               Sort
             </Badge>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             {(Object.keys(sortLabels) as SortOption[]).map((key) => (
-              <DropdownMenuItem
-                key={key}
-                onClick={() => setSortOption(key)}
-                className={sortOption === key ? "bg-muted font-semibold" : ""}
-              >
+              <DropdownMenuItem key={key} onClick={() => setSortOption(key)} className={sortOption === key ? "bg-muted font-semibold" : ""}>
                 {sortLabels[key]}
               </DropdownMenuItem>
             ))}
@@ -145,9 +128,7 @@ const LiveStreamShop = () => {
                 ? "bg-secondary text-secondary-foreground hover:bg-secondary/90"
                 : "bg-background text-foreground border-border hover:bg-muted"
             }`}
-            onClick={() =>
-              setActiveFilter(activeFilter === filter.value ? null : filter.value)
-            }
+            onClick={() => setActiveFilter(activeFilter === filter.value ? null : filter.value)}
           >
             {filter.label}
           </Badge>
@@ -162,9 +143,7 @@ const LiveStreamShop = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-6">
-          No products found.
-        </p>
+        <p className="text-sm text-muted-foreground text-center py-6">No products found.</p>
       )}
     </div>
   );
@@ -176,7 +155,6 @@ interface ProductCardProps {
     image: string;
     title: string;
     price: number;
-    estInr?: string;
     qty: number;
     bids?: number;
     status: ItemStatus;
@@ -190,24 +168,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <div className={`flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors ${isSold ? "opacity-60" : ""}`}>
       <div className="relative flex-shrink-0">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="w-16 h-16 rounded-lg object-cover"
-        />
+        <img src={product.image} alt={product.title} className="w-16 h-16 rounded-lg object-cover" />
         <button className="absolute top-1 left-1 p-0.5 bg-card/80 rounded">
           <Bookmark className="h-3 w-3 text-muted-foreground" />
         </button>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">
-          {product.title}
-        </p>
+        <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">{product.title}</p>
         <div className="flex items-center gap-1.5 text-sm">
-          <span className="font-bold text-foreground">${product.price}</span>
-          {product.estInr && (
-            <span className="text-muted-foreground text-xs">(est. {product.estInr})</span>
-          )}
+          <span className="font-bold text-foreground">₹{product.price.toLocaleString("en-IN")}</span>
           {product.bids !== undefined && product.bids > 0 && (
             <span className="text-destructive text-xs">{product.bids} bid{product.bids > 1 ? "s" : ""}</span>
           )}
