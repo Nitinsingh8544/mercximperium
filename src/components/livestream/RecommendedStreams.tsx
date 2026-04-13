@@ -36,10 +36,10 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   };
 
   const handleClick = (streamId: number) => {
+    // Always navigate to open in same tab
+    navigate(`/live/${streamId}`);
     if (onStreamSelect) {
       onStreamSelect(streamId);
-    } else {
-      navigate(`/live/${streamId}`);
     }
   };
 
