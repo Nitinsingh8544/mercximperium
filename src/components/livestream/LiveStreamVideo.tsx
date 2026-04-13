@@ -1,9 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Star, Volume2, VolumeX, Share2, Play, StickyNote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Volume2, VolumeX, Share2, Play, StickyNote, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
@@ -20,6 +20,10 @@ interface LiveStreamVideoProps {
   hasPrev?: boolean;
 }
 
+const TOTAL_DURATION = 180;
+const EXPLAIN_DURATION = 150;
+const BID_DURATION = 30;
+
 const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasNext = false, hasPrev = false }: LiveStreamVideoProps) => {
   const navigate = useNavigate();
   const [isCustomBidOpen, setIsCustomBidOpen] = useState(false);
@@ -29,6 +33,16 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isNoteOpen, setIsNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState("");
+  const [likes, setLikes] = useState(38);
+  const [dislikes, setDislikes] = useState(2);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(TOTAL_DURATION);
+  const [phase, setPhase] = useState<"explain" | "bid">("explain");
+  const [lastBidder, setLastBidder] = useState<string | null>("kingd72");
+  const [winner, setWinner] = useState<string | null>(null);
+  const [showWinner, setShowWinner] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
   const { toast } = useToast();
@@ -52,7 +66,69 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const nextBid = currentBid + 5;
   const nextBidINR = (nextBid * 93.1).toFixed(2);
 
+  // Timer logic: 150s explain then 30s bid
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setTimeLeft(TOTAL_DURATION);
+    setPhase("explain");
+    setWinner(null);
+    setShowWinner(false);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        const next = prev - 1;
+        if (next <= BID_DURATION && next > 0) {
+          setPhase("bid");
+        }
+        if (next <= 0) {
+          // Auction ended for this item
+          if (timerRef.current) clearInterval(timerRef.current);
+          setPhase("bid");
+          // Show winner
+          setWinner(lastBidder);
+          setShowWinner(true);
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [streamId]);
+
+  // Update winner when lastBidder changes at timer end
+  useEffect(() => {
+    if (timeLeft === 0 && lastBidder) {
+      setWinner(lastBidder);
+      setShowWinner(true);
+    }
+  }, [timeLeft, lastBidder]);
+
+  // Auto-hide winner after 5s
+  useEffect(() => {
+    if (showWinner) {
+      const t = setTimeout(() => setShowWinner(false), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [showWinner]);
+
+  const bidTimeLeft = phase === "bid" ? timeLeft : Math.max(0, timeLeft - EXPLAIN_DURATION);
+  const displayTime = phase === "bid" ? timeLeft : timeLeft - BID_DURATION;
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  };
+
   const handleBid = async (amount: number) => {
+    if (phase !== "bid" && timeLeft > BID_DURATION) {
+      toast({ title: "Bidding not started", description: "Wait for the bidding phase to begin.", variant: "destructive" });
+      return;
+    }
+
     const result = await placeBid({
       stream_id: streamId,
       item_name: itemInfo.name,
@@ -65,7 +141,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
     if (!result.error) {
       onBid(amount);
-      toast({ title: "Bid placed!", description: `You bid $${amount}` });
+      setLastBidder("You");
+      toast({ title: "Bid placed!", description: `You bid ₹${(amount * 93.1).toFixed(0)}` });
     }
   };
 
@@ -74,7 +151,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (isNaN(amount) || amount <= currentBid) {
       toast({
         title: "Invalid bid",
-        description: `Your bid must be greater than the current bid of $${currentBid}`,
+        description: `Your bid must be greater than the current bid of ₹${(currentBid * 93.1).toFixed(0)}`,
         variant: "destructive",
       });
       return;
@@ -84,22 +161,22 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setCustomBidAmount("");
   };
 
+  const handleLike = () => {
+    if (liked) { setLiked(false); setLikes(l => l - 1); }
+    else { setLiked(true); setLikes(l => l + 1); if (disliked) { setDisliked(false); setDislikes(d => d - 1); } }
+  };
+
+  const handleDislike = () => {
+    if (disliked) { setDisliked(false); setDislikes(d => d - 1); }
+    else { setDisliked(true); setDislikes(d => d + 1); if (liked) { setLiked(false); setLikes(l => l - 1); } }
+  };
+
   const shareUrl = `${window.location.origin}/live/${streamId}`;
 
   const handleShare = async () => {
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Live Auction - ${itemInfo.name}`,
-          text: `Check out this live auction by ${sellerInfo.name}!`,
-          url: shareUrl,
-        });
-      } catch {
-        setIsShareOpen(true);
-      }
-    } else {
-      setIsShareOpen(true);
-    }
+      try { await navigator.share({ title: `Live Auction - ${itemInfo.name}`, text: `Check out this live auction by ${sellerInfo.name}!`, url: shareUrl }); } catch { setIsShareOpen(true); }
+    } else { setIsShareOpen(true); }
   };
 
   const handleCopyLink = () => {
@@ -127,10 +204,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
           {/* Streamer Info Overlay - top left */}
           <div className="absolute top-4 left-4 z-10">
-            <div
-              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}
-            >
+            <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}>
               <Avatar className="h-10 w-10 border-2 border-secondary">
                 <AvatarImage src={sellerInfo.image} />
                 <AvatarFallback className="bg-primary text-primary-foreground">SS</AvatarFallback>
@@ -144,25 +218,23 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               </div>
               <Button
                 size="sm"
-                className={`ml-2 rounded-full text-xs font-semibold ${
-                  following
-                    ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleFollow(sellerInfo.name, "auction");
-                }}
+                className={`ml-2 rounded-full text-xs font-semibold ${following ? "bg-white/20 text-white border border-white/30 hover:bg-white/30" : "bg-secondary text-secondary-foreground hover:bg-secondary/90"}`}
+                onClick={(e) => { e.stopPropagation(); toggleFollow(sellerInfo.name, "auction"); }}
               >
                 {following ? "Following" : "Follow"}
               </Button>
             </div>
           </div>
 
-          {/* Viewers count - top right */}
-          <div className="absolute top-4 right-4 z-10">
+          {/* Countdown Timer - top right */}
+          <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
+            {/* Viewer count */}
             <div className="bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5">
-              👍 38
+              LIVE · 38
+            </div>
+            {/* Phase & Timer */}
+            <div className={`px-3 py-1.5 rounded-lg text-sm font-bold backdrop-blur-sm ${phase === "bid" ? "bg-destructive/90 text-white animate-pulse" : "bg-primary/70 text-white"}`}>
+              {phase === "explain" ? "📢 Explaining" : "🔥 BIDDING"} · {formatTime(displayTime > 0 ? displayTime : timeLeft)}
             </div>
           </div>
 
@@ -195,6 +267,20 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={() => setIsNoteOpen(true)}>
               <StickyNote className="h-5 w-5" />
             </Button>
+            {/* Like */}
+            <Button variant="ghost" size="icon" className={`backdrop-blur-sm rounded-full ${liked ? "bg-secondary/80 text-secondary-foreground" : "bg-primary/40 text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground"}`} onClick={handleLike}>
+              <div className="flex flex-col items-center">
+                <ThumbsUp className="h-4 w-4" />
+                <span className="text-[9px] mt-0.5">{likes}</span>
+              </div>
+            </Button>
+            {/* Dislike */}
+            <Button variant="ghost" size="icon" className={`backdrop-blur-sm rounded-full ${disliked ? "bg-destructive/80 text-white" : "bg-primary/40 text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground"}`} onClick={handleDislike}>
+              <div className="flex flex-col items-center">
+                <ThumbsDown className="h-4 w-4" />
+                <span className="text-[9px] mt-0.5">{dislikes}</span>
+              </div>
+            </Button>
           </div>
 
           {/* Paused overlay */}
@@ -206,18 +292,33 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Current Winner Banner */}
-          <div className="absolute bottom-[120px] left-4 z-10">
-            <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-xs bg-secondary text-secondary-foreground">K</AvatarFallback>
-              </Avatar>
-              <span className="text-sm text-white">
-                <span className="font-semibold">kingd72</span>
-                <span className="text-secondary font-bold ml-1">is Winning!</span>
-              </span>
+          {/* Winner Celebration Overlay */}
+          {showWinner && winner && (
+            <div className="absolute inset-0 flex items-center justify-center z-20 bg-foreground/60 backdrop-blur-sm">
+              <div className="text-center animate-in zoom-in-50 duration-500">
+                <div className="text-6xl mb-3">🎉</div>
+                <p className="text-3xl font-bold text-secondary mb-1">Winner!</p>
+                <p className="text-xl text-white font-semibold">{winner}</p>
+                <p className="text-white/70 mt-1">won the bid at ₹{(currentBid * 93.1).toFixed(0)}</p>
+                <div className="text-4xl mt-2">🏆🎊✨</div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Current Winner Banner */}
+          {lastBidder && !showWinner && (
+            <div className="absolute bottom-[120px] left-4 z-10">
+              <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs bg-secondary text-secondary-foreground">{lastBidder[0].toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <span className="text-sm text-white">
+                  <span className="font-semibold">{lastBidder}</span>
+                  <span className="text-secondary font-bold ml-1">is Winning!</span>
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Product Info Overlay - bottom of video */}
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-primary/90 via-primary/70 to-transparent pt-8">
@@ -226,17 +327,16 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                 <img src={itemInfo.image} alt={itemInfo.name} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm leading-tight">
-                  {itemInfo.itemNumber}. {itemInfo.name}
-                </p>
+                <p className="text-white font-semibold text-sm leading-tight">{itemInfo.itemNumber}. {itemInfo.name}</p>
                 <p className="text-white/60 text-xs">{itemInfo.description}</p>
                 <p className="text-white/50 text-xs">34 Bids</p>
                 <p className="text-white/40 text-xs">Shipping + Taxes are extra</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-white font-bold text-lg">${currentBid}</p>
-                <p className="text-white/60 text-xs">est. ₹{estimatedINR}</p>
-                <p className="text-secondary text-xs font-medium">00:09</p>
+                <p className="text-white font-bold text-lg">₹{(currentBid * 93.1).toFixed(0)}</p>
+                <p className={`text-xs font-medium ${phase === "bid" ? "text-destructive-foreground animate-pulse" : "text-secondary"}`}>
+                  {formatTime(displayTime > 0 ? displayTime : timeLeft)}
+                </p>
               </div>
             </div>
           </div>
@@ -248,15 +348,17 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
             onClick={() => setIsCustomBidOpen(true)}
+            disabled={phase !== "bid"}
           >
             Custom
           </Button>
           <Button
             className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full"
             onClick={() => handleBid(nextBid)}
+            disabled={phase !== "bid"}
           >
             <span className="flex flex-col items-center leading-tight">
-              <span>Bid: ${nextBid}</span>
+              <span>Bid: ₹{(nextBid * 93.1).toFixed(0)}</span>
               <span className="text-[10px] font-normal opacity-70">est. ₹{nextBidINR}</span>
             </span>
           </Button>
@@ -271,29 +373,23 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Current highest bid: <span className="font-bold text-secondary">${currentBid}</span>
+              Current highest bid: <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
             </p>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Your bid amount ($)</label>
+              <label className="text-sm font-medium text-foreground">Your bid amount (₹)</label>
               <Input
                 type="number"
-                placeholder={`Enter more than $${currentBid}`}
+                placeholder={`Enter more than ₹${(currentBid * 93.1).toFixed(0)}`}
                 value={customBidAmount}
                 onChange={(e) => setCustomBidAmount(e.target.value)}
                 min={currentBid + 1}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCustomBidSubmit();
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleCustomBidSubmit(); }}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold">
-              Place Bid
-            </Button>
+            <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>Cancel</Button>
+            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold">Place Bid</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -308,9 +404,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <p className="text-sm text-muted-foreground">Share this live auction with friends:</p>
             <div className="flex gap-2">
               <Input value={shareUrl} readOnly className="flex-1" />
-              <Button onClick={handleCopyLink} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Copy
-              </Button>
+              <Button onClick={handleCopyLink} className="bg-primary hover:bg-primary/90 text-primary-foreground">Copy</Button>
             </div>
           </div>
         </DialogContent>
@@ -324,12 +418,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">Add a note for your customers about this item:</p>
-            <Textarea
-              placeholder="e.g. Condition details, sizing notes, bundle deals..."
-              value={noteText}
-              onChange={(e) => setNoteText(e.target.value)}
-              rows={4}
-            />
+            <Textarea placeholder="e.g. Condition details, sizing notes, bundle deals..." value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={4} />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsNoteOpen(false)}>Cancel</Button>
