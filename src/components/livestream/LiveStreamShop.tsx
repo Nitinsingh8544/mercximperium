@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Bookmark, ArrowUpDown } from "lucide-react";
+import { Search, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -167,11 +167,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <div className={`flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors ${isSold ? "opacity-60" : ""}`}>
-      <div className="relative flex-shrink-0">
+      <div className="flex-shrink-0">
         <img src={product.image} alt={product.title} className="w-16 h-16 rounded-lg object-cover" />
-        <button className="absolute top-1 left-1 p-0.5 bg-card/80 rounded">
-          <Bookmark className="h-3 w-3 text-muted-foreground" />
-        </button>
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">{product.title}</p>
@@ -184,7 +181,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-muted-foreground text-xs">0 bids</span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground">Qty. {product.qty}</p>
+        
         <Button
           size="sm"
           variant="outline"

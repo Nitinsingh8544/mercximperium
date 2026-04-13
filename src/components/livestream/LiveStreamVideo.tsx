@@ -268,16 +268,16 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               <StickyNote className="h-5 w-5" />
             </Button>
             {/* Like */}
-            <Button variant="ghost" size="icon" className={`backdrop-blur-sm rounded-full ${liked ? "bg-secondary/80 text-secondary-foreground" : "bg-primary/40 text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground"}`} onClick={handleLike}>
+            <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={handleLike}>
               <div className="flex flex-col items-center">
-                <ThumbsUp className="h-4 w-4" />
+                <ThumbsUp className={`h-4 w-4 ${liked ? "fill-white" : ""}`} />
                 <span className="text-[9px] mt-0.5">{likes}</span>
               </div>
             </Button>
             {/* Dislike */}
-            <Button variant="ghost" size="icon" className={`backdrop-blur-sm rounded-full ${disliked ? "bg-destructive/80 text-white" : "bg-primary/40 text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground"}`} onClick={handleDislike}>
+            <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={handleDislike}>
               <div className="flex flex-col items-center">
-                <ThumbsDown className="h-4 w-4" />
+                <ThumbsDown className={`h-4 w-4 ${disliked ? "fill-white" : ""}`} />
                 <span className="text-[9px] mt-0.5">{dislikes}</span>
               </div>
             </Button>
@@ -357,10 +357,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             onClick={() => handleBid(nextBid)}
             disabled={phase !== "bid"}
           >
-            <span className="flex flex-col items-center leading-tight">
-              <span>Bid: ₹{(nextBid * 93.1).toFixed(0)}</span>
-              <span className="text-[10px] font-normal opacity-70">est. ₹{nextBidINR}</span>
-            </span>
+            Bid: ₹{(nextBid * 93.1).toFixed(0)}
           </Button>
         </div>
       </div>
