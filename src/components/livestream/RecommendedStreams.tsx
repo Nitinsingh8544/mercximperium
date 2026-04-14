@@ -36,8 +36,9 @@ const RecommendedStreams = ({ currentStreamId, onStreamSelect }: RecommendedStre
   };
 
   const handleClick = (streamId: number) => {
-    // Always navigate to open in same tab
+    // Navigate and scroll to top
     navigate(`/live/${streamId}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (onStreamSelect) {
       onStreamSelect(streamId);
     }

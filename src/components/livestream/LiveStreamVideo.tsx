@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +9,7 @@ import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { auctionStreams } from "@/lib/streamRanking";
 
 interface LiveStreamVideoProps {
   currentBid: number;
@@ -23,6 +24,36 @@ interface LiveStreamVideoProps {
 const TOTAL_DURATION = 180;
 const EXPLAIN_DURATION = 150;
 const BID_DURATION = 30;
+
+// Stream-specific data mapping
+const streamSellerData: Record<number, { name: string; image: string; rating: number }> = {
+  301: { name: "antiqueauctions", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", rating: 4.6 },
+  302: { name: "cardkingz", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", rating: 4.9 },
+  303: { name: "gemdealer", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100", rating: 4.7 },
+  304: { name: "retrorides", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100", rating: 4.5 },
+  305: { name: "artbidhouse", image: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100", rating: 4.8 },
+  306: { name: "winebidder", image: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100", rating: 4.4 },
+  307: { name: "signedstuff", image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100", rating: 4.7 },
+  308: { name: "coinmaster", image: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100", rating: 4.6 },
+  309: { name: "luxurywatchbid", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", rating: 4.9 },
+  310: { name: "sneakervault", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100", rating: 4.8 },
+};
+
+const streamItemData: Record<number, { name: string; description: string; image: string; itemNumber: string }> = {
+  301: { name: "Victorian Mahogany Cabinet", description: "CIRCA 1870 ORIGINAL", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800", itemNumber: "01" },
+  302: { name: "1986 Fleer Michael Jordan RC", description: "PSA 9 MINT CONDITION", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800", itemNumber: "05" },
+  303: { name: "Natural Blue Sapphire 3.2ct", description: "GIA CERTIFIED SRI LANKAN", image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800", itemNumber: "02" },
+  304: { name: "1967 Mustang GT500 Engine", description: "MATCHING NUMBERS ORIGINAL", image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800", itemNumber: "04" },
+  305: { name: "Original Oil on Canvas", description: "SIGNED CONTEMPORARY PIECE", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800", itemNumber: "03" },
+  306: { name: "Château Margaux 1982", description: "750ML PERFECT STORAGE", image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=800", itemNumber: "01" },
+  307: { name: "Signed Muhammad Ali Gloves", description: "JSA AUTHENTICATED", image: "https://images.unsplash.com/photo-1594897030264-ab7d87efc473?w=800", itemNumber: "06" },
+  308: { name: "1909-S VDB Lincoln Penny", description: "PCGS VF-35 GRADED", image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=800", itemNumber: "02" },
+  309: { name: "Rolex Daytona Ref. 6239", description: "PAUL NEWMAN DIAL 1968", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800", itemNumber: "01" },
+  310: { name: "Nike Air Mag 2016 DS", description: "SIZE 11 SELF-LACING", image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800", itemNumber: "03" },
+};
+
+const defaultSeller = { name: "stewsshoes", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100", rating: 4.8 };
+const defaultItem = { name: "RB CRIMSON JORDAN RETRO 3 SZ: 14", description: "USED REP BOX AS-482", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800", itemNumber: "03" };
 
 const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasNext = false, hasPrev = false }: LiveStreamVideoProps) => {
   const navigate = useNavigate();
@@ -48,18 +79,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const sellerInfo = {
-    name: "stewsshoes",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-    rating: 4.8,
-  };
-
-  const itemInfo = {
-    name: "RB CRIMSON JORDAN RETRO 3 SZ: 14",
-    description: "USED REP BOX AS-482",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
-    itemNumber: "03",
-  };
+  const sellerInfo = streamSellerData[streamId] || defaultSeller;
+  const itemInfo = streamItemData[streamId] || defaultItem;
 
   const following = isFollowing(sellerInfo.name);
   const estimatedINR = (currentBid * 93.1).toFixed(2);
