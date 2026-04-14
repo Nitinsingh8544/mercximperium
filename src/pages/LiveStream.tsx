@@ -69,17 +69,17 @@ const LiveStream = () => {
         <div className="max-w-[1600px] mx-auto">
           {/* Desktop 3-column layout */}
           <div className="hidden lg:grid lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4 h-[672px]">
-            <div className="h-full overflow-hidden">
+            <div className="h-full overflow-hidden" key={`shop-${streamId}`}>
               <LiveStreamShop />
             </div>
-            <div className="h-full min-w-0 overflow-hidden">
+            <div className="h-full min-w-0 overflow-hidden" key={`video-${streamId}`}>
               <LiveStreamVideo 
                 currentBid={currentBid} 
                 onBid={(amount) => setCurrentBid(amount)} 
                 streamId={streamId}
               />
             </div>
-            <div className="h-full overflow-hidden">
+            <div className="h-full overflow-hidden" key={`chat-${streamId}`}>
               <LiveStreamChat streamId={streamChatId} />
             </div>
           </div>
@@ -87,12 +87,13 @@ const LiveStream = () => {
 
         <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
           <LiveStreamVideo 
+            key={`mvideo-${streamId}`}
             currentBid={currentBid} 
             onBid={(amount) => setCurrentBid(amount)} 
             streamId={streamId}
           />
-          <LiveStreamShop />
-          <LiveStreamChat streamId={streamChatId} />
+          <LiveStreamShop key={`mshop-${streamId}`} />
+          <LiveStreamChat key={`mchat-${streamId}`} streamId={streamChatId} />
         </div>
 
         <div className="max-w-[1600px] mx-auto mt-6">
