@@ -11,53 +11,100 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type ItemStatus = "auction" | "sold" | "buynow";
-type SortOption = "none" | "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest";
+type SortOption = "none" | "price-asc" | "price-desc" | "name-asc" | "name-desc";
 
-const shopProducts = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=100",
-    title: "BLESS THE CHAT WITH A BRAND NEW TRAVIS SCOTT!!!!",
-    price: 13034,
-    qty: 118,
-    bids: 0,
-    status: "buynow" as ItemStatus,
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=100",
-    title: "BLESS THE CHAT WITH A DS JORDAN!!!!!!",
-    price: 4655,
-    qty: 170,
-    bids: 0,
-    status: "sold" as ItemStatus,
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100",
-    title: "Vintage Boston Red Sox Mesh Snapback Hat...",
-    price: 465,
-    qty: 1,
-    bids: 1,
-    status: "auction" as ItemStatus,
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=100",
-    title: "Rider Cup New Era Strap",
-    price: 279,
-    qty: 1,
-    bids: 0,
-    status: "auction" as ItemStatus,
-  },
+interface ShopProduct {
+  id: number;
+  image: string;
+  title: string;
+  price: number;
+  bids: number;
+  status: ItemStatus;
+}
+
+// Stream-specific product data
+const streamProducts: Record<number, ShopProduct[]> = {
+  301: [
+    { id: 1, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100", title: "Victorian Mahogany Cabinet", price: 7355, bids: 34, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=100", title: "Antique Brass Wall Clock", price: 3200, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=100", title: "Carved Oak Writing Desk", price: 12500, bids: 12, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1532372576444-dda954194ad0?w=100", title: "Crystal Chandelier Set", price: 8900, bids: 5, status: "auction" },
+    { id: 5, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=100", title: "Persian Silk Rug", price: 15000, bids: 0, status: "buynow" },
+  ],
+  302: [
+    { id: 1, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=100", title: "Vintage Denim Jacket", price: 4500, bids: 8, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=100", title: "Designer Silk Scarf", price: 2800, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=100", title: "Leather Crossbody Bag", price: 6200, bids: 15, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100", title: "Retro Sneakers Limited Ed.", price: 9500, bids: 3, status: "auction" },
+  ],
+  303: [
+    { id: 1, image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=100", title: "Natural Blue Sapphire Ring", price: 25000, bids: 22, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1515562141589-67f0d89b23c5?w=100", title: "Pearl Necklace Set", price: 8500, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=100", title: "Gold Filigree Earrings", price: 4200, bids: 10, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=100", title: "Diamond Tennis Bracelet", price: 35000, bids: 7, status: "auction" },
+    { id: 5, image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=100", title: "Emerald Pendant", price: 12000, bids: 0, status: "buynow" },
+  ],
+  304: [
+    { id: 1, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=100", title: "Hand-knotted Wool Carpet", price: 18000, bids: 6, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1616627561950-9f746e330187?w=100", title: "Ceramic Vase Collection", price: 3500, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=100", title: "Vintage Oil Painting", price: 22000, bids: 18, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=100", title: "Bronze Horse Sculpture", price: 9800, bids: 4, status: "auction" },
+  ],
+  305: [
+    { id: 1, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100", title: "Omega Vintage Watch 1960", price: 45000, bids: 30, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=100", title: "Rolex Submariner Case", price: 28000, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=100", title: "Seiko Presage Limited", price: 15000, bids: 20, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?w=100", title: "Casio G-Shock Rare Edition", price: 8500, bids: 2, status: "auction" },
+  ],
+  306: [
+    { id: 1, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=100", title: "Mughal Era Silver Coin", price: 12000, bids: 14, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=100", title: "British India Gold Sovereign", price: 55000, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1532372576444-dda954194ad0?w=100", title: "Ancient Roman Denarius", price: 32000, bids: 25, status: "sold" },
+  ],
+  307: [
+    { id: 1, image: "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=100", title: "Watercolor Landscape Original", price: 8500, bids: 9, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=100", title: "Abstract Acrylic Canvas", price: 5200, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=100", title: "Modern Sculpture Print", price: 3800, bids: 6, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=100", title: "Charcoal Portrait Study", price: 2500, bids: 1, status: "auction" },
+  ],
+  308: [
+    { id: 1, image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=100", title: "Handwoven Banarasi Saree", price: 18500, bids: 11, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=100", title: "Embroidered Sherwani Set", price: 12000, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=100", title: "Pashmina Shawl Premium", price: 7500, bids: 8, status: "sold" },
+  ],
+  309: [
+    { id: 1, image: "https://images.unsplash.com/photo-1616627561950-9f746e330187?w=100", title: "Tanjore Gold Leaf Painting", price: 22000, bids: 16, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=100", title: "Sandalwood Carved Elephant", price: 6500, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1594040226829-7f251ab46d80?w=100", title: "Brass Nataraja Statue", price: 9800, bids: 12, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1532372576444-dda954194ad0?w=100", title: "Marble Inlay Box Set", price: 4500, bids: 3, status: "auction" },
+  ],
+  310: [
+    { id: 1, image: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=100", title: "Grandfather Pendulum Clock", price: 28000, bids: 20, status: "auction" },
+    { id: 2, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100", title: "Art Deco Table Clock", price: 5500, bids: 0, status: "buynow" },
+    { id: 3, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100", title: "Swiss Cuckoo Clock", price: 15000, bids: 14, status: "sold" },
+    { id: 4, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=100", title: "Pocket Watch Victorian Era", price: 11000, bids: 5, status: "auction" },
+  ],
+};
+
+// Default products for unknown streams
+const defaultProducts: ShopProduct[] = [
+  { id: 1, image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100", title: "Antique Collection Item", price: 5000, bids: 3, status: "auction" },
+  { id: 2, image: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=100", title: "Vintage Decor Piece", price: 2500, bids: 0, status: "buynow" },
+  { id: 3, image: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=100", title: "Classic Wooden Frame", price: 1800, bids: 7, status: "sold" },
 ];
 
 type FilterType = "auction" | "buynow" | "sold";
 
-const LiveStreamShop = () => {
+interface LiveStreamShopProps {
+  streamId?: number;
+}
+
+const LiveStreamShop = ({ streamId = 301 }: LiveStreamShopProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("none");
+
+  const products = streamProducts[streamId] || defaultProducts;
 
   const filters: { label: string; value: FilterType }[] = [
     { label: "Auction", value: "auction" },
@@ -66,19 +113,30 @@ const LiveStreamShop = () => {
   ];
 
   const sortLabels: Record<SortOption, string> = {
-    "none": "None (Show All)",
-    "newest": "Newest",
-    "price-asc": "Price: Low → High",
-    "price-desc": "Price: High → Low",
+    "none": "All Items",
     "name-asc": "Name: A → Z",
     "name-desc": "Name: Z → A",
+    "price-asc": "Price: Low → High",
+    "price-desc": "Price: High → Low",
   };
 
-  const filteredProducts = shopProducts
+  const filteredProducts = products
     .filter((p) => {
       const matchesSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = !activeFilter || p.status === activeFilter;
-      return matchesSearch && matchesFilter;
+      if (activeFilter === "auction") {
+        // Show only items currently in auction (active bidding)
+        return matchesSearch && p.status === "auction";
+      }
+      if (activeFilter === "buynow") {
+        // Show items listed in auction but not yet sold
+        return matchesSearch && (p.status === "buynow" || p.status === "auction");
+      }
+      if (activeFilter === "sold") {
+        // Show only sold items
+        return matchesSearch && p.status === "sold";
+      }
+      // No filter (Sort) - show all items
+      return matchesSearch;
     })
     .sort((a, b) => {
       switch (sortOption) {
@@ -150,15 +208,7 @@ const LiveStreamShop = () => {
 };
 
 interface ProductCardProps {
-  product: {
-    id: number;
-    image: string;
-    title: string;
-    price: number;
-    qty: number;
-    bids?: number;
-    status: ItemStatus;
-  };
+  product: ShopProduct;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
@@ -174,10 +224,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">{product.title}</p>
         <div className="flex items-center gap-1.5 text-sm">
           <span className="font-bold text-foreground">₹{product.price.toLocaleString("en-IN")}</span>
-          {product.bids !== undefined && product.bids > 0 && (
+          {product.bids > 0 && (
             <span className="text-destructive text-xs">{product.bids} bid{product.bids > 1 ? "s" : ""}</span>
           )}
-          {product.bids !== undefined && product.bids === 0 && product.status === "auction" && (
+          {product.bids === 0 && product.status === "auction" && (
             <span className="text-muted-foreground text-xs">0 bids</span>
           )}
         </div>
