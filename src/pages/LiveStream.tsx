@@ -70,7 +70,7 @@ const LiveStream = () => {
           {/* Desktop 3-column layout */}
           <div className="hidden lg:grid lg:grid-cols-[280px_1fr_320px] gap-3 sm:gap-4 h-[672px]">
             <div className="h-full overflow-hidden" key={`shop-${streamId}`}>
-              <LiveStreamShop />
+              <LiveStreamShop streamId={streamId} />
             </div>
             <div className="h-full min-w-0 overflow-hidden" key={`video-${streamId}`}>
               <LiveStreamVideo 
@@ -92,7 +92,7 @@ const LiveStream = () => {
             onBid={(amount) => setCurrentBid(amount)} 
             streamId={streamId}
           />
-          <LiveStreamShop key={`mshop-${streamId}`} />
+          <LiveStreamShop key={`mshop-${streamId}`} streamId={streamId} />
           <LiveStreamChat key={`mchat-${streamId}`} streamId={streamChatId} />
         </div>
 
