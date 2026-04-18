@@ -7,6 +7,7 @@ import { Star, Volume2, VolumeX, Share2, Play, StickyNote, ChevronLeft, ChevronR
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
+import { useAuctionWinners } from "@/hooks/useAuctionWinners";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
@@ -71,11 +72,15 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [timeLeft, setTimeLeft] = useState(TOTAL_DURATION);
   const [phase, setPhase] = useState<"explain" | "bid">("explain");
   const [lastBidder, setLastBidder] = useState<string | null>("kingd72");
+  const [bidCount, setBidCount] = useState(34);
   const [winner, setWinner] = useState<string | null>(null);
   const [showWinner, setShowWinner] = useState(false);
+  const [bidFlash, setBidFlash] = useState<string | null>(null);
+  const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
+  const { addWinner } = useAuctionWinners();
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
 
