@@ -174,6 +174,10 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (!result.error) {
       onBid(amount);
       setLastBidder("You");
+      setBidCount(c => c + 1);
+      // Flash winner name for 1 second
+      setBidFlash("You");
+      setTimeout(() => setBidFlash(null), 1000);
       toast({ title: "Bid placed!", description: `You bid ₹${(amount * 93.1).toFixed(0)}` });
     }
   };
