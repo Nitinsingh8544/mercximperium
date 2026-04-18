@@ -208,7 +208,6 @@ const LiveStreamShop = ({ streamId = 301, sellerInfo }: LiveStreamShopProps) => 
           <ProductCard
             key={product.id}
             product={product}
-            hidePrebid={activeFilter === "auction"}
             onClick={() => setSelectedProduct(product)}
           />
         ))}
@@ -242,14 +241,14 @@ const LiveStreamShop = ({ streamId = 301, sellerInfo }: LiveStreamShopProps) => 
 
 interface ProductCardProps {
   product: ShopProduct;
-  hidePrebid?: boolean;
   onClick?: () => void;
 }
 
-const ProductCard = ({ product, hidePrebid, onClick }: ProductCardProps) => {
-  const statusLabel = product.status === "auction" ? "Pre-bid" : product.status === "sold" ? "Sold" : "Buy Now";
+const ProductCard = ({ product, onClick }: ProductCardProps) => {
   const isSold = product.status === "sold";
-  const showButton = !(hidePrebid && product.status === "auction");
+  const isAuction = product.status === "auction";
+  // Only show "Buy Now" or "Sold" buttons. Pre-bid removed entirely (real-time bidding only).
+  const buttonLabel = isSold ? "Sold" : isAuction ? null : "Buy Now";
 
   return (
     <div
@@ -261,17 +260,19 @@ const ProductCard = ({ product, hidePrebid, onClick }: ProductCardProps) => {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground line-clamp-2 mb-1 leading-tight">{product.title}</p>
-        <div className="flex items-center gap-1.5 text-sm">
+        <div className="flex items-center gap-1.5 text-sm flex-wrap">
           <span className="font-bold text-foreground">₹{product.price.toLocaleString("en-IN")}</span>
           {product.bids > 0 && (
-            <span className="text-destructive text-xs">{product.bids} bid{product.bids > 1 ? "s" : ""}</span>
+            <span className="inline-flex items-center gap-0.5 bg-destructive/10 text-destructive text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              🔥 {product.bids} bid{product.bids > 1 ? "s" : ""}
+            </span>
           )}
-          {product.bids === 0 && product.status === "auction" && (
+          {product.bids === 0 && isAuction && (
             <span className="text-muted-foreground text-xs">0 bids</span>
           )}
         </div>
 
-        {showButton && (
+        {buttonLabel && (
           <Button
             size="sm"
             variant="outline"
@@ -280,12 +281,10 @@ const ProductCard = ({ product, hidePrebid, onClick }: ProductCardProps) => {
             className={`w-full mt-1.5 text-xs h-8 rounded-full ${
               isSold
                 ? "border-muted-foreground/30 text-muted-foreground"
-                : product.status === "auction"
-                ? "border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
                 : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             }`}
           >
-            {statusLabel}
+            {buttonLabel}
           </Button>
         )}
       </div>
