@@ -341,7 +341,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Current Winner Banner */}
+          {/* Bid Flash Overlay - 1s flash on new bid */}
+          {bidFlash && (
+            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+              <div className="bg-secondary/95 px-6 py-3 rounded-xl shadow-2xl animate-in zoom-in-50 fade-in duration-200">
+                <p className="text-secondary-foreground font-bold text-2xl">⚡ {bidFlash} bid!</p>
+              </div>
+            </div>
+          )}
           {lastBidder && !showWinner && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
@@ -365,7 +372,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm leading-tight">{itemInfo.itemNumber}. {itemInfo.name}</p>
                 <p className="text-white/60 text-xs">{itemInfo.description}</p>
-                <p className="text-white/50 text-xs">34 Bids</p>
+                <p className="text-white/50 text-xs">{bidCount} Bids</p>
                 <p className="text-white/40 text-xs">Shipping + Taxes are extra</p>
               </div>
               <div className="text-right flex-shrink-0">
