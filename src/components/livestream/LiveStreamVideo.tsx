@@ -72,34 +72,46 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [disliked, setDisliked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_DURATION);
   const [phase, setPhase] = useState<"explain" | "bid">("explain");
-  const [lastBidder, setLastBidder] = useState<string | null>("kingd72");
-  const [bidCount, setBidCount] = useState(34);
+  const [lastBidder, setLastBidder] = useState<string | null>(null);
+  const [bidCount, setBidCount] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [showWinner, setShowWinner] = useState(false);
-  const [bidFlash, setBidFlash] = useState<string | null>(null);
+  const [fadeOut, setFadeOut] = useState(false);
   const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
   const { addWinner } = useAuctionWinners();
+  const { getActiveItem, advanceQueue } = useAuctionQueue();
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sellerInfo = streamSellerData[streamId] || defaultSeller;
-  const itemInfo = streamItemData[streamId] || defaultItem;
+  // Active item from queue takes precedence over static fallback
+  const activeQueueItem = getActiveItem(streamId);
+  const fallbackItem = streamItemData[streamId] || defaultItem;
+  const itemInfo = activeQueueItem
+    ? {
+        name: activeQueueItem.title,
+        description: fallbackItem.description,
+        image: activeQueueItem.image.replace("w=100", "w=800"),
+        itemNumber: String(activeQueueItem.order).padStart(2, "0"),
+      }
+    : fallbackItem;
 
   const following = isFollowing(sellerInfo.name);
-  const estimatedINR = (currentBid * 93.1).toFixed(2);
   const nextBid = currentBid + 5;
-  const nextBidINR = (nextBid * 93.1).toFixed(2);
 
-  // Timer logic: 150s explain then 30s bid
-  useEffect(() => {
+  // Reset timer + bid state for a fresh auction cycle (called per item & per stream change)
+  const startNewCycle = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     setTimeLeft(TOTAL_DURATION);
     setPhase("explain");
     setWinner(null);
     setShowWinner(false);
+    setFadeOut(false);
+    setLastBidder(null);
+    setBidCount(0);
     winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
@@ -116,16 +128,23 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         return next;
       });
     }, 1000);
+  }, []);
 
+  // Start a new cycle when stream OR active queue item changes
+  useEffect(() => {
+    startNewCycle();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [streamId]);
+  }, [streamId, activeQueueItem?.id, startNewCycle]);
 
-  // Record the winner exactly once when timer ends
+  // Record winner exactly once when timer hits 0
   useEffect(() => {
-    if (timeLeft === 0 && lastBidder && !winnerRecordedRef.current) {
-      winnerRecordedRef.current = true;
+    if (timeLeft !== 0 || winnerRecordedRef.current) return;
+    winnerRecordedRef.current = true;
+
+    // Only the highest bidder (lastBidder) wins. If nobody bid, no winner.
+    if (lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
       addWinner({
@@ -137,15 +156,25 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         totalBids: bidCount,
       });
     }
-  }, [timeLeft, lastBidder, streamId, itemInfo, currentBid, bidCount, addWinner]);
 
-  // Auto-hide winner after 2s
-  useEffect(() => {
-    if (showWinner) {
-      const t = setTimeout(() => setShowWinner(false), 2000);
-      return () => clearTimeout(t);
-    }
-  }, [showWinner]);
+    // After 2s splash → fade for 0.5s → advance queue + fresh timer
+    const splashTimer = setTimeout(() => {
+      setFadeOut(true);
+      const fadeTimer = setTimeout(() => {
+        // Mark current as sold and activate next pending item
+        const next = advanceQueue(streamId);
+        if (!next) {
+          // No more items in queue — leave winner badge, stop timer
+          setShowWinner(false);
+          setFadeOut(false);
+        }
+        // If `next` exists, the activeQueueItem change will trigger startNewCycle()
+      }, 500);
+      return () => clearTimeout(fadeTimer);
+    }, 2000);
+
+    return () => clearTimeout(splashTimer);
+  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue]);
 
   const bidTimeLeft = phase === "bid" ? timeLeft : Math.max(0, timeLeft - EXPLAIN_DURATION);
   const displayTime = phase === "bid" ? timeLeft : timeLeft - BID_DURATION;
@@ -157,8 +186,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   };
 
   const handleBid = async (amount: number) => {
-    if (phase !== "bid" && timeLeft > BID_DURATION) {
-      toast({ title: "Bidding not started", description: "Wait for the bidding phase to begin.", variant: "destructive" });
+    // Bidding strictly disabled outside the active 30s bid window
+    if (phase !== "bid" || timeLeft <= 0) {
+      toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
       return;
     }
 
@@ -176,10 +206,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
       onBid(amount);
       setLastBidder("You");
       setBidCount(c => c + 1);
-      // Flash winner name for 1 second
-      setBidFlash("You");
-      setTimeout(() => setBidFlash(null), 1000);
-      toast({ title: "Bid placed!", description: `You bid ₹${(amount * 93.1).toFixed(0)}` });
+      // Per spec: do NOT show "you win" message during bidding.
+      // Live ticker (`is Winning!` badge) already shows the current top bidder.
     }
   };
 
