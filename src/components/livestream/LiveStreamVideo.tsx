@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useAuctionWinners } from "@/hooks/useAuctionWinners";
+import { useAuctionQueue } from "@/hooks/useAuctionQueue";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
