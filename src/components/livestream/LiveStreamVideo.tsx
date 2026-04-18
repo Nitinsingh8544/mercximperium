@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useAuctionWinners } from "@/hooks/useAuctionWinners";
+import { useAuctionQueue } from "@/hooks/useAuctionQueue";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
@@ -71,34 +72,46 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [disliked, setDisliked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_DURATION);
   const [phase, setPhase] = useState<"explain" | "bid">("explain");
-  const [lastBidder, setLastBidder] = useState<string | null>("kingd72");
-  const [bidCount, setBidCount] = useState(34);
+  const [lastBidder, setLastBidder] = useState<string | null>(null);
+  const [bidCount, setBidCount] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
   const [showWinner, setShowWinner] = useState(false);
-  const [bidFlash, setBidFlash] = useState<string | null>(null);
+  const [fadeOut, setFadeOut] = useState(false);
   const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
   const { addWinner } = useAuctionWinners();
+  const { getActiveItem, advanceQueue } = useAuctionQueue();
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sellerInfo = streamSellerData[streamId] || defaultSeller;
-  const itemInfo = streamItemData[streamId] || defaultItem;
+  // Active item from queue takes precedence over static fallback
+  const activeQueueItem = getActiveItem(streamId);
+  const fallbackItem = streamItemData[streamId] || defaultItem;
+  const itemInfo = activeQueueItem
+    ? {
+        name: activeQueueItem.title,
+        description: fallbackItem.description,
+        image: activeQueueItem.image.replace("w=100", "w=800"),
+        itemNumber: String(activeQueueItem.order).padStart(2, "0"),
+      }
+    : fallbackItem;
 
   const following = isFollowing(sellerInfo.name);
-  const estimatedINR = (currentBid * 93.1).toFixed(2);
   const nextBid = currentBid + 5;
-  const nextBidINR = (nextBid * 93.1).toFixed(2);
 
-  // Timer logic: 150s explain then 30s bid
-  useEffect(() => {
+  // Reset timer + bid state for a fresh auction cycle (called per item & per stream change)
+  const startNewCycle = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     setTimeLeft(TOTAL_DURATION);
     setPhase("explain");
     setWinner(null);
     setShowWinner(false);
+    setFadeOut(false);
+    setLastBidder(null);
+    setBidCount(0);
     winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
@@ -115,16 +128,23 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         return next;
       });
     }, 1000);
+  }, []);
 
+  // Start a new cycle when stream OR active queue item changes
+  useEffect(() => {
+    startNewCycle();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [streamId]);
+  }, [streamId, activeQueueItem?.id, startNewCycle]);
 
-  // Record the winner exactly once when timer ends
+  // Record winner exactly once when timer hits 0
   useEffect(() => {
-    if (timeLeft === 0 && lastBidder && !winnerRecordedRef.current) {
-      winnerRecordedRef.current = true;
+    if (timeLeft !== 0 || winnerRecordedRef.current) return;
+    winnerRecordedRef.current = true;
+
+    // Only the highest bidder (lastBidder) wins. If nobody bid, no winner.
+    if (lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
       addWinner({
@@ -136,15 +156,25 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         totalBids: bidCount,
       });
     }
-  }, [timeLeft, lastBidder, streamId, itemInfo, currentBid, bidCount, addWinner]);
 
-  // Auto-hide winner after 2s
-  useEffect(() => {
-    if (showWinner) {
-      const t = setTimeout(() => setShowWinner(false), 2000);
-      return () => clearTimeout(t);
-    }
-  }, [showWinner]);
+    // After 2s splash → fade for 0.5s → advance queue + fresh timer
+    const splashTimer = setTimeout(() => {
+      setFadeOut(true);
+      const fadeTimer = setTimeout(() => {
+        // Mark current as sold and activate next pending item
+        const next = advanceQueue(streamId);
+        if (!next) {
+          // No more items in queue — leave winner badge, stop timer
+          setShowWinner(false);
+          setFadeOut(false);
+        }
+        // If `next` exists, the activeQueueItem change will trigger startNewCycle()
+      }, 500);
+      return () => clearTimeout(fadeTimer);
+    }, 2000);
+
+    return () => clearTimeout(splashTimer);
+  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue]);
 
   const bidTimeLeft = phase === "bid" ? timeLeft : Math.max(0, timeLeft - EXPLAIN_DURATION);
   const displayTime = phase === "bid" ? timeLeft : timeLeft - BID_DURATION;
@@ -156,8 +186,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   };
 
   const handleBid = async (amount: number) => {
-    if (phase !== "bid" && timeLeft > BID_DURATION) {
-      toast({ title: "Bidding not started", description: "Wait for the bidding phase to begin.", variant: "destructive" });
+    // Bidding strictly disabled outside the active 30s bid window
+    if (phase !== "bid" || timeLeft <= 0) {
+      toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
       return;
     }
 
@@ -175,10 +206,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
       onBid(amount);
       setLastBidder("You");
       setBidCount(c => c + 1);
-      // Flash winner name for 1 second
-      setBidFlash("You");
-      setTimeout(() => setBidFlash(null), 1000);
-      toast({ title: "Bid placed!", description: `You bid ₹${(amount * 93.1).toFixed(0)}` });
+      // Per spec: do NOT show "you win" message during bidding.
+      // Live ticker (`is Winning!` badge) already shows the current top bidder.
     }
   };
 
@@ -328,9 +357,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Winner Celebration Splash Overlay - 2s */}
+          {/* Winner Celebration Splash Overlay - 2s, then fade for 0.5s before next item */}
           {showWinner && winner && (
-            <div className="absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-secondary/80 via-primary/70 to-secondary/80 backdrop-blur-md animate-in fade-in duration-300">
+            <div className={`absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-secondary/80 via-primary/70 to-secondary/80 backdrop-blur-md transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in"}`}>
               {/* Splash rays */}
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[150%] w-[150%] bg-[radial-gradient(circle,_hsl(var(--secondary)/0.4)_0%,_transparent_60%)] animate-ping" />
@@ -338,29 +367,24 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               <div className="relative text-center animate-in zoom-in-50 duration-500 px-6 py-5 bg-card/95 rounded-2xl shadow-2xl border-2 border-secondary">
                 <div className="text-5xl mb-2 animate-bounce">🎉🏆🎉</div>
                 <p className="text-2xl font-extrabold text-secondary mb-2 tracking-wide">WINNER!</p>
-                <Avatar className="h-16 w-16 mx-auto border-4 border-secondary shadow-lg mb-2">
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl font-bold">
+                <Avatar className="h-20 w-20 mx-auto border-4 border-secondary shadow-lg mb-2">
+                  <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-bold">
                     {winner.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <p className="text-xl text-foreground font-bold">{winner}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  won at <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
+                  won <span className="font-semibold text-foreground">{itemInfo.name}</span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  at <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
                 </p>
                 <div className="text-2xl mt-1">✨🎊✨</div>
               </div>
             </div>
           )}
 
-          {/* Bid Flash Overlay - 1s flash on new bid */}
-          {bidFlash && (
-            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-              <div className="bg-secondary/95 px-6 py-3 rounded-xl shadow-2xl animate-in zoom-in-50 fade-in duration-200">
-                <p className="text-secondary-foreground font-bold text-2xl">⚡ {bidFlash} bid!</p>
-              </div>
-            </div>
-          )}
-          {/* Live bidder badge - only during active auction (not after end) */}
+          {/* Live bidder badge - only during active bidding (not after end) */}
           {lastBidder && !showWinner && timeLeft > 0 && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
