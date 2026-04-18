@@ -99,6 +99,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setPhase("explain");
     setWinner(null);
     setShowWinner(false);
+    winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
@@ -107,12 +108,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           setPhase("bid");
         }
         if (next <= 0) {
-          // Auction ended for this item
           if (timerRef.current) clearInterval(timerRef.current);
           setPhase("bid");
-          // Show winner
-          setWinner(lastBidder);
-          setShowWinner(true);
           return 0;
         }
         return next;
@@ -124,13 +121,22 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     };
   }, [streamId]);
 
-  // Update winner when lastBidder changes at timer end
+  // Record the winner exactly once when timer ends
   useEffect(() => {
-    if (timeLeft === 0 && lastBidder) {
+    if (timeLeft === 0 && lastBidder && !winnerRecordedRef.current) {
+      winnerRecordedRef.current = true;
       setWinner(lastBidder);
       setShowWinner(true);
+      addWinner({
+        streamId,
+        itemName: itemInfo.name,
+        itemImage: itemInfo.image,
+        winnerName: lastBidder,
+        finalPrice: Math.round(currentBid * 93.1),
+        totalBids: bidCount,
+      });
     }
-  }, [timeLeft, lastBidder]);
+  }, [timeLeft, lastBidder, streamId, itemInfo, currentBid, bidCount, addWinner]);
 
   // Auto-hide winner after 5s
   useEffect(() => {
