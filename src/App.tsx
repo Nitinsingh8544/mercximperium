@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { AuctionWinnersProvider } from "@/hooks/useAuctionWinners";
+import { AuctionQueueProvider } from "@/hooks/useAuctionQueue";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import SignUp from "./pages/SignUp";
@@ -41,6 +42,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <AuctionWinnersProvider>
+          <AuctionQueueProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/signup" element={<SignUp />} />
@@ -68,6 +70,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </AuctionQueueProvider>
           </AuctionWinnersProvider>
         </AuthProvider>
       </BrowserRouter>
