@@ -357,9 +357,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Winner Celebration Splash Overlay - 2s */}
+          {/* Winner Celebration Splash Overlay - 2s, then fade for 0.5s before next item */}
           {showWinner && winner && (
-            <div className="absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-secondary/80 via-primary/70 to-secondary/80 backdrop-blur-md animate-in fade-in duration-300">
+            <div className={`absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-secondary/80 via-primary/70 to-secondary/80 backdrop-blur-md transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in"}`}>
               {/* Splash rays */}
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[150%] w-[150%] bg-[radial-gradient(circle,_hsl(var(--secondary)/0.4)_0%,_transparent_60%)] animate-ping" />
@@ -367,29 +367,24 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               <div className="relative text-center animate-in zoom-in-50 duration-500 px-6 py-5 bg-card/95 rounded-2xl shadow-2xl border-2 border-secondary">
                 <div className="text-5xl mb-2 animate-bounce">🎉🏆🎉</div>
                 <p className="text-2xl font-extrabold text-secondary mb-2 tracking-wide">WINNER!</p>
-                <Avatar className="h-16 w-16 mx-auto border-4 border-secondary shadow-lg mb-2">
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl font-bold">
+                <Avatar className="h-20 w-20 mx-auto border-4 border-secondary shadow-lg mb-2">
+                  <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-bold">
                     {winner.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <p className="text-xl text-foreground font-bold">{winner}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  won at <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
+                  won <span className="font-semibold text-foreground">{itemInfo.name}</span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  at <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
                 </p>
                 <div className="text-2xl mt-1">✨🎊✨</div>
               </div>
             </div>
           )}
 
-          {/* Bid Flash Overlay - 1s flash on new bid */}
-          {bidFlash && (
-            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-              <div className="bg-secondary/95 px-6 py-3 rounded-xl shadow-2xl animate-in zoom-in-50 fade-in duration-200">
-                <p className="text-secondary-foreground font-bold text-2xl">⚡ {bidFlash} bid!</p>
-              </div>
-            </div>
-          )}
-          {/* Live bidder badge - only during active auction (not after end) */}
+          {/* Live bidder badge - only during active bidding (not after end) */}
           {lastBidder && !showWinner && timeLeft > 0 && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
