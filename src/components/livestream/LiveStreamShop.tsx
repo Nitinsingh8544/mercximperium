@@ -103,14 +103,17 @@ type FilterType = "auction" | "buynow" | "sold";
 
 interface LiveStreamShopProps {
   streamId?: number;
+  sellerInfo?: ShopSellerInfo;
 }
 
-const LiveStreamShop = ({ streamId = 301 }: LiveStreamShopProps) => {
+const LiveStreamShop = ({ streamId = 301, sellerInfo }: LiveStreamShopProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("none");
+  const [selectedProduct, setSelectedProduct] = useState<ShopProduct | null>(null);
 
   const products = streamProducts[streamId] || defaultProducts;
+  const seller = sellerInfo || { name: "Seller", image: "" };
 
   const filters: { label: string; value: FilterType }[] = [
     { label: "Auction", value: "auction" },
