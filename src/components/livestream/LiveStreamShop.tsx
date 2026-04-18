@@ -9,6 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ProductDetailModal from "@/components/livestream/ProductDetailModal";
+
+interface ShopSellerInfo {
+  name: string;
+  image: string;
+}
 
 type ItemStatus = "auction" | "sold" | "buynow";
 type SortOption = "none" | "price-asc" | "price-desc" | "name-asc" | "name-desc";
