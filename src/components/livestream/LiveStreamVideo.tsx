@@ -7,6 +7,7 @@ import { Star, Volume2, VolumeX, Share2, Play, StickyNote, ChevronLeft, ChevronR
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useFollows } from "@/hooks/useFollows";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
+import { useAuctionWinners } from "@/hooks/useAuctionWinners";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
@@ -71,11 +72,15 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [timeLeft, setTimeLeft] = useState(TOTAL_DURATION);
   const [phase, setPhase] = useState<"explain" | "bid">("explain");
   const [lastBidder, setLastBidder] = useState<string | null>("kingd72");
+  const [bidCount, setBidCount] = useState(34);
   const [winner, setWinner] = useState<string | null>(null);
   const [showWinner, setShowWinner] = useState(false);
+  const [bidFlash, setBidFlash] = useState<string | null>(null);
+  const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
   const { placeBid } = useAuctionBids();
+  const { addWinner } = useAuctionWinners();
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -94,6 +99,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setPhase("explain");
     setWinner(null);
     setShowWinner(false);
+    winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
@@ -102,12 +108,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           setPhase("bid");
         }
         if (next <= 0) {
-          // Auction ended for this item
           if (timerRef.current) clearInterval(timerRef.current);
           setPhase("bid");
-          // Show winner
-          setWinner(lastBidder);
-          setShowWinner(true);
           return 0;
         }
         return next;
@@ -119,13 +121,22 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     };
   }, [streamId]);
 
-  // Update winner when lastBidder changes at timer end
+  // Record the winner exactly once when timer ends
   useEffect(() => {
-    if (timeLeft === 0 && lastBidder) {
+    if (timeLeft === 0 && lastBidder && !winnerRecordedRef.current) {
+      winnerRecordedRef.current = true;
       setWinner(lastBidder);
       setShowWinner(true);
+      addWinner({
+        streamId,
+        itemName: itemInfo.name,
+        itemImage: itemInfo.image,
+        winnerName: lastBidder,
+        finalPrice: Math.round(currentBid * 93.1),
+        totalBids: bidCount,
+      });
     }
-  }, [timeLeft, lastBidder]);
+  }, [timeLeft, lastBidder, streamId, itemInfo, currentBid, bidCount, addWinner]);
 
   // Auto-hide winner after 5s
   useEffect(() => {
@@ -163,6 +174,10 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (!result.error) {
       onBid(amount);
       setLastBidder("You");
+      setBidCount(c => c + 1);
+      // Flash winner name for 1 second
+      setBidFlash("You");
+      setTimeout(() => setBidFlash(null), 1000);
       toast({ title: "Bid placed!", description: `You bid ₹${(amount * 93.1).toFixed(0)}` });
     }
   };
@@ -326,7 +341,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Current Winner Banner */}
+          {/* Bid Flash Overlay - 1s flash on new bid */}
+          {bidFlash && (
+            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+              <div className="bg-secondary/95 px-6 py-3 rounded-xl shadow-2xl animate-in zoom-in-50 fade-in duration-200">
+                <p className="text-secondary-foreground font-bold text-2xl">⚡ {bidFlash} bid!</p>
+              </div>
+            </div>
+          )}
           {lastBidder && !showWinner && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
@@ -350,7 +372,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold text-sm leading-tight">{itemInfo.itemNumber}. {itemInfo.name}</p>
                 <p className="text-white/60 text-xs">{itemInfo.description}</p>
-                <p className="text-white/50 text-xs">34 Bids</p>
+                <p className="text-white/50 text-xs">{bidCount} Bids</p>
                 <p className="text-white/40 text-xs">Shipping + Taxes are extra</p>
               </div>
               <div className="text-right flex-shrink-0">

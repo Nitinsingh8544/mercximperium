@@ -9,6 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ProductDetailModal from "@/components/livestream/ProductDetailModal";
+
+interface ShopSellerInfo {
+  name: string;
+  image: string;
+}
 
 type ItemStatus = "auction" | "sold" | "buynow";
 type SortOption = "none" | "price-asc" | "price-desc" | "name-asc" | "name-desc";
@@ -97,14 +103,17 @@ type FilterType = "auction" | "buynow" | "sold";
 
 interface LiveStreamShopProps {
   streamId?: number;
+  sellerInfo?: ShopSellerInfo;
 }
 
-const LiveStreamShop = ({ streamId = 301 }: LiveStreamShopProps) => {
+const LiveStreamShop = ({ streamId = 301, sellerInfo }: LiveStreamShopProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>("none");
+  const [selectedProduct, setSelectedProduct] = useState<ShopProduct | null>(null);
 
   const products = streamProducts[streamId] || defaultProducts;
+  const seller = sellerInfo || { name: "Seller", image: "" };
 
   const filters: { label: string; value: FilterType }[] = [
     { label: "Auction", value: "auction" },
@@ -196,27 +205,57 @@ const LiveStreamShop = ({ streamId = 301 }: LiveStreamShopProps) => {
       {/* Products */}
       <div className="space-y-3">
         {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            hidePrebid={activeFilter === "auction"}
+            onClick={() => setSelectedProduct(product)}
+          />
         ))}
       </div>
 
       {filteredProducts.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6">No products found.</p>
       )}
+
+      <ProductDetailModal
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        product={
+          selectedProduct
+            ? {
+                id: selectedProduct.id,
+                image: selectedProduct.image.replace("w=100", "w=500"),
+                title: selectedProduct.title,
+                price: selectedProduct.price,
+                originalPrice: Math.round(selectedProduct.price * 1.2),
+                currency: "₹",
+              }
+            : null
+        }
+        sellerName={seller.name}
+        sellerAvatar={seller.image}
+      />
     </div>
   );
 };
 
 interface ProductCardProps {
   product: ShopProduct;
+  hidePrebid?: boolean;
+  onClick?: () => void;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, hidePrebid, onClick }: ProductCardProps) => {
   const statusLabel = product.status === "auction" ? "Pre-bid" : product.status === "sold" ? "Sold" : "Buy Now";
   const isSold = product.status === "sold";
+  const showButton = !(hidePrebid && product.status === "auction");
 
   return (
-    <div className={`flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors ${isSold ? "opacity-60" : ""}`}>
+    <div
+      className={`flex gap-3 p-2 bg-background rounded-lg hover:bg-muted/50 transition-colors cursor-pointer ${isSold ? "opacity-60" : ""}`}
+      onClick={onClick}
+    >
       <div className="flex-shrink-0">
         <img src={product.image} alt={product.title} className="w-16 h-16 rounded-lg object-cover" />
       </div>
@@ -231,21 +270,24 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-muted-foreground text-xs">0 bids</span>
           )}
         </div>
-        
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={isSold}
-          className={`w-full mt-1.5 text-xs h-8 rounded-full ${
-            isSold
-              ? "border-muted-foreground/30 text-muted-foreground"
-              : product.status === "auction"
-              ? "border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
-              : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-          }`}
-        >
-          {statusLabel}
-        </Button>
+
+        {showButton && (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isSold}
+            onClick={(e) => { e.stopPropagation(); onClick?.(); }}
+            className={`w-full mt-1.5 text-xs h-8 rounded-full ${
+              isSold
+                ? "border-muted-foreground/30 text-muted-foreground"
+                : product.status === "auction"
+                ? "border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
+                : "border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            }`}
+          >
+            {statusLabel}
+          </Button>
+        )}
       </div>
     </div>
   );
