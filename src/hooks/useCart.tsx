@@ -83,6 +83,21 @@ export const useCart = () => {
     }
   };
 
+  const updateQuantity = async (id: string, quantity: number) => {
+    if (!user) return;
+    if (quantity < 1) return;
+
+    const { error } = await supabase
+      .from("cart_items")
+      .update({ quantity })
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (!error) {
+      setCartItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
+    }
+  };
+
   const removeFromCart = async (id: string) => {
     if (!user) return;
 
