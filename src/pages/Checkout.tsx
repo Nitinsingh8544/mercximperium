@@ -74,7 +74,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
 
-  const item = location.state as {
+  type CheckoutItem = {
     title: string;
     image: string;
     price: number;
@@ -84,7 +84,15 @@ const Checkout = () => {
     sellerName: string;
     color: string;
     size: string;
-  } | null;
+  };
+
+  const rawState = location.state as (CheckoutItem | { items: CheckoutItem[] }) | null;
+  const items: CheckoutItem[] | null = rawState
+    ? "items" in rawState
+      ? rawState.items
+      : [rawState as CheckoutItem]
+    : null;
+  const item = items?.[0] ?? null;
 
   const [addresses, setAddresses] = useState<Address[]>(defaultAddresses);
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "");
