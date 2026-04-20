@@ -401,23 +401,36 @@ const Checkout = () => {
 
               <Separator className="mb-4" />
 
-              <h3 className="text-base font-semibold text-foreground mb-3">Order Summary</h3>
+              <h3 className="text-base font-semibold text-foreground mb-3">
+                Order Summary {items.length > 1 && <span className="text-xs font-normal text-muted-foreground">({items.length} items)</span>}
+              </h3>
 
-              <div className="flex gap-3 mb-4">
-                <img src={item.image} alt={item.title} className="w-16 h-16 rounded-md object-cover" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">Color: {item.color} | Size: {item.size}</p>
-                  <p className="text-xs text-muted-foreground">Sold by: {item.sellerName}</p>
-                  <p className="text-sm font-bold text-foreground mt-1">{item.currency}{item.price.toLocaleString()}</p>
-                </div>
+              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto pr-1">
+                {items.map((it, idx) => (
+                  <div key={idx} className="flex gap-3">
+                    <img src={it.image} alt={it.title} className="w-14 h-14 rounded-md object-cover flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{it.title}</p>
+                      {(it.color || it.size) && (
+                        <p className="text-xs text-muted-foreground">
+                          {it.color && `Color: ${it.color}`}{it.color && it.size && " | "}{it.size && `Size: ${it.size}`}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground truncate">Sold by: {it.sellerName}</p>
+                      <p className="text-sm font-bold text-foreground mt-0.5">
+                        {it.currency}{(it.price * it.quantity).toLocaleString()}
+                        {it.quantity > 1 && <span className="text-xs font-normal text-muted-foreground ml-1">(x{it.quantity})</span>}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <Separator className="mb-3" />
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Items ({item.quantity}):</span>
+                  <span className="text-muted-foreground">Items ({totalQuantity}):</span>
                   <span className="text-foreground">{item.currency}{itemTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
