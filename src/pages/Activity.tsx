@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Users, Trash2, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Users, Trash2, ShoppingCart, ShoppingBag, Minus, Plus } from "lucide-react";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useCart, type CartItem } from "@/hooks/useCart";
 
