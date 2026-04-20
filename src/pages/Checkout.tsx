@@ -179,9 +179,10 @@ const Checkout = () => {
     // Earn credits based on the final order amount (1 credit per ₹5 spent)
     const earned = await earnCredits(orderTotal);
 
+    const orderDesc = items.length > 1 ? `${items.length} items` : item.title;
     toast({
       title: "Order placed successfully!",
-      description: `Your order for ${item.title} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
+      description: `Your order for ${orderDesc} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
     });
     navigate("/dashboard");
   };
