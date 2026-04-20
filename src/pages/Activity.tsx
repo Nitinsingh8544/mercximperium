@@ -13,7 +13,7 @@ import { useCart, type CartItem } from "@/hooks/useCart";
 const Activity = () => {
   const navigate = useNavigate();
   const { wonBids } = useAuctionBids();
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = (id: string) => {
