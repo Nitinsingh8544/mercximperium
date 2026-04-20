@@ -6,14 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Users, Trash2, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Users, Trash2, ShoppingCart, ShoppingBag, Minus, Plus } from "lucide-react";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useCart, type CartItem } from "@/hooks/useCart";
 
 const Activity = () => {
   const navigate = useNavigate();
   const { wonBids } = useAuctionBids();
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = (id: string) => {
@@ -149,7 +149,7 @@ const Activity = () => {
                         </div>
                         <CardContent className="p-4">
                           <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-2">{item.product_title}</h3>
-                          <div className="flex items-baseline gap-2 mb-1">
+                          <div className="flex items-baseline gap-2 mb-2">
                             <span className="text-lg font-bold text-secondary">
                               {item.product_currency}{Number(item.product_price).toLocaleString()}
                             </span>
@@ -159,11 +159,51 @@ const Activity = () => {
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+
+                          {/* Seller profile */}
                           {item.seller_name && (
-                            <p className="text-xs text-muted-foreground mt-1">Seller: {item.seller_name}</p>
+                            <button
+                              type="button"
+                              onClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
+                              className="flex items-center gap-2 mb-2 group"
+                            >
+                              <Avatar className="h-6 w-6">
+                                <AvatarFallback className="text-[10px] bg-muted">
+                                  {item.seller_name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs text-muted-foreground group-hover:text-primary group-hover:underline">
+                                {item.seller_name}
+                              </span>
+                            </button>
                           )}
-                          <div className="flex gap-2 mt-3 pt-3 border-t border-border">
+
+                          {/* Quantity stepper */}
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs text-muted-foreground">Qty</span>
+                            <div className="flex items-center border border-border rounded-md">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2 pt-3 border-t border-border">
                             <Button
                               variant="outline"
                               size="sm"
