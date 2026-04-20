@@ -112,5 +112,5 @@ export const useCart = () => {
     }
   };
 
-  return { cartItems, loading, addToCart, removeFromCart, refetch: fetchCart };
+  return { cartItems, loading, addToCart, removeFromCart, updateQuantity, refetch: fetchCart };
 };
