@@ -77,6 +77,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [winner, setWinner] = useState<string | null>(null);
   const [showWinner, setShowWinner] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const [nextItemCountdown, setNextItemCountdown] = useState<number | null>(null);
   const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
@@ -112,6 +113,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setFadeOut(false);
     setLastBidder(null);
     setBidCount(0);
+    setNextItemCountdown(null);
     winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
@@ -138,13 +140,17 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     };
   }, [streamId, activeQueueItem?.id, startNewCycle]);
 
-  // Record winner exactly once when timer hits 0
+  // Record winner / outcome exactly once when timer hits 0,
+  // then run a 3s countdown before activating the next item.
   useEffect(() => {
     if (timeLeft !== 0 || winnerRecordedRef.current) return;
     winnerRecordedRef.current = true;
 
-    // Only the highest bidder (lastBidder) wins. If nobody bid, no winner.
-    if (lastBidder) {
+    const hadBids = !!lastBidder;
+    const outcome: "sold" | "unsold" = hadBids ? "sold" : "unsold";
+
+    // Only the highest bidder (lastBidder) wins. If nobody bid → unsold (goes to Buy Now).
+    if (hadBids && lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
       addWinner({
@@ -157,21 +163,40 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
       });
     }
 
-    // After 2s splash → fade for 0.5s → advance queue + fresh timer
+    // Splash duration: 2s if there's a winner, otherwise skip straight to countdown.
+    const splashDuration = hadBids ? 2000 : 0;
+
     const splashTimer = setTimeout(() => {
       setFadeOut(true);
-      const fadeTimer = setTimeout(() => {
-        // Mark current as sold and activate next pending item
-        const next = advanceQueue(streamId);
+      // Start visible 3s countdown to next item
+      setNextItemCountdown(3);
+      const cdInterval = setInterval(() => {
+        setNextItemCountdown((c) => {
+          if (c === null) return null;
+          if (c <= 1) {
+            clearInterval(cdInterval);
+            return 0;
+          }
+          return c - 1;
+        });
+      }, 1000);
+
+      const advanceTimer = setTimeout(() => {
+        clearInterval(cdInterval);
+        setNextItemCountdown(null);
+        const next = advanceQueue(streamId, outcome);
         if (!next) {
-          // No more items in queue — leave winner badge, stop timer
+          // No more items — leave winner badge, stop overlays
           setShowWinner(false);
           setFadeOut(false);
         }
-        // If `next` exists, the activeQueueItem change will trigger startNewCycle()
-      }, 500);
-      return () => clearTimeout(fadeTimer);
-    }, 2000);
+      }, 3000);
+
+      return () => {
+        clearInterval(cdInterval);
+        clearTimeout(advanceTimer);
+      };
+    }, splashDuration);
 
     return () => clearTimeout(splashTimer);
   }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue]);
@@ -384,7 +409,17 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Live bidder badge - only during active bidding (not after end) */}
+          {/* Next-item countdown overlay (3s between auctions) */}
+          {nextItemCountdown !== null && nextItemCountdown > 0 && (
+            <div className="absolute inset-0 flex items-center justify-center z-40 bg-foreground/70 backdrop-blur-sm animate-in fade-in duration-200">
+              <div className="text-center px-8 py-6 bg-card rounded-2xl shadow-2xl border-2 border-secondary">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Next item in</p>
+                <p className="text-7xl font-extrabold text-secondary tabular-nums animate-pulse">{nextItemCountdown}</p>
+                <p className="text-xs text-muted-foreground mt-2">Get ready to bid!</p>
+              </div>
+            </div>
+          )}
+
           {lastBidder && !showWinner && timeLeft > 0 && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">
