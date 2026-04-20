@@ -111,7 +111,7 @@ const Checkout = () => {
   // Card form
   const [cardForm, setCardForm] = useState({ number: "", nickname: user?.email?.split("@")[0] || "", expiryMonth: "01", expiryYear: "2026" });
 
-  if (!item) {
+  if (!item || !items) {
     return (
       <div className="min-h-screen bg-background">
         <AuthenticatedHeader />
@@ -124,7 +124,8 @@ const Checkout = () => {
   }
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-  const itemTotal = item.price * item.quantity;
+  const itemTotal = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+  const totalQuantity = items.reduce((sum, it) => sum + it.quantity, 0);
   const deliveryCharge = 0;
   const creditDiscount = creditsToRupees(appliedCredits);
   const orderTotal = itemTotal + deliveryCharge - creditDiscount;
