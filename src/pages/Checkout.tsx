@@ -74,7 +74,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
 
-  const item = location.state as {
+  type CheckoutItem = {
     title: string;
     image: string;
     price: number;
@@ -84,7 +84,15 @@ const Checkout = () => {
     sellerName: string;
     color: string;
     size: string;
-  } | null;
+  };
+
+  const rawState = location.state as (CheckoutItem | { items: CheckoutItem[] }) | null;
+  const items: CheckoutItem[] | null = rawState
+    ? "items" in rawState
+      ? rawState.items
+      : [rawState as CheckoutItem]
+    : null;
+  const item = items?.[0] ?? null;
 
   const [addresses, setAddresses] = useState<Address[]>(defaultAddresses);
   const [selectedAddressId, setSelectedAddressId] = useState(addresses[0]?.id || "");
@@ -103,7 +111,7 @@ const Checkout = () => {
   // Card form
   const [cardForm, setCardForm] = useState({ number: "", nickname: user?.email?.split("@")[0] || "", expiryMonth: "01", expiryYear: "2026" });
 
-  if (!item) {
+  if (!item || !items) {
     return (
       <div className="min-h-screen bg-background">
         <AuthenticatedHeader />
@@ -116,7 +124,8 @@ const Checkout = () => {
   }
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-  const itemTotal = item.price * item.quantity;
+  const itemTotal = items.reduce((sum, it) => sum + it.price * it.quantity, 0);
+  const totalQuantity = items.reduce((sum, it) => sum + it.quantity, 0);
   const deliveryCharge = 0;
   const creditDiscount = creditsToRupees(appliedCredits);
   const orderTotal = itemTotal + deliveryCharge - creditDiscount;
@@ -170,9 +179,10 @@ const Checkout = () => {
     // Earn credits based on the final order amount (1 credit per ₹5 spent)
     const earned = await earnCredits(orderTotal);
 
+    const orderDesc = items.length > 1 ? `${items.length} items` : item.title;
     toast({
       title: "Order placed successfully!",
-      description: `Your order for ${item.title} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
+      description: `Your order for ${orderDesc} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
     });
     navigate("/dashboard");
   };
@@ -391,23 +401,36 @@ const Checkout = () => {
 
               <Separator className="mb-4" />
 
-              <h3 className="text-base font-semibold text-foreground mb-3">Order Summary</h3>
+              <h3 className="text-base font-semibold text-foreground mb-3">
+                Order Summary {items.length > 1 && <span className="text-xs font-normal text-muted-foreground">({items.length} items)</span>}
+              </h3>
 
-              <div className="flex gap-3 mb-4">
-                <img src={item.image} alt={item.title} className="w-16 h-16 rounded-md object-cover" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
-                  <p className="text-xs text-muted-foreground">Color: {item.color} | Size: {item.size}</p>
-                  <p className="text-xs text-muted-foreground">Sold by: {item.sellerName}</p>
-                  <p className="text-sm font-bold text-foreground mt-1">{item.currency}{item.price.toLocaleString()}</p>
-                </div>
+              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto pr-1">
+                {items.map((it, idx) => (
+                  <div key={idx} className="flex gap-3">
+                    <img src={it.image} alt={it.title} className="w-14 h-14 rounded-md object-cover flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{it.title}</p>
+                      {(it.color || it.size) && (
+                        <p className="text-xs text-muted-foreground">
+                          {it.color && `Color: ${it.color}`}{it.color && it.size && " | "}{it.size && `Size: ${it.size}`}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground truncate">Sold by: {it.sellerName}</p>
+                      <p className="text-sm font-bold text-foreground mt-0.5">
+                        {it.currency}{(it.price * it.quantity).toLocaleString()}
+                        {it.quantity > 1 && <span className="text-xs font-normal text-muted-foreground ml-1">(x{it.quantity})</span>}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <Separator className="mb-3" />
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Items ({item.quantity}):</span>
+                  <span className="text-muted-foreground">Items ({totalQuantity}):</span>
                   <span className="text-foreground">{item.currency}{itemTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
