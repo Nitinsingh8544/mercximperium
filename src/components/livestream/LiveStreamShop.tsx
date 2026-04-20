@@ -149,10 +149,13 @@ const LiveStreamShop = ({ streamId = 301, sellerInfo }: LiveStreamShopProps) => 
       .filter((p) => {
         const matchesSearch = !searchQuery || p.title.toLowerCase().includes(searchQuery.toLowerCase());
         if (!matchesSearch) return false;
-        if (activeFilter === "auction") return p.status === "pending"; // not started yet
-        if (activeFilter === "buynow") return p.status === "active"; // started, unsold
+        // Auction:  items not started yet (pending) + the live item (active)
+        // Buy Now:  items that finished the auction with NO bids (unsold)
+        // Sold:     items that finished the auction with a winning bid (sold)
+        if (activeFilter === "auction") return p.status === "pending" || p.status === "active";
+        if (activeFilter === "buynow") return p.status === "unsold";
         if (activeFilter === "sold") return p.status === "sold";
-        return true; // no filter — show all (ordered by seller-defined sequence by default)
+        return true; // no filter — show all in seller-defined order
       })
       .sort((a, b) => {
         switch (sortOption) {
@@ -256,12 +259,13 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
   const isSold = product.status === "sold";
   const isActive = product.status === "active";
   const isPending = product.status === "pending";
+  const isUnsold = product.status === "unsold";
 
-  // Status label per area:
-  // - pending → "Upcoming" (no action button, listed in Auction filter)
-  // - active  → "Buy Now" (listed in Buy Now filter)
-  // - sold    → "Sold"   (listed in Sold filter)
-  const buttonLabel = isSold ? "Sold" : isActive ? "Buy Now" : null;
+  // Action button:
+  // - sold    → "Sold" (disabled)
+  // - unsold  → "Buy Now" (auction ended without a bid; available for direct purchase)
+  // - active/pending → no button (handled in live auction flow)
+  const buttonLabel = isSold ? "Sold" : isUnsold ? "Buy Now" : null;
 
   return (
     <div
@@ -283,6 +287,11 @@ const ProductCard = ({ product, onClick }: ProductCardProps) => {
           {isPending && (
             <span className="inline-flex items-center gap-0.5 bg-muted text-muted-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
               #{product.order} Upcoming
+            </span>
+          )}
+          {isUnsold && (
+            <span className="inline-flex items-center gap-0.5 bg-secondary/15 text-secondary text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+              Available
             </span>
           )}
         </div>

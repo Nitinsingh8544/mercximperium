@@ -113,6 +113,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setFadeOut(false);
     setLastBidder(null);
     setBidCount(0);
+    setNextItemCountdown(null);
     winnerRecordedRef.current = false;
 
     timerRef.current = setInterval(() => {
@@ -408,7 +409,17 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Live bidder badge - only during active bidding (not after end) */}
+          {/* Next-item countdown overlay (3s between auctions) */}
+          {nextItemCountdown !== null && nextItemCountdown > 0 && (
+            <div className="absolute inset-0 flex items-center justify-center z-40 bg-foreground/70 backdrop-blur-sm animate-in fade-in duration-200">
+              <div className="text-center px-8 py-6 bg-card rounded-2xl shadow-2xl border-2 border-secondary">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Next item in</p>
+                <p className="text-7xl font-extrabold text-secondary tabular-nums animate-pulse">{nextItemCountdown}</p>
+                <p className="text-xs text-muted-foreground mt-2">Get ready to bid!</p>
+              </div>
+            </div>
+          )}
+
           {lastBidder && !showWinner && timeLeft > 0 && (
             <div className="absolute bottom-[120px] left-4 z-10">
               <div className="flex items-center gap-2 bg-primary/70 backdrop-blur-sm px-3 py-1.5 rounded-lg">

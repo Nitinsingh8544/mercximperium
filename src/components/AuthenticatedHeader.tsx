@@ -4,7 +4,7 @@ import { useCredits } from "@/hooks/useCredits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
-import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, Settings, CreditCard, User, Video, Tag, Users, Wallet } from "lucide-react";
+import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, ShoppingCart, Settings, CreditCard, User, Video, Tag, Users, Wallet } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
 import {
@@ -254,8 +254,9 @@ const AuthenticatedHeader = () => {
                 variant="ghost" 
                 size="icon"
                 className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/activity" ? "bg-primary/10" : ""}`}
+                aria-label="My Cart"
               >
-                <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
 
@@ -383,8 +384,8 @@ const AuthenticatedHeader = () => {
             <span className="text-[10px]">Browse</span>
           </Link>
           <Link to="/activity" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/activity" ? "text-primary" : "text-muted-foreground"}`}>
-            <Heart className="w-5 h-5" />
-            <span className="text-[10px]">Activity</span>
+            <ShoppingCart className="w-5 h-5" />
+            <span className="text-[10px]">Cart</span>
           </Link>
           <Link to="/messages" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/messages" ? "text-primary" : "text-muted-foreground"}`}>
             <MessageSquare className="w-5 h-5" />
