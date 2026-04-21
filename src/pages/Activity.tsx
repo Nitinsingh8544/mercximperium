@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Users, Trash2, ShoppingCart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Trash2, ShoppingCart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useCart, type CartItem } from "@/hooks/useCart";
 
@@ -44,6 +44,7 @@ const CartItemCard = ({
     <Card
       className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
     >
+      {/* Image-only area (above the dividing line) */}
       <div className="relative aspect-[65/35] overflow-hidden bg-muted">
         <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
           <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
@@ -73,22 +74,29 @@ const CartItemCard = ({
             >
               <ChevronRight className="h-4 w-4" />
             </button>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-background/70 rounded-full px-2 py-1">
-              {images.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Go to image ${i + 1}`}
-                  onClick={() => setImgIndex(i)}
-                  className={`h-1.5 rounded-full transition-all ${
-                    i === imgIndex ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/60"
-                  }`}
-                />
-              ))}
-            </div>
           </>
         )}
+        {/* Horizontal dot indicators - always visible when there are images */}
+        {images.length > 0 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-background/70 rounded-full px-2 py-1">
+            {(images.length > 1 ? images : [null]).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Go to image ${i + 1}`}
+                onClick={() => images.length > 1 && setImgIndex(i)}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === imgIndex ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Dividing line — everything below belongs to item details */}
+      <div className="h-px bg-border" />
+
       <CardContent className="p-4 space-y-3">
         {/* 1. Seller profile */}
         {item.seller_name && (
@@ -236,18 +244,9 @@ const Activity = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div className="flex justify-between items-start mb-6 gap-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Activity</h1>
-          <div className="flex items-center gap-2">
-            {selectedIds.size > 0 && (
-              <Button
-                onClick={handleBuySelected}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
-              </Button>
-            )}
+          <div className="flex flex-col items-end gap-2">
             <Button
               variant="outline"
               className="gap-2"
@@ -261,10 +260,15 @@ const Activity = () => {
             >
               {selectedIds.size === cartItems.length && cartItems.length > 0 ? "Deselect All" : "Select"}
             </Button>
-            <Button variant="outline" className="gap-2">
-              <Users className="w-4 h-4" />
-              Friends
-            </Button>
+            {selectedIds.size > 0 && (
+              <Button
+                onClick={handleBuySelected}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
+              </Button>
+            )}
           </div>
         </div>
 
