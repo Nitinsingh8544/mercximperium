@@ -44,7 +44,7 @@ const CartItemCard = ({
     <Card
       className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+      <div className="relative aspect-[65/35] overflow-hidden bg-muted">
         <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
           <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
         </div>
@@ -97,12 +97,12 @@ const CartItemCard = ({
             onClick={onSellerClick}
             className="flex items-center gap-2 group w-full"
           >
-            <Avatar className="h-7 w-7">
-              <AvatarFallback className="text-[10px] bg-muted">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-sm bg-muted">
                 {item.seller_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary group-hover:underline">
+            <span className="text-sm font-medium text-muted-foreground group-hover:text-primary group-hover:underline">
               {item.seller_name}
             </span>
           </button>
