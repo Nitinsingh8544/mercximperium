@@ -238,10 +238,34 @@ const Activity = () => {
       <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Activity</h1>
-          <Button variant="outline" className="gap-2">
-            <Users className="w-4 h-4" />
-            Friends
-          </Button>
+          <div className="flex items-center gap-2">
+            {selectedIds.size > 0 && (
+              <Button
+                onClick={handleBuySelected}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => {
+                if (selectedIds.size === cartItems.length && cartItems.length > 0) {
+                  setSelectedIds(new Set());
+                } else {
+                  setSelectedIds(new Set(cartItems.map((i) => i.id)));
+                }
+              }}
+            >
+              {selectedIds.size === cartItems.length && cartItems.length > 0 ? "Deselect All" : "Select"}
+            </Button>
+            <Button variant="outline" className="gap-2">
+              <Users className="w-4 h-4" />
+              Friends
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="cart" className="w-full">
@@ -266,33 +290,7 @@ const Activity = () => {
                 <p className="text-sm text-muted-foreground mt-2">Add items from live streams to see them here</p>
               </div>
             ) : (
-              <>
-                {/* Multi-select toolbar */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border border-border rounded-lg p-3">
-                  <div className="flex items-center gap-3">
-                    <Checkbox
-                      id="select-all"
-                      checked={selectedIds.size === cartItems.length && cartItems.length > 0}
-                      onCheckedChange={toggleSelectAll}
-                    />
-                    <label htmlFor="select-all" className="text-sm font-medium text-foreground cursor-pointer">
-                      Select all ({cartItems.length})
-                    </label>
-                    {selectedIds.size > 0 && (
-                      <span className="text-sm text-muted-foreground">
-                        • {selectedIds.size} selected · {selectedCurrency}{selectedTotal.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  <Button
-                    onClick={handleBuySelected}
-                    disabled={selectedIds.size === 0}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                  >
-                    <ShoppingBag className="h-4 w-4" />
-                    Buy Selected ({selectedIds.size})
-                  </Button>
-                </div>
+              <></>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {cartItems.map((item) => {
