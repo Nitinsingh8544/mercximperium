@@ -132,97 +132,16 @@ const Activity = () => {
                   {cartItems.map((item) => {
                     const isSelected = selectedIds.has(item.id);
                     return (
-                      <Card
+                      <CartItemCard
                         key={item.id}
-                        className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                          <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={() => toggleSelect(item.id)}
-                            />
-                          </div>
-                          {item.product_image && (
-                            <img src={item.product_image} alt={item.product_title} className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-2">{item.product_title}</h3>
-                          <div className="flex items-baseline gap-2 mb-2">
-                            <span className="text-lg font-bold text-secondary">
-                              {item.product_currency}{Number(item.product_price).toLocaleString()}
-                            </span>
-                            {item.product_original_price && (
-                              <span className="text-xs text-muted-foreground line-through">
-                                {item.product_currency}{Number(item.product_original_price).toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Seller profile */}
-                          {item.seller_name && (
-                            <button
-                              type="button"
-                              onClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
-                              className="flex items-center gap-2 mb-2 group"
-                            >
-                              <Avatar className="h-6 w-6">
-                                <AvatarFallback className="text-[10px] bg-muted">
-                                  {item.seller_name.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="text-xs text-muted-foreground group-hover:text-primary group-hover:underline">
-                                {item.seller_name}
-                              </span>
-                            </button>
-                          )}
-
-                          {/* Quantity stepper */}
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs text-muted-foreground">Qty</span>
-                            <div className="flex items-center border border-border rounded-md">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                disabled={item.quantity <= 1}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2 pt-3 border-t border-border">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1 text-destructive hover:text-destructive"
-                              onClick={() => removeFromCart(item.id)}
-                            >
-                              <Trash2 className="h-3.5 w-3.5 mr-1" />
-                              Remove
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                              onClick={() => handleBuySingle(item)}
-                            >
-                              Buy Now
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                        item={item}
+                        isSelected={isSelected}
+                        onToggleSelect={() => toggleSelect(item.id)}
+                        onSellerClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
+                        onQtyChange={(q) => updateQuantity(item.id, q)}
+                        onRemove={() => removeFromCart(item.id)}
+                        onBuy={() => handleBuySingle(item)}
+                      />
                     );
                   })}
                 </div>
