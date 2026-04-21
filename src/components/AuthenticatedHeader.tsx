@@ -270,14 +270,19 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground"
-            >
-              <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-              <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString()}</span>
-            </Button>
+            <Link to="/wallet">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground ${
+                  location.pathname === "/wallet" ? "bg-primary/10 text-primary" : ""
+                }`}
+                aria-label="Wallet"
+              >
+                <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
+                <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString()}</span>
+              </Button>
+            </Link>
 
             <Button 
               variant="ghost" 
