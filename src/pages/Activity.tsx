@@ -6,9 +6,175 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Users, Trash2, ShoppingCart, ShoppingBag, Minus, Plus } from "lucide-react";
+import { Users, Trash2, ShoppingCart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useCart, type CartItem } from "@/hooks/useCart";
+
+interface CartItemCardProps {
+  item: CartItem;
+  isSelected: boolean;
+  onToggleSelect: () => void;
+  onSellerClick: () => void;
+  onQtyChange: (quantity: number) => void;
+  onRemove: () => void;
+  onBuy: () => void;
+}
+
+const CartItemCard = ({
+  item,
+  isSelected,
+  onToggleSelect,
+  onSellerClick,
+  onQtyChange,
+  onRemove,
+  onBuy,
+}: CartItemCardProps) => {
+  const images = useMemo(() => {
+    const arr = [item.product_image].filter(Boolean) as string[];
+    return arr;
+  }, [item.product_image]);
+
+  const [imgIndex, setImgIndex] = useState(0);
+  const hasMultiple = images.length > 1;
+
+  const goPrev = () => setImgIndex((i) => (i - 1 + images.length) % images.length);
+  const goNext = () => setImgIndex((i) => (i + 1) % images.length);
+
+  return (
+    <Card
+      className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+        <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
+          <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
+        </div>
+        {images.length > 0 && (
+          <img
+            src={images[imgIndex]}
+            alt={item.product_title}
+            className="w-full h-full object-cover"
+          />
+        )}
+        {hasMultiple && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Previous image"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-foreground rounded-full h-7 w-7 flex items-center justify-center shadow"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Next image"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-foreground rounded-full h-7 w-7 flex items-center justify-center shadow"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-background/70 rounded-full px-2 py-1">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Go to image ${i + 1}`}
+                  onClick={() => setImgIndex(i)}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === imgIndex ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/60"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <CardContent className="p-4 space-y-3">
+        {/* 1. Seller profile */}
+        {item.seller_name && (
+          <button
+            type="button"
+            onClick={onSellerClick}
+            className="flex items-center gap-2 group w-full"
+          >
+            <Avatar className="h-7 w-7">
+              <AvatarFallback className="text-[10px] bg-muted">
+                {item.seller_name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary group-hover:underline">
+              {item.seller_name}
+            </span>
+          </button>
+        )}
+
+        {/* 2. Description / title */}
+        <h3 className="font-semibold text-foreground text-sm line-clamp-2">
+          {item.product_title}
+        </h3>
+
+        {/* 3. Amount */}
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-bold text-secondary">
+            {item.product_currency}
+            {Number(item.product_price).toLocaleString()}
+          </span>
+          {item.product_original_price && (
+            <span className="text-xs text-muted-foreground line-through">
+              {item.product_currency}
+              {Number(item.product_original_price).toLocaleString()}
+            </span>
+          )}
+        </div>
+
+        {/* 4. Quantity */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">Qty</span>
+          <div className="flex items-center border border-border rounded-md">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onQtyChange(item.quantity - 1)}
+              disabled={item.quantity <= 1}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
+            <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={() => onQtyChange(item.quantity + 1)}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+
+        {/* 5. Actions */}
+        <div className="flex gap-2 pt-3 border-t border-border">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 text-destructive hover:text-destructive"
+            onClick={onRemove}
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1" />
+            Remove
+          </Button>
+          <Button
+            size="sm"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+            onClick={onBuy}
+          >
+            Buy Now
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const Activity = () => {
   const navigate = useNavigate();
@@ -132,97 +298,16 @@ const Activity = () => {
                   {cartItems.map((item) => {
                     const isSelected = selectedIds.has(item.id);
                     return (
-                      <Card
+                      <CartItemCard
                         key={item.id}
-                        className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                          <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={() => toggleSelect(item.id)}
-                            />
-                          </div>
-                          {item.product_image && (
-                            <img src={item.product_image} alt={item.product_title} className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-2">{item.product_title}</h3>
-                          <div className="flex items-baseline gap-2 mb-2">
-                            <span className="text-lg font-bold text-secondary">
-                              {item.product_currency}{Number(item.product_price).toLocaleString()}
-                            </span>
-                            {item.product_original_price && (
-                              <span className="text-xs text-muted-foreground line-through">
-                                {item.product_currency}{Number(item.product_original_price).toLocaleString()}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Seller profile */}
-                          {item.seller_name && (
-                            <button
-                              type="button"
-                              onClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
-                              className="flex items-center gap-2 mb-2 group"
-                            >
-                              <Avatar className="h-6 w-6">
-                                <AvatarFallback className="text-[10px] bg-muted">
-                                  {item.seller_name.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="text-xs text-muted-foreground group-hover:text-primary group-hover:underline">
-                                {item.seller_name}
-                              </span>
-                            </button>
-                          )}
-
-                          {/* Quantity stepper */}
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs text-muted-foreground">Qty</span>
-                            <div className="flex items-center border border-border rounded-md">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                disabled={item.quantity <= 1}
-                              >
-                                <Minus className="h-3 w-3" />
-                              </Button>
-                              <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2 pt-3 border-t border-border">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1 text-destructive hover:text-destructive"
-                              onClick={() => removeFromCart(item.id)}
-                            >
-                              <Trash2 className="h-3.5 w-3.5 mr-1" />
-                              Remove
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                              onClick={() => handleBuySingle(item)}
-                            >
-                              Buy Now
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                        item={item}
+                        isSelected={isSelected}
+                        onToggleSelect={() => toggleSelect(item.id)}
+                        onSellerClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
+                        onQtyChange={(q) => updateQuantity(item.id, q)}
+                        onRemove={() => removeFromCart(item.id)}
+                        onBuy={() => handleBuySingle(item)}
+                      />
                     );
                   })}
                 </div>
