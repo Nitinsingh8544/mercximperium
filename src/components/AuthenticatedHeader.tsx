@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCredits } from "@/hooks/useCredits";
+import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
-import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, ShoppingCart, Settings, CreditCard, User, Video, Tag, Users, Wallet } from "lucide-react";
+import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, ShoppingCart, Settings, CreditCard, User, Video, Tag, Users, Wallet, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
 import {
@@ -20,6 +21,7 @@ const AuthenticatedHeader = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { credits } = useCredits();
+  const { balance: walletBalance } = useWallet();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -270,17 +272,35 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
+            <Link to="/credits" className="hidden sm:block">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 sm:h-9 px-2 sm:px-3 gap-1 hover:text-foreground ${
+                  location.pathname === "/credits"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground"
+                }`}
+                aria-label="Credits"
+              >
+                <Coins className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString("en-IN")}</span>
+              </Button>
+            </Link>
+
             <Link to="/wallet">
               <Button
                 variant="ghost"
                 size="sm"
-                className={`h-8 sm:h-9 px-2 sm:px-3 gap-1 text-muted-foreground hover:text-foreground ${
-                  location.pathname === "/wallet" ? "bg-primary/10 text-primary" : ""
+                className={`h-8 sm:h-9 px-2 sm:px-3 gap-1 hover:text-foreground ${
+                  location.pathname === "/wallet"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground"
                 }`}
                 aria-label="Wallet"
               >
-                <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-                <span className="text-xs sm:text-sm font-medium">₹{credits.toLocaleString("en-IN")}</span>
+                <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
+                <span className="text-xs sm:text-sm font-medium">₹{walletBalance.toLocaleString("en-IN")}</span>
               </Button>
             </Link>
 
