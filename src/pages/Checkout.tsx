@@ -24,6 +24,7 @@ import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Ban
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useCredits } from "@/hooks/useCredits";
+import { useWallet } from "@/hooks/useWallet";
 
 interface Address {
   id: string;
@@ -73,6 +74,7 @@ const Checkout = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
+  const { balance: walletBalance, spend: spendWallet } = useWallet();
 
   type CheckoutItem = {
     title: string;
@@ -172,6 +174,24 @@ const Checkout = () => {
       const success = await applyCredits(appliedCredits);
       if (!success) {
         toast({ title: "Failed to apply credits", variant: "destructive" });
+        return;
+      }
+    }
+
+    // If user chose Wallet, deduct from wallet balance
+    if (paymentMethod === "wallet") {
+      if (walletBalance < orderTotal) {
+        toast({
+          title: "Insufficient wallet balance",
+          description: `You have ₹${walletBalance.toLocaleString("en-IN")}. Add money to your wallet or pick another method.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      const desc = items.length > 1 ? `Order payment for ${items.length} items` : `Order payment: ${item.title}`;
+      const res = await spendWallet(orderTotal, desc, `ORD${Date.now().toString().slice(-8)}`);
+      if (!res.success) {
+        toast({ title: "Wallet payment failed", description: res.error, variant: "destructive" });
         return;
       }
     }
