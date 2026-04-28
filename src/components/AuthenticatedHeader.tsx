@@ -280,7 +280,7 @@ const AuthenticatedHeader = () => {
                 aria-label="Wallet"
               >
                 <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
-                <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString()}</span>
+                <span className="text-xs sm:text-sm font-medium">₹{credits.toLocaleString("en-IN")}</span>
               </Button>
             </Link>
 
