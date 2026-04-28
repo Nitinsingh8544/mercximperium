@@ -45,7 +45,7 @@ const CartItemCard = ({
       className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
     >
       {/* Image-only area — taller, occupies most of the card up to the dividing line */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
           <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
         </div>
@@ -264,8 +264,8 @@ const Activity = () => {
                 {selectedIds.size > 0 && (
                   <Button
                     onClick={handleBuySelected}
-                    size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                    size="default"
+                    className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
                   >
                     <ShoppingBag className="h-4 w-4" />
                     Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
@@ -273,7 +273,8 @@ const Activity = () => {
                 )}
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
+                  className="h-9"
                   onClick={toggleSelectAll}
                 >
                   {selectedIds.size === cartItems.length ? "Deselect All" : "Select"}

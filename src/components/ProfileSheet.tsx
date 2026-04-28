@@ -17,7 +17,8 @@ import {
   HelpCircle,
   LogOut,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  Coins
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -60,6 +61,7 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
     { icon: Gavel, label: "Bids & Offers", onClick: () => handleNavigation("/bids") },
     { icon: ShoppingBag, label: "Purchases", onClick: () => handleNavigation("/activity") },
     { icon: Shield, label: "Account Health", onClick: () => handleNavigation("/account-health") },
+    { icon: Coins, label: "Credits", onClick: () => handleNavigation("/credits") },
   ];
 
   const menuItems = [
@@ -99,7 +101,7 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
         {/* Quick Actions Grid */}
         <div className="p-4 border-b border-border">
           <div className="grid grid-cols-3 gap-3">
-            {quickActions.slice(0, 6).map((action) => (
+            {quickActions.map((action) => (
               <button
                 key={action.label}
                 onClick={action.onClick}
@@ -110,13 +112,6 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
               </button>
             ))}
           </div>
-          <button
-            onClick={quickActions[6].onClick}
-            className="flex flex-col items-center gap-2 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors mt-3 w-[calc(33.33%-0.5rem)]"
-          >
-            <Shield className="w-5 h-5 text-foreground" />
-            <span className="text-xs text-center text-foreground leading-tight">Account Health</span>
-          </button>
         </div>
 
         {/* Menu Items */}

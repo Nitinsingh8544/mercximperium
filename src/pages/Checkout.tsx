@@ -24,6 +24,7 @@ import { ArrowLeft, MapPin, Plus, CreditCard, Building2, Smartphone, Wallet, Ban
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useCredits } from "@/hooks/useCredits";
+import { useWallet } from "@/hooks/useWallet";
 
 interface Address {
   id: string;
@@ -73,6 +74,7 @@ const Checkout = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { credits, creditsToRupees, applyCredits, earnCredits } = useCredits();
+  const { balance: walletBalance, spend: spendWallet } = useWallet();
 
   type CheckoutItem = {
     title: string;
@@ -176,6 +178,24 @@ const Checkout = () => {
       }
     }
 
+    // If user chose Wallet, deduct from wallet balance
+    if (paymentMethod === "wallet") {
+      if (walletBalance < orderTotal) {
+        toast({
+          title: "Insufficient wallet balance",
+          description: `You have ₹${walletBalance.toLocaleString("en-IN")}. Add money to your wallet or pick another method.`,
+          variant: "destructive",
+        });
+        return;
+      }
+      const desc = items.length > 1 ? `Order payment for ${items.length} items` : `Order payment: ${item.title}`;
+      const res = await spendWallet(orderTotal, desc, `ORD${Date.now().toString().slice(-8)}`);
+      if (!res.success) {
+        toast({ title: "Wallet payment failed", description: res.error, variant: "destructive" });
+        return;
+      }
+    }
+
     // Earn credits based on the final order amount (1 credit per ₹5 spent)
     const earned = await earnCredits(orderTotal);
 
@@ -272,8 +292,44 @@ const Checkout = () => {
 
               <p className="text-sm font-medium text-foreground mb-3">Another payment method</p>
 
-              <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
-                {/* Credit / Debit Card */}
+                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
+                  {/* MercxImperium Wallet */}
+                  <div className={`p-4 rounded-lg border transition-colors ${paymentMethod === "wallet" ? "border-primary bg-primary/5" : "border-border"}`}>
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="wallet" id="pay-wallet" />
+                      <Label htmlFor="pay-wallet" className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Wallet className="w-4 h-4 text-secondary" />
+                            <span className="text-sm font-medium text-foreground">Pay with Wallet</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            Bal: <span className="font-semibold text-foreground">₹{walletBalance.toLocaleString("en-IN")}</span>
+                          </span>
+                        </div>
+                      </Label>
+                    </div>
+                    {paymentMethod === "wallet" && (
+                      <div className="mt-3 ml-7">
+                        {walletBalance >= orderTotal ? (
+                          <p className="text-xs text-muted-foreground">
+                            ₹{orderTotal.toLocaleString("en-IN")} will be deducted from your wallet.
+                          </p>
+                        ) : (
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <p className="text-xs text-destructive">
+                              Insufficient balance. Need ₹{(orderTotal - walletBalance).toLocaleString("en-IN")} more.
+                            </p>
+                            <Button variant="link" className="text-primary text-xs p-0 h-auto" onClick={() => navigate("/wallet")}>
+                              Add money →
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Credit / Debit Card */}
                 <div className={`p-4 rounded-lg border transition-colors ${paymentMethod === "card" ? "border-primary bg-primary/5" : "border-border"}`}>
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value="card" id="pay-card" />

@@ -29,7 +29,11 @@ export const useWallet = () => {
     }
     try {
       const [{ data: cred }, { data: tx }] = await Promise.all([
-        supabase.from("user_credits").select("balance").eq("user_id", user.id).maybeSingle(),
+        supabase
+          .from("user_credits")
+          .select("wallet_balance")
+          .eq("user_id", user.id)
+          .maybeSingle(),
         supabase
           .from("wallet_transactions")
           .select("*")
@@ -39,14 +43,14 @@ export const useWallet = () => {
       ]);
 
       if (cred) {
-        setBalance(cred.balance);
+        setBalance(Number(cred.wallet_balance) || 0);
       } else {
         const { data: created } = await supabase
           .from("user_credits")
-          .insert({ user_id: user.id, balance: 1000 })
-          .select("balance")
+          .insert({ user_id: user.id, balance: 1000, wallet_balance: 0 })
+          .select("wallet_balance")
           .single();
-        if (created) setBalance(created.balance);
+        if (created) setBalance(Number(created.wallet_balance) || 0);
       }
 
       setTransactions((tx as WalletTransaction[]) || []);
@@ -61,6 +65,14 @@ export const useWallet = () => {
     fetchAll();
   }, [fetchAll]);
 
+  const writeBalance = async (newBalance: number) => {
+    if (!user) return { error: new Error("Not authenticated") };
+    return supabase
+      .from("user_credits")
+      .update({ wallet_balance: newBalance })
+      .eq("user_id", user.id);
+  };
+
   const addMoney = async (
     rupees: number,
     paymentMethod: string,
@@ -69,14 +81,10 @@ export const useWallet = () => {
     if (!user) return { success: false, error: "Not authenticated" };
     if (rupees <= 0) return { success: false, error: "Enter a valid amount" };
 
-    // Wallet stores actual rupees (1:1)
     const amount = Math.round(rupees);
     const newBalance = balance + amount;
 
-    const { error: updErr } = await supabase
-      .from("user_credits")
-      .update({ balance: newBalance })
-      .eq("user_id", user.id);
+    const { error: updErr } = await writeBalance(newBalance);
     if (updErr) return { success: false, error: updErr.message };
 
     const { data: txRow, error: txErr } = await supabase
@@ -109,10 +117,7 @@ export const useWallet = () => {
     if (rupees > balance) return { success: false, error: "Insufficient balance" };
 
     const newBalance = balance - rupees;
-    const { error: updErr } = await supabase
-      .from("user_credits")
-      .update({ balance: newBalance })
-      .eq("user_id", user.id);
+    const { error: updErr } = await writeBalance(newBalance);
     if (updErr) return { success: false, error: updErr.message };
 
     const { data: txRow, error: txErr } = await supabase
@@ -144,10 +149,7 @@ export const useWallet = () => {
     if (rupees > balance) return { success: false, error: "Insufficient balance" };
 
     const newBalance = balance - rupees;
-    const { error: updErr } = await supabase
-      .from("user_credits")
-      .update({ balance: newBalance })
-      .eq("user_id", user.id);
+    const { error: updErr } = await writeBalance(newBalance);
     if (updErr) return { success: false, error: updErr.message };
 
     const { data: txRow, error: txErr } = await supabase
