@@ -33,21 +33,26 @@ import {
   Send,
   History,
   ArrowLeft,
-  Sparkles,
+  Banknote,
 } from "lucide-react";
 
 const QUICK_AMOUNTS = [100, 500, 1000, 2000, 5000];
 
 const Wallet = () => {
   const navigate = useNavigate();
-  const { balance, transactions, loading, addMoney, creditsToRupees } = useWallet();
+  const { balance, transactions, loading, addMoney, withdraw } = useWallet();
 
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState<string>("");
   const [method, setMethod] = useState<string>("UPI");
   const [submitting, setSubmitting] = useState(false);
 
-  const rupees = creditsToRupees(balance);
+  // Withdraw dialog state
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState<string>("");
+  const [withdrawMethod, setWithdrawMethod] = useState<string>("UPI");
+  const [withdrawDest, setWithdrawDest] = useState<string>("");
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const handleAdd = async () => {
     const value = Number(amount);
@@ -65,6 +70,37 @@ const Wallet = () => {
       setAmount("");
     } else {
       toast({ title: "Top-up failed", description: res.error, variant: "destructive" });
+    }
+  };
+
+  const handleWithdraw = async () => {
+    const value = Number(withdrawAmount);
+    if (!value || value <= 0) {
+      toast({ title: "Enter a valid amount", variant: "destructive" });
+      return;
+    }
+    if (value > balance) {
+      toast({ title: "Insufficient balance", variant: "destructive" });
+      return;
+    }
+    if (!withdrawDest.trim()) {
+      toast({ title: "Enter your account / UPI details", variant: "destructive" });
+      return;
+    }
+    setWithdrawing(true);
+    const ref = `WD${Date.now().toString().slice(-8)}`;
+    const res = await withdraw(value, `${withdrawMethod} • ${withdrawDest}`, ref);
+    setWithdrawing(false);
+    if (res.success) {
+      toast({
+        title: "Withdrawal initiated",
+        description: `₹${value.toLocaleString()} will be sent to ${withdrawDest}`,
+      });
+      setWithdrawOpen(false);
+      setWithdrawAmount("");
+      setWithdrawDest("");
+    } else {
+      toast({ title: "Withdrawal failed", description: res.error, variant: "destructive" });
     }
   };
 
@@ -92,23 +128,30 @@ const Wallet = () => {
                 </div>
                 <div className="flex items-baseline gap-3">
                   <span className="text-4xl sm:text-5xl font-bold">
-                    ₹{rupees.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                    ₹{balance.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                   </span>
                 </div>
-                <div className="text-sm opacity-80 mt-1 flex items-center gap-1">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {balance.toLocaleString()} credits · 5 credits = ₹1
-                </div>
               </div>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="gap-2"
-                onClick={() => setOpen(true)}
-              >
-                <Plus className="h-5 w-5" />
-                Add Money
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="gap-2"
+                  onClick={() => setOpen(true)}
+                >
+                  <Plus className="h-5 w-5" />
+                  Add Money
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="gap-2 bg-background/10 text-primary-foreground border-primary-foreground/30 hover:bg-background/20 hover:text-primary-foreground"
+                  onClick={() => setWithdrawOpen(true)}
+                >
+                  <Banknote className="h-5 w-5" />
+                  Withdraw
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -123,12 +166,12 @@ const Wallet = () => {
               <span className="text-xs font-medium">Add Money</span>
             </CardContent>
           </Card>
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => navigate("/activity")}>
+          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setWithdrawOpen(true)}>
             <CardContent className="p-4 flex flex-col items-center gap-2 text-center">
               <div className="h-10 w-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                <Send className="h-5 w-5 text-secondary" />
+                <Banknote className="h-5 w-5 text-secondary" />
               </div>
-              <span className="text-xs font-medium">Pay & Bid</span>
+              <span className="text-xs font-medium">Withdraw</span>
             </CardContent>
           </Card>
           <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => navigate("/account-settings/payments")}>
@@ -179,7 +222,6 @@ const Wallet = () => {
                       <div className="divide-y divide-border">
                         {list.map((tx) => {
                           const isCredit = tx.type === "credit";
-                          const rupeeAmt = creditsToRupees(tx.amount);
                           return (
                             <div key={tx.id} className="px-6 py-3 flex items-center gap-3">
                               <div
@@ -208,10 +250,10 @@ const Wallet = () => {
                               </div>
                               <div className="text-right">
                                 <p className={`text-sm font-bold ${isCredit ? "text-secondary" : "text-destructive"}`}>
-                                  {isCredit ? "+" : "−"}₹{rupeeAmt.toLocaleString("en-IN")}
+                                  {isCredit ? "+" : "−"}₹{Number(tx.amount).toLocaleString("en-IN")}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground">
-                                  Bal: ₹{creditsToRupees(tx.balance_after).toLocaleString("en-IN")}
+                                  Bal: ₹{Number(tx.balance_after).toLocaleString("en-IN")}
                                 </p>
                               </div>
                             </div>
@@ -287,6 +329,69 @@ const Wallet = () => {
             </Button>
             <Button onClick={handleAdd} disabled={submitting || !amount}>
               {submitting ? "Processing..." : `Add ₹${Number(amount || 0).toLocaleString()}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Withdraw dialog */}
+      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Withdraw Money</DialogTitle>
+            <DialogDescription>
+              Transfer money from your wallet to your bank or UPI.
+              Available balance: <span className="font-semibold text-foreground">₹{balance.toLocaleString("en-IN")}</span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="wd-amount">Amount (₹)</Label>
+              <Input
+                id="wd-amount"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={balance}
+                placeholder="Enter amount"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Withdraw to</Label>
+              <Select value={withdrawMethod} onValueChange={setWithdrawMethod}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPI">UPI</SelectItem>
+                  <SelectItem value="Bank Transfer">Bank Transfer (IMPS/NEFT)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="wd-dest">
+                {withdrawMethod === "UPI" ? "UPI ID" : "Account number"}
+              </Label>
+              <Input
+                id="wd-dest"
+                placeholder={withdrawMethod === "UPI" ? "name@bank" : "Account number"}
+                value={withdrawDest}
+                onChange={(e) => setWithdrawDest(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setWithdrawOpen(false)} disabled={withdrawing}>
+              Cancel
+            </Button>
+            <Button onClick={handleWithdraw} disabled={withdrawing || !withdrawAmount}>
+              {withdrawing ? "Processing..." : `Withdraw ₹${Number(withdrawAmount || 0).toLocaleString()}`}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -44,8 +44,8 @@ const CartItemCard = ({
     <Card
       className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
     >
-      {/* Image-only area (above the dividing line) */}
-      <div className="relative aspect-[65/35] overflow-hidden bg-muted">
+      {/* Image-only area — taller, occupies most of the card up to the dividing line */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-muted">
         <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
           <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
         </div>
@@ -76,7 +76,7 @@ const CartItemCard = ({
             </button>
           </>
         )}
-        {/* Horizontal dot indicators - always visible when there are images */}
+        {/* Horizontal dot indicators */}
         {images.length > 0 && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-background/70 rounded-full px-2 py-1">
             {(images.length > 1 ? images : [null]).map((_, i) => (
@@ -94,65 +94,61 @@ const CartItemCard = ({
         )}
       </div>
 
-      {/* Dividing line — everything below belongs to item details */}
+      {/* Dividing line — compact details below */}
       <div className="h-px bg-border" />
 
-      <CardContent className="p-4 space-y-3">
-        {/* 1. Seller profile */}
+      <CardContent className="p-3 space-y-2">
+        {/* Seller + title in a tight row */}
         {item.seller_name && (
           <button
             type="button"
             onClick={onSellerClick}
-            className="flex items-center gap-2 group w-full"
+            className="flex items-center gap-1.5 group w-full"
           >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-sm bg-muted">
+            <Avatar className="h-5 w-5">
+              <AvatarFallback className="text-[10px] bg-muted">
                 {item.seller_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium text-muted-foreground group-hover:text-primary group-hover:underline">
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary group-hover:underline truncate">
               {item.seller_name}
             </span>
           </button>
         )}
 
-        {/* 2. Description / title */}
-        <h3 className="font-semibold text-foreground text-sm line-clamp-2">
+        <h3 className="font-semibold text-foreground text-xs line-clamp-1">
           {item.product_title}
         </h3>
 
-        {/* 3. Amount */}
-        <div className="flex items-baseline gap-2">
-          <span className="text-lg font-bold text-secondary">
-            {item.product_currency}
-            {Number(item.product_price).toLocaleString()}
-          </span>
-          {item.product_original_price && (
-            <span className="text-xs text-muted-foreground line-through">
+        {/* Price + qty stepper inline */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-baseline gap-1.5 min-w-0">
+            <span className="text-sm font-bold text-secondary">
               {item.product_currency}
-              {Number(item.product_original_price).toLocaleString()}
+              {Number(item.product_price).toLocaleString()}
             </span>
-          )}
-        </div>
-
-        {/* 4. Quantity */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Qty</span>
-          <div className="flex items-center border border-border rounded-md">
+            {item.product_original_price && (
+              <span className="text-[10px] text-muted-foreground line-through truncate">
+                {item.product_currency}
+                {Number(item.product_original_price).toLocaleString()}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center border border-border rounded-md shrink-0">
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-6 w-6"
               onClick={() => onQtyChange(item.quantity - 1)}
               disabled={item.quantity <= 1}
             >
               <Minus className="h-3 w-3" />
             </Button>
-            <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+            <span className="w-6 text-center text-xs font-medium">{item.quantity}</span>
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-6 w-6"
               onClick={() => onQtyChange(item.quantity + 1)}
             >
               <Plus className="h-3 w-3" />
@@ -160,12 +156,12 @@ const CartItemCard = ({
           </div>
         </div>
 
-        {/* 5. Actions */}
-        <div className="flex gap-2 pt-3 border-t border-border">
+        {/* Actions */}
+        <div className="flex gap-2 pt-2 border-t border-border">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 text-destructive hover:text-destructive"
+            className="flex-1 h-8 text-xs text-destructive hover:text-destructive"
             onClick={onRemove}
           >
             <Trash2 className="h-3.5 w-3.5 mr-1" />
@@ -173,7 +169,7 @@ const CartItemCard = ({
           </Button>
           <Button
             size="sm"
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
             onClick={onBuy}
           >
             Buy Now
@@ -244,47 +240,47 @@ const Activity = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
-        <div className="flex justify-between items-start mb-6 gap-4">
+        <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Activity</h1>
-          <div className="flex flex-col items-end gap-2">
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={() => {
-                if (selectedIds.size === cartItems.length && cartItems.length > 0) {
-                  setSelectedIds(new Set());
-                } else {
-                  setSelectedIds(new Set(cartItems.map((i) => i.id)));
-                }
-              }}
-            >
-              {selectedIds.size === cartItems.length && cartItems.length > 0 ? "Deselect All" : "Select"}
-            </Button>
-            {selectedIds.size > 0 && (
-              <Button
-                onClick={handleBuySelected}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
-              </Button>
-            )}
-          </div>
         </div>
 
         <Tabs defaultValue="cart" className="w-full">
-          <TabsList className="w-full sm:w-auto mb-6 bg-muted">
-            <TabsTrigger value="cart" className="gap-1">
-              <ShoppingCart className="h-3.5 w-3.5" />
-              My Cart
-              {cartItems.length > 0 && (
-                <span className="ml-1 bg-secondary text-secondary-foreground text-[10px] font-bold rounded-full px-1.5 py-0.5">
-                  {cartItems.length}
-                </span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+            <TabsList className="bg-muted">
+              <TabsTrigger value="cart" className="gap-1">
+                <ShoppingCart className="h-3.5 w-3.5" />
+                My Cart
+                {cartItems.length > 0 && (
+                  <span className="ml-1 bg-secondary text-secondary-foreground text-[10px] font-bold rounded-full px-1.5 py-0.5">
+                    {cartItems.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
+            </TabsList>
+
+            {cartItems.length > 0 && (
+              <div className="flex items-center gap-2">
+                {selectedIds.size > 0 && (
+                  <Button
+                    onClick={handleBuySelected}
+                    size="sm"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                >
+                  {selectedIds.size === cartItems.length ? "Deselect All" : "Select"}
+                </Button>
+              </div>
+            )}
+          </div>
 
           <TabsContent value="cart" className="space-y-4">
             {cartItems.length === 0 ? (
