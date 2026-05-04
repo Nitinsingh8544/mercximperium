@@ -23,6 +23,7 @@ interface Order {
   total_amount: number;
   status: string;
   created_at: string;
+  updated_at: string;
 }
 
 const STATUS_META: Record<string, { label: string; className: string }> = {
