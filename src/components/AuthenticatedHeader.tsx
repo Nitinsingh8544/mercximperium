@@ -272,22 +272,6 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
-            <Link to="/credits" className="hidden sm:block">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`h-8 sm:h-9 px-2 sm:px-3 gap-1 hover:text-foreground ${
-                  location.pathname === "/credits"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground"
-                }`}
-                aria-label="Credits"
-              >
-                <Coins className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
-                <span className="text-xs sm:text-sm font-medium">{credits.toLocaleString("en-IN")}</span>
-              </Button>
-            </Link>
-
             <Link to="/wallet">
               <Button
                 variant="ghost"
