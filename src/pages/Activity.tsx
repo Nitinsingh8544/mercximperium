@@ -1,14 +1,38 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { Trash2, ShoppingCart, ShoppingBag, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { useAuctionBids } from "@/hooks/useAuctionBids";
 import { useCart, type CartItem } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Order {
+  id: string;
+  product_title: string;
+  product_image: string | null;
+  product_price: number;
+  product_currency: string;
+  quantity: number;
+  seller_name: string | null;
+  total_amount: number;
+  status: string;
+  created_at: string;
+}
+
+const STATUS_META: Record<string, { label: string; className: string }> = {
+  ordered: { label: "Ordered", className: "bg-muted text-foreground" },
+  packed: { label: "Packed", className: "bg-secondary/20 text-secondary-foreground" },
+  shipped: { label: "Shipped", className: "bg-primary/20 text-primary" },
+  out_for_delivery: { label: "Out for Delivery", className: "bg-primary/20 text-primary" },
+  delivered: { label: "Delivered", className: "bg-green-500/20 text-green-700 dark:text-green-400" },
+  cancelled: { label: "Cancelled", className: "bg-destructive/20 text-destructive" },
+};
 
 interface CartItemCardProps {
   item: CartItem;
@@ -29,149 +53,75 @@ const CartItemCard = ({
   onRemove,
   onBuy,
 }: CartItemCardProps) => {
-  const images = useMemo(() => {
-    const arr = [item.product_image].filter(Boolean) as string[];
-    return arr;
-  }, [item.product_image]);
-
+  const images = useMemo(() => [item.product_image].filter(Boolean) as string[], [item.product_image]);
   const [imgIndex, setImgIndex] = useState(0);
   const hasMultiple = images.length > 1;
-
   const goPrev = () => setImgIndex((i) => (i - 1 + images.length) % images.length);
   const goNext = () => setImgIndex((i) => (i + 1) % images.length);
 
   return (
-    <Card
-      className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}
-    >
-      {/* Image-only area — taller, occupies most of the card up to the dividing line */}
+    <Card className={`overflow-hidden transition-colors ${isSelected ? "border-primary ring-1 ring-primary" : ""}`}>
       <div className="relative aspect-square overflow-hidden bg-muted">
-        <div className="absolute top-2 left-2 z-10 bg-background/90 rounded-md p-1">
-          <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
+        <div className="absolute top-1.5 left-1.5 z-10 bg-background/90 rounded p-0.5">
+          <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} className="h-3.5 w-3.5" />
         </div>
         {images.length > 0 && (
-          <img
-            src={images[imgIndex]}
-            alt={item.product_title}
-            className="w-full h-full object-cover"
-          />
+          <img src={images[imgIndex]} alt={item.product_title} className="w-full h-full object-cover" />
         )}
         {hasMultiple && (
           <>
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Previous image"
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-foreground rounded-full h-7 w-7 flex items-center justify-center shadow"
-            >
-              <ChevronLeft className="h-4 w-4" />
+            <button type="button" onClick={goPrev} aria-label="Previous"
+              className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full h-5 w-5 flex items-center justify-center shadow">
+              <ChevronLeft className="h-3 w-3" />
             </button>
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Next image"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-foreground rounded-full h-7 w-7 flex items-center justify-center shadow"
-            >
-              <ChevronRight className="h-4 w-4" />
+            <button type="button" onClick={goNext} aria-label="Next"
+              className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full h-5 w-5 flex items-center justify-center shadow">
+              <ChevronRight className="h-3 w-3" />
             </button>
           </>
         )}
-        {/* Horizontal dot indicators */}
-        {images.length > 0 && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-background/70 rounded-full px-2 py-1">
-            {(images.length > 1 ? images : [null]).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Go to image ${i + 1}`}
-                onClick={() => images.length > 1 && setImgIndex(i)}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === imgIndex ? "w-4 bg-primary" : "w-1.5 bg-muted-foreground/60"
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Dividing line — compact details below */}
       <div className="h-px bg-border" />
 
-      <CardContent className="p-3 space-y-2">
-        {/* Seller + title in a tight row */}
+      <CardContent className="p-2 space-y-1.5">
         {item.seller_name && (
-          <button
-            type="button"
-            onClick={onSellerClick}
-            className="flex items-center gap-1.5 group w-full"
-          >
-            <Avatar className="h-5 w-5">
-              <AvatarFallback className="text-[10px] bg-muted">
+          <button type="button" onClick={onSellerClick} className="flex items-center gap-1 group w-full">
+            <Avatar className="h-4 w-4">
+              <AvatarFallback className="text-[8px] bg-muted">
                 {item.seller_name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary group-hover:underline truncate">
+            <span className="text-[10px] font-medium text-muted-foreground group-hover:text-primary group-hover:underline truncate">
               {item.seller_name}
             </span>
           </button>
         )}
 
-        <h3 className="font-semibold text-foreground text-xs line-clamp-1">
-          {item.product_title}
-        </h3>
+        <h3 className="font-semibold text-foreground text-xs line-clamp-1">{item.product_title}</h3>
 
-        {/* Price + qty stepper inline */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-baseline gap-1.5 min-w-0">
-            <span className="text-sm font-bold text-secondary">
-              {item.product_currency}
-              {Number(item.product_price).toLocaleString()}
-            </span>
-            {item.product_original_price && (
-              <span className="text-[10px] text-muted-foreground line-through truncate">
-                {item.product_currency}
-                {Number(item.product_original_price).toLocaleString()}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center border border-border rounded-md shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => onQtyChange(item.quantity - 1)}
-              disabled={item.quantity <= 1}
-            >
-              <Minus className="h-3 w-3" />
+        <div className="flex items-center justify-between gap-1.5">
+          <span className="text-xs font-bold text-secondary">
+            {item.product_currency}{Number(item.product_price).toLocaleString()}
+          </span>
+          <div className="flex items-center border border-border rounded">
+            <Button variant="ghost" size="icon" className="h-5 w-5"
+              onClick={() => onQtyChange(item.quantity - 1)} disabled={item.quantity <= 1}>
+              <Minus className="h-2.5 w-2.5" />
             </Button>
-            <span className="w-6 text-center text-xs font-medium">{item.quantity}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => onQtyChange(item.quantity + 1)}
-            >
-              <Plus className="h-3 w-3" />
+            <span className="w-5 text-center text-[10px] font-medium">{item.quantity}</span>
+            <Button variant="ghost" size="icon" className="h-5 w-5"
+              onClick={() => onQtyChange(item.quantity + 1)}>
+              <Plus className="h-2.5 w-2.5" />
             </Button>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 pt-2 border-t border-border">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 h-8 text-xs text-destructive hover:text-destructive"
-            onClick={onRemove}
-          >
-            <Trash2 className="h-3.5 w-3.5 mr-1" />
-            Remove
+        <div className="flex gap-1.5 pt-1.5 border-t border-border">
+          <Button variant="outline" size="sm" className="flex-1 h-7 text-[10px] text-destructive hover:text-destructive px-1" onClick={onRemove}>
+            <Trash2 className="h-3 w-3 mr-1" /> Remove
           </Button>
-          <Button
-            size="sm"
-            className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
-            onClick={onBuy}
-          >
+          <Button size="sm" className="flex-1 h-7 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground px-1" onClick={onBuy}>
             Buy Now
           </Button>
         </div>
@@ -182,9 +132,22 @@ const CartItemCard = ({
 
 const Activity = () => {
   const navigate = useNavigate();
-  const { wonBids } = useAuctionBids();
+  const { user } = useAuth();
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setOrders((data as Order[]) || []);
+    })();
+  }, [user]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
@@ -258,32 +221,22 @@ const Activity = () => {
               </TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
             </TabsList>
+          </div>
 
+          <TabsContent value="cart" className="space-y-4">
             {cartItems.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-end gap-2">
                 {selectedIds.size > 0 && (
-                  <Button
-                    onClick={handleBuySelected}
-                    size="default"
-                    className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                  >
-                    <ShoppingBag className="h-4 w-4" />
+                  <Button onClick={handleBuySelected} size="sm" className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5">
+                    <ShoppingBag className="h-3.5 w-3.5" />
                     Buy ({selectedIds.size}) · {selectedCurrency}{selectedTotal.toLocaleString()}
                   </Button>
                 )}
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="h-9"
-                  onClick={toggleSelectAll}
-                >
+                <Button variant="outline" size="sm" className="h-8" onClick={toggleSelectAll}>
                   {selectedIds.size === cartItems.length ? "Deselect All" : "Select"}
                 </Button>
               </div>
             )}
-          </div>
-
-          <TabsContent value="cart" className="space-y-4">
             {cartItems.length === 0 ? (
               <div className="text-center py-16">
                 <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
@@ -291,67 +244,69 @@ const Activity = () => {
                 <p className="text-sm text-muted-foreground mt-2">Add items from live streams to see them here</p>
               </div>
             ) : (
-              <>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {cartItems.map((item) => {
-                    const isSelected = selectedIds.has(item.id);
-                    return (
-                      <CartItemCard
-                        key={item.id}
-                        item={item}
-                        isSelected={isSelected}
-                        onToggleSelect={() => toggleSelect(item.id)}
-                        onSellerClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
-                        onQtyChange={(q) => updateQuantity(item.id, q)}
-                        onRemove={() => removeFromCart(item.id)}
-                        onBuy={() => handleBuySingle(item)}
-                      />
-                    );
-                  })}
-                </div>
-              </>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {cartItems.map((item) => (
+                  <CartItemCard
+                    key={item.id}
+                    item={item}
+                    isSelected={selectedIds.has(item.id)}
+                    onToggleSelect={() => toggleSelect(item.id)}
+                    onSellerClick={() => navigate(`/seller/${encodeURIComponent(item.seller_name!)}`)}
+                    onQtyChange={(q) => updateQuantity(item.id, q)}
+                    onRemove={() => removeFromCart(item.id)}
+                    onBuy={() => handleBuySingle(item)}
+                  />
+                ))}
+              </div>
             )}
           </TabsContent>
 
           <TabsContent value="orders" className="space-y-4">
-            {wonBids.length === 0 ? (
+            {orders.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-lg">No orders yet</p>
-                <p className="text-sm text-muted-foreground mt-2">Items you win in auctions will appear here</p>
+                <p className="text-sm text-muted-foreground mt-2">Items you buy will appear here</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {wonBids.map((bid) => (
-                  <Card key={bid.id} className="overflow-hidden">
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
-                      {bid.item_image && (
-                        <img src={bid.item_image} alt={bid.item_name} className="w-full h-full object-cover" />
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold text-foreground text-sm mb-1">{bid.item_name}</h3>
-                      {bid.item_description && (
-                        <p className="text-xs text-muted-foreground mb-2">{bid.item_description}</p>
-                      )}
-                      <p className="text-lg font-bold text-secondary">₹{Number(bid.bid_amount).toLocaleString("en-IN")}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Won on {new Date(bid.created_at).toLocaleDateString()}
-                      </p>
-                      {bid.seller_name && (
-                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={bid.seller_image || undefined} />
-                            <AvatarFallback className="text-xs bg-muted">
-                              {bid.seller_name.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-xs text-muted-foreground">{bid.seller_name}</span>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {orders.map((order) => {
+                  const meta = STATUS_META[order.status] || STATUS_META.ordered;
+                  return (
+                    <Card
+                      key={order.id}
+                      className="overflow-hidden cursor-pointer hover:border-primary transition-colors"
+                      onClick={() => navigate(`/orders/${order.id}`)}
+                    >
+                      <div className="relative aspect-square overflow-hidden bg-muted">
+                        {order.product_image && (
+                          <img src={order.product_image} alt={order.product_title} className="w-full h-full object-cover" />
+                        )}
+                        <Badge className={`absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 border-0 ${meta.className}`}>
+                          {meta.label}
+                        </Badge>
+                      </div>
+                      <CardContent className="p-2">
+                        <h3 className="font-semibold text-foreground text-xs line-clamp-1">{order.product_title}</h3>
+                        <p className="text-sm font-bold text-secondary mt-0.5">
+                          {order.product_currency}{Number(order.total_amount).toLocaleString("en-IN")}
+                        </p>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">
+                          {new Date(order.created_at).toLocaleDateString()}
+                        </p>
+                        {order.seller_name && (
+                          <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border">
+                            <Avatar className="h-4 w-4">
+                              <AvatarFallback className="text-[8px] bg-muted">
+                                {order.seller_name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-[10px] text-muted-foreground truncate">{order.seller_name}</span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>

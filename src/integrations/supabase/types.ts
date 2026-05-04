@@ -244,6 +244,60 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          id: string
+          payment_method: string | null
+          product_currency: string
+          product_image: string | null
+          product_price: number
+          product_title: string
+          quantity: number
+          seller_name: string | null
+          shipping_address: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string | null
+          product_currency?: string
+          product_image?: string | null
+          product_price: number
+          product_title: string
+          quantity?: number
+          seller_name?: string | null
+          shipping_address?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string | null
+          product_currency?: string
+          product_image?: string | null
+          product_price?: number
+          product_title?: string
+          quantity?: number
+          seller_name?: string | null
+          shipping_address?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
