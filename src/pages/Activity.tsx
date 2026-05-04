@@ -262,53 +262,132 @@ const Activity = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="orders" className="space-y-4">
+          <TabsContent value="orders" className="space-y-8">
             {orders.length === 0 ? (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-lg">No orders yet</p>
                 <p className="text-sm text-muted-foreground mt-2">Items you buy will appear here</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                {orders.map((order) => {
-                  const meta = STATUS_META[order.status] || STATUS_META.ordered;
+              <>
+                {(() => {
+                  const activeOrders = orders.filter((o) => o.status !== "delivered");
+                  const deliveredOrders = orders.filter((o) => o.status === "delivered");
                   return (
-                    <Card
-                      key={order.id}
-                      className="overflow-hidden cursor-pointer hover:border-primary transition-colors"
-                      onClick={() => navigate(`/orders/${order.id}`)}
-                    >
-                      <div className="relative aspect-square overflow-hidden bg-muted">
-                        {order.product_image && (
-                          <img src={order.product_image} alt={order.product_title} className="w-full h-full object-cover" />
-                        )}
-                        <Badge className={`absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 border-0 ${meta.className}`}>
-                          {meta.label}
-                        </Badge>
-                      </div>
-                      <CardContent className="p-2">
-                        <h3 className="font-semibold text-foreground text-xs line-clamp-1">{order.product_title}</h3>
-                        <p className="text-sm font-bold text-secondary mt-0.5">
-                          {order.product_currency}{Number(order.total_amount).toLocaleString("en-IN")}
-                        </p>
-                        <p className="text-[9px] text-muted-foreground mt-0.5">
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </p>
-                        {order.seller_name && (
-                          <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border">
-                            <Avatar className="h-4 w-4">
-                              <AvatarFallback className="text-[8px] bg-muted">
-                                {order.seller_name.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-[10px] text-muted-foreground truncate">{order.seller_name}</span>
+                    <>
+                      <section className="space-y-3">
+                        <h2 className="text-lg font-semibold text-foreground">Active Orders</h2>
+                        {activeOrders.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">No active orders.</p>
+                        ) : (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                            {activeOrders.map((order) => {
+                              const meta = STATUS_META[order.status] || STATUS_META.ordered;
+                              return (
+                                <Card
+                                  key={order.id}
+                                  className="overflow-hidden cursor-pointer hover:border-primary transition-colors"
+                                  onClick={() => navigate(`/orders/${order.id}`)}
+                                >
+                                  <div className="relative aspect-square overflow-hidden bg-muted">
+                                    {order.product_image && (
+                                      <img src={order.product_image} alt={order.product_title} className="w-full h-full object-cover" />
+                                    )}
+                                    <Badge className={`absolute top-1.5 right-1.5 text-[9px] px-1.5 py-0.5 border-0 ${meta.className}`}>
+                                      {meta.label}
+                                    </Badge>
+                                  </div>
+                                  <CardContent className="p-2">
+                                    <h3 className="font-semibold text-foreground text-xs line-clamp-1">{order.product_title}</h3>
+                                    <p className="text-sm font-bold text-secondary mt-0.5">
+                                      {order.product_currency}{Number(order.total_amount).toLocaleString("en-IN")}
+                                    </p>
+                                    <p className="text-[9px] text-muted-foreground mt-0.5">
+                                      {new Date(order.created_at).toLocaleDateString()}
+                                    </p>
+                                    {order.seller_name && (
+                                      <div className="flex items-center gap-1 mt-1.5 pt-1.5 border-t border-border">
+                                        <Avatar className="h-4 w-4">
+                                          <AvatarFallback className="text-[8px] bg-muted">
+                                            {order.seller_name.charAt(0).toUpperCase()}
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-[10px] text-muted-foreground truncate">{order.seller_name}</span>
+                                      </div>
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              );
+                            })}
                           </div>
                         )}
-                      </CardContent>
-                    </Card>
+                      </section>
+
+                      <section className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-lg font-semibold text-foreground">Delivered Orders</h2>
+                          {deliveredOrders.length > 0 && (
+                            <span className="text-xs text-muted-foreground">{deliveredOrders.length} item{deliveredOrders.length > 1 ? "s" : ""}</span>
+                          )}
+                        </div>
+                        {deliveredOrders.length === 0 ? (
+                          <p className="text-sm text-muted-foreground">No delivered orders yet.</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {deliveredOrders.map((order) => {
+                              const deliveredAt = new Date(order.updated_at || order.created_at);
+                              return (
+                                <Card
+                                  key={order.id}
+                                  className="overflow-hidden cursor-pointer hover:border-primary transition-colors"
+                                  onClick={() => navigate(`/orders/${order.id}`)}
+                                >
+                                  <div className="flex items-stretch gap-3 p-2">
+                                    <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-md bg-muted">
+                                      {order.product_image && (
+                                        <img src={order.product_image} alt={order.product_title} className="w-full h-full object-cover" />
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                      <div>
+                                        <div className="flex items-start justify-between gap-2">
+                                          <h3 className="font-semibold text-foreground text-sm line-clamp-1">{order.product_title}</h3>
+                                          <Badge className={`shrink-0 text-[9px] px-1.5 py-0.5 border-0 ${STATUS_META.delivered.className}`}>
+                                            Delivered
+                                          </Badge>
+                                        </div>
+                                        {order.seller_name && (
+                                          <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                            Sold by {order.seller_name}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <div className="flex items-end justify-between gap-2 mt-1.5">
+                                        <div className="text-[11px] text-muted-foreground">
+                                          <p>Qty: <span className="text-foreground font-medium">{order.quantity}</span></p>
+                                          <p>
+                                            Delivered on{" "}
+                                            <span className="text-foreground font-medium">
+                                              {deliveredAt.toLocaleDateString()} · {deliveredAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                            </span>
+                                          </p>
+                                        </div>
+                                        <span className="text-sm font-bold text-secondary whitespace-nowrap">
+                                          {order.product_currency}{Number(order.total_amount).toLocaleString("en-IN")}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </section>
+                    </>
                   );
-                })}
-              </div>
+                })()}
+              </>
             )}
           </TabsContent>
         </Tabs>
