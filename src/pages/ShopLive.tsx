@@ -99,10 +99,10 @@ const ShopLive = () => {
               Live Sales
             </Button>
             <Button
-              variant={mode === "auction" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
-              className={`h-8 text-xs gap-1.5 ${mode === "auction" ? "bg-secondary text-secondary-foreground" : ""}`}
-              onClick={() => setMode("auction")}
+              className="h-8 text-xs gap-1.5"
+              onClick={() => navigate("/dashboard")}
             >
               <Gavel className="h-3.5 w-3.5" />
               Auction
