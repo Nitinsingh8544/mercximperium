@@ -267,28 +267,6 @@ const Addresses = () => {
             )}
           </div>
 
-          {/* Country of Residence */}
-          <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-2">Country of Residence</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-1">Your country influences recommendations for shows and products</p>
-            <p className="text-xs sm:text-sm text-muted-foreground mb-4">Shipping feasibility is determined by your address</p>
-            
-            <div className="max-w-full sm:max-w-md">
-              <label className="text-xs sm:text-sm text-muted-foreground">Country or region *</label>
-              <Select value={country} onValueChange={setCountry}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="India">India</SelectItem>
-                  <SelectItem value="United States">United States</SelectItem>
-                  <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                  <SelectItem value="Canada">Canada</SelectItem>
-                  <SelectItem value="Australia">Australia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
         </main>
       </div>
 
