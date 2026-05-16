@@ -87,6 +87,11 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const { addWinner } = useAuctionWinners();
   const { getActiveItem, advanceQueue } = useAuctionQueue();
   const { toast } = useToast();
+  const { balance: walletBalance, spend: walletSpend } = useWallet();
+  const [lockedAmount, setLockedAmount] = useState(0); // in ₹
+  const [insufficientOpen, setInsufficientOpen] = useState(false);
+  const [insufficientNeed, setInsufficientNeed] = useState(0);
+  const prevLastBidderRef = useRef<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sellerInfo = streamSellerData[streamId] || defaultSeller;
