@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Trophy } from "lucide-react";
-import { useAuctionWinners } from "@/hooks/useAuctionWinners";
+import { useAuctionWinners, type AuctionWinner } from "@/hooks/useAuctionWinners";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import WinnerDetailModal from "./WinnerDetailModal";
 
 interface AuctionWinnersPanelProps {
   streamId: number;
@@ -10,6 +12,7 @@ interface AuctionWinnersPanelProps {
 const AuctionWinnersPanel = ({ streamId }: AuctionWinnersPanelProps) => {
   const { getWinnersForStream } = useAuctionWinners();
   const winners = getWinnersForStream(streamId);
+  const [selected, setSelected] = useState<AuctionWinner | null>(null);
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 flex flex-col">
