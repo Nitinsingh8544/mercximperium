@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Trophy } from "lucide-react";
-import { useAuctionWinners } from "@/hooks/useAuctionWinners";
+import { useAuctionWinners, type AuctionWinner } from "@/hooks/useAuctionWinners";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import WinnerDetailModal from "./WinnerDetailModal";
 
 interface AuctionWinnersPanelProps {
   streamId: number;
@@ -10,6 +12,7 @@ interface AuctionWinnersPanelProps {
 const AuctionWinnersPanel = ({ streamId }: AuctionWinnersPanelProps) => {
   const { getWinnersForStream } = useAuctionWinners();
   const winners = getWinnersForStream(streamId);
+  const [selected, setSelected] = useState<AuctionWinner | null>(null);
 
   return (
     <div className="bg-card rounded-xl border border-border p-4 flex flex-col">
@@ -26,9 +29,10 @@ const AuctionWinnersPanel = ({ streamId }: AuctionWinnersPanelProps) => {
         <ScrollArea className="max-h-[260px]">
           <div className="space-y-2 pr-2">
             {winners.map((w) => (
-              <div
+              <button
                 key={w.id}
-                className="flex gap-2 p-2 bg-background rounded-lg border border-border"
+                onClick={() => setSelected(w)}
+                className="w-full flex gap-2 p-2 bg-background rounded-lg border border-border text-left hover:border-secondary hover:bg-secondary/5 transition-colors"
               >
                 <img
                   src={w.itemImage}
@@ -58,11 +62,17 @@ const AuctionWinnersPanel = ({ streamId }: AuctionWinnersPanelProps) => {
                     </span>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </ScrollArea>
       )}
+
+      <WinnerDetailModal
+        open={!!selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+        winner={selected}
+      />
     </div>
   );
 };

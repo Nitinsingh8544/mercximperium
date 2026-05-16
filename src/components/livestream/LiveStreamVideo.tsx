@@ -12,6 +12,8 @@ import { useAuctionQueue } from "@/hooks/useAuctionQueue";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
+import { useWallet } from "@/hooks/useWallet";
+import { Wallet as WalletIcon } from "lucide-react";
 
 interface LiveStreamVideoProps {
   currentBid: number;
@@ -85,6 +87,11 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const { addWinner } = useAuctionWinners();
   const { getActiveItem, advanceQueue } = useAuctionQueue();
   const { toast } = useToast();
+  const { balance: walletBalance, spend: walletSpend } = useWallet();
+  const [lockedAmount, setLockedAmount] = useState(0); // in ₹
+  const [insufficientOpen, setInsufficientOpen] = useState(false);
+  const [insufficientNeed, setInsufficientNeed] = useState(0);
+  const prevLastBidderRef = useRef<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sellerInfo = streamSellerData[streamId] || defaultSeller;
@@ -115,6 +122,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setBidCount(0);
     setNextItemCountdown(null);
     winnerRecordedRef.current = false;
+    setLockedAmount(0);
+    prevLastBidderRef.current = null;
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
@@ -153,14 +162,37 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (hadBids && lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
+      const finalPriceInr = Math.round(currentBid * 93.1);
       addWinner({
         streamId,
         itemName: itemInfo.name,
         itemImage: itemInfo.image,
         winnerName: lastBidder,
-        finalPrice: Math.round(currentBid * 93.1),
+        finalPrice: finalPriceInr,
         totalBids: bidCount,
       });
+
+      // If the current user won, actually deduct the locked amount from their wallet.
+      if (lastBidder === "You" && lockedAmount > 0) {
+        walletSpend(lockedAmount, `Auction win: ${itemInfo.name}`, `stream-${streamId}`).then((r) => {
+          if (r.success) {
+            toast({
+              title: "🏆 You won the auction!",
+              description: `₹${lockedAmount.toLocaleString("en-IN")} deducted from your wallet for ${itemInfo.name}.`,
+            });
+          } else {
+            toast({
+              title: "Payment issue",
+              description: r.error || "Could not deduct funds from wallet.",
+              variant: "destructive",
+            });
+          }
+          setLockedAmount(0);
+        });
+      } else if (lastBidder !== "You" && lockedAmount > 0) {
+        // Lost — release any locked funds
+        setLockedAmount(0);
+      }
     }
 
     // Splash duration: 2s if there's a winner, otherwise skip straight to countdown.
@@ -199,7 +231,31 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     }, splashDuration);
 
     return () => clearTimeout(splashTimer);
-  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue]);
+  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue, lockedAmount, walletSpend, toast]);
+
+  // Notify on winning/losing whenever the top bidder changes
+  useEffect(() => {
+    const prev = prevLastBidderRef.current;
+    const curr = lastBidder;
+    if (prev === curr) return;
+    prevLastBidderRef.current = curr;
+    if (!curr || timeLeft === 0) return;
+
+    if (curr === "You") {
+      toast({
+        title: "🎯 You're winning!",
+        description: `You're the top bidder at ₹${(currentBid * 93.1).toFixed(0)}. Hold your lead!`,
+      });
+    } else if (prev === "You") {
+      // You were outbid — release locked funds
+      if (lockedAmount > 0) setLockedAmount(0);
+      toast({
+        title: "📉 You've been outbid!",
+        description: `${curr} is now winning at ₹${(currentBid * 93.1).toFixed(0)}. Place a higher bid to take the lead.`,
+        variant: "destructive",
+      });
+    }
+  }, [lastBidder, currentBid, timeLeft, lockedAmount, toast]);
 
   const bidTimeLeft = phase === "bid" ? timeLeft : Math.max(0, timeLeft - EXPLAIN_DURATION);
   const displayTime = phase === "bid" ? timeLeft : timeLeft - BID_DURATION;
@@ -210,10 +266,22 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
 
+  const availableBalance = Math.max(0, walletBalance - lockedAmount);
+
   const handleBid = async (amount: number) => {
     // Bidding strictly disabled outside the active 30s bid window
     if (phase !== "bid" || timeLeft <= 0) {
       toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
+      return;
+    }
+
+    // Wallet check — bid amount in ₹
+    const bidRupees = Math.round(amount * 93.1);
+    // Required funds = bid - already locked from your previous bid in this cycle
+    const requiredNow = Math.max(0, bidRupees - lockedAmount);
+    if (requiredNow > availableBalance) {
+      setInsufficientNeed(bidRupees);
+      setInsufficientOpen(true);
       return;
     }
 
@@ -231,8 +299,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
       onBid(amount);
       setLastBidder("You");
       setBidCount(c => c + 1);
-      // Per spec: do NOT show "you win" message during bidding.
-      // Live ticker (`is Winning!` badge) already shows the current top bidder.
+      // Lock the new bid amount (replaces prior lock for this cycle)
+      setLockedAmount(bidRupees);
     }
   };
 
@@ -473,8 +541,21 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
         </div>
 
+        {/* Wallet status row */}
+        <div className="flex items-center justify-between px-3 pt-2 pb-1 bg-primary text-primary-foreground text-[11px]">
+          <div className="flex items-center gap-1.5">
+            <WalletIcon className="h-3 w-3" />
+            <span>Available: <span className="font-semibold">₹{availableBalance.toLocaleString("en-IN")}</span></span>
+          </div>
+          {lockedAmount > 0 && (
+            <span className="text-secondary font-semibold">
+              🔒 Locked in bid: ₹{lockedAmount.toLocaleString("en-IN")}
+            </span>
+          )}
+        </div>
+
         {/* Bid Buttons */}
-        <div className="flex gap-2 p-3 bg-primary">
+        <div className="flex gap-2 p-3 pt-2 bg-primary">
           <Button
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
@@ -492,6 +573,38 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </Button>
         </div>
       </div>
+
+      {/* Insufficient Wallet Dialog */}
+      <Dialog open={insufficientOpen} onOpenChange={setInsufficientOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Insufficient wallet balance</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              This bid requires <span className="font-bold text-foreground">₹{insufficientNeed.toLocaleString("en-IN")}</span>{" "}
+              to be locked from your wallet.
+            </p>
+            <div className="rounded-lg bg-muted p-3 space-y-1 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Wallet balance</span><span className="font-semibold">₹{walletBalance.toLocaleString("en-IN")}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Locked in current bid</span><span className="font-semibold">₹{lockedAmount.toLocaleString("en-IN")}</span></div>
+              <div className="flex justify-between border-t pt-1"><span className="text-muted-foreground">Available</span><span className="font-bold text-secondary">₹{availableBalance.toLocaleString("en-IN")}</span></div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Top up your wallet to continue bidding. If another bidder outbids you, your locked amount is released back automatically.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInsufficientOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => { setInsufficientOpen(false); navigate("/wallet"); }}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold"
+            >
+              <WalletIcon className="h-4 w-4 mr-1.5" /> Add Money
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Custom Bid Dialog */}
       <Dialog open={isCustomBidOpen} onOpenChange={setIsCustomBidOpen}>
