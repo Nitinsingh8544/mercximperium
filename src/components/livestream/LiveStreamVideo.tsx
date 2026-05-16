@@ -541,8 +541,21 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
         </div>
 
+        {/* Wallet status row */}
+        <div className="flex items-center justify-between px-3 pt-2 pb-1 bg-primary text-primary-foreground text-[11px]">
+          <div className="flex items-center gap-1.5">
+            <WalletIcon className="h-3 w-3" />
+            <span>Available: <span className="font-semibold">₹{availableBalance.toLocaleString("en-IN")}</span></span>
+          </div>
+          {lockedAmount > 0 && (
+            <span className="text-secondary font-semibold">
+              🔒 Locked in bid: ₹{lockedAmount.toLocaleString("en-IN")}
+            </span>
+          )}
+        </div>
+
         {/* Bid Buttons */}
-        <div className="flex gap-2 p-3 bg-primary">
+        <div className="flex gap-2 p-3 pt-2 bg-primary">
           <Button
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
@@ -560,6 +573,38 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </Button>
         </div>
       </div>
+
+      {/* Insufficient Wallet Dialog */}
+      <Dialog open={insufficientOpen} onOpenChange={setInsufficientOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Insufficient wallet balance</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              This bid requires <span className="font-bold text-foreground">₹{insufficientNeed.toLocaleString("en-IN")}</span>{" "}
+              to be locked from your wallet.
+            </p>
+            <div className="rounded-lg bg-muted p-3 space-y-1 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Wallet balance</span><span className="font-semibold">₹{walletBalance.toLocaleString("en-IN")}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Locked in current bid</span><span className="font-semibold">₹{lockedAmount.toLocaleString("en-IN")}</span></div>
+              <div className="flex justify-between border-t pt-1"><span className="text-muted-foreground">Available</span><span className="font-bold text-secondary">₹{availableBalance.toLocaleString("en-IN")}</span></div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Top up your wallet to continue bidding. If another bidder outbids you, your locked amount is released back automatically.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInsufficientOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => { setInsufficientOpen(false); navigate("/wallet"); }}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold"
+            >
+              <WalletIcon className="h-4 w-4 mr-1.5" /> Add Money
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Custom Bid Dialog */}
       <Dialog open={isCustomBidOpen} onOpenChange={setIsCustomBidOpen}>
