@@ -231,7 +231,31 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     }, splashDuration);
 
     return () => clearTimeout(splashTimer);
-  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue]);
+  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue, lockedAmount, walletSpend, toast]);
+
+  // Notify on winning/losing whenever the top bidder changes
+  useEffect(() => {
+    const prev = prevLastBidderRef.current;
+    const curr = lastBidder;
+    if (prev === curr) return;
+    prevLastBidderRef.current = curr;
+    if (!curr || timeLeft === 0) return;
+
+    if (curr === "You") {
+      toast({
+        title: "🎯 You're winning!",
+        description: `You're the top bidder at ₹${(currentBid * 93.1).toFixed(0)}. Hold your lead!`,
+      });
+    } else if (prev === "You") {
+      // You were outbid — release locked funds
+      if (lockedAmount > 0) setLockedAmount(0);
+      toast({
+        title: "📉 You've been outbid!",
+        description: `${curr} is now winning at ₹${(currentBid * 93.1).toFixed(0)}. Place a higher bid to take the lead.`,
+        variant: "destructive",
+      });
+    }
+  }, [lastBidder, currentBid, timeLeft, lockedAmount, toast]);
 
   const bidTimeLeft = phase === "bid" ? timeLeft : Math.max(0, timeLeft - EXPLAIN_DURATION);
   const displayTime = phase === "bid" ? timeLeft : timeLeft - BID_DURATION;
@@ -242,10 +266,22 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
 
+  const availableBalance = Math.max(0, walletBalance - lockedAmount);
+
   const handleBid = async (amount: number) => {
     // Bidding strictly disabled outside the active 30s bid window
     if (phase !== "bid" || timeLeft <= 0) {
       toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
+      return;
+    }
+
+    // Wallet check — bid amount in ₹
+    const bidRupees = Math.round(amount * 93.1);
+    // Required funds = bid - already locked from your previous bid in this cycle
+    const requiredNow = Math.max(0, bidRupees - lockedAmount);
+    if (requiredNow > availableBalance) {
+      setInsufficientNeed(bidRupees);
+      setInsufficientOpen(true);
       return;
     }
 
@@ -263,8 +299,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
       onBid(amount);
       setLastBidder("You");
       setBidCount(c => c + 1);
-      // Per spec: do NOT show "you win" message during bidding.
-      // Live ticker (`is Winning!` badge) already shows the current top bidder.
+      // Lock the new bid amount (replaces prior lock for this cycle)
+      setLockedAmount(bidRupees);
     }
   };
 
