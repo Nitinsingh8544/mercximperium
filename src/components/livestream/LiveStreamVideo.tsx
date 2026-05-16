@@ -162,14 +162,37 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (hadBids && lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
+      const finalPriceInr = Math.round(currentBid * 93.1);
       addWinner({
         streamId,
         itemName: itemInfo.name,
         itemImage: itemInfo.image,
         winnerName: lastBidder,
-        finalPrice: Math.round(currentBid * 93.1),
+        finalPrice: finalPriceInr,
         totalBids: bidCount,
       });
+
+      // If the current user won, actually deduct the locked amount from their wallet.
+      if (lastBidder === "You" && lockedAmount > 0) {
+        walletSpend(lockedAmount, `Auction win: ${itemInfo.name}`, `stream-${streamId}`).then((r) => {
+          if (r.success) {
+            toast({
+              title: "🏆 You won the auction!",
+              description: `₹${lockedAmount.toLocaleString("en-IN")} deducted from your wallet for ${itemInfo.name}.`,
+            });
+          } else {
+            toast({
+              title: "Payment issue",
+              description: r.error || "Could not deduct funds from wallet.",
+              variant: "destructive",
+            });
+          }
+          setLockedAmount(0);
+        });
+      } else if (lastBidder !== "You" && lockedAmount > 0) {
+        // Lost — release any locked funds
+        setLockedAmount(0);
+      }
     }
 
     // Splash duration: 2s if there's a winner, otherwise skip straight to countdown.
