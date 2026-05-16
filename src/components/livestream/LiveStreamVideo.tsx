@@ -122,6 +122,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     setBidCount(0);
     setNextItemCountdown(null);
     winnerRecordedRef.current = false;
+    setLockedAmount(0);
+    prevLastBidderRef.current = null;
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
