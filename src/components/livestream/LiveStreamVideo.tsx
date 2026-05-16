@@ -12,6 +12,8 @@ import { useAuctionQueue } from "@/hooks/useAuctionQueue";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { auctionStreams } from "@/lib/streamRanking";
+import { useWallet } from "@/hooks/useWallet";
+import { Wallet as WalletIcon } from "lucide-react";
 
 interface LiveStreamVideoProps {
   currentBid: number;
