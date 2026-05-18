@@ -16,6 +16,7 @@ import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Browse from "./pages/Browse";
+import CategoryView from "./pages/CategoryView";
 import Activity from "./pages/Activity";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
