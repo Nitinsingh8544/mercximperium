@@ -455,29 +455,75 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Winner Celebration Splash Overlay - 2s, then fade for 0.5s before next item */}
+          {/* Winner Celebration Splash Overlay - sophisticated, with party poppers & confetti */}
           {showWinner && winner && (
-            <div className={`absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-secondary/80 via-primary/70 to-secondary/80 backdrop-blur-md transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in"}`}>
-              {/* Splash rays */}
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[150%] w-[150%] bg-[radial-gradient(circle,_hsl(var(--secondary)/0.4)_0%,_transparent_60%)] animate-ping" />
+            <div className={`absolute inset-0 flex items-center justify-center z-30 bg-gradient-to-br from-primary/80 via-secondary/60 to-primary/80 backdrop-blur-md overflow-hidden transition-opacity duration-500 ${fadeOut ? "opacity-0" : "opacity-100 animate-in fade-in"}`}>
+              {/* Radial glow */}
+              <div className="absolute inset-0">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[160%] w-[160%] bg-[radial-gradient(circle,_hsl(var(--secondary)/0.45)_0%,_transparent_55%)] animate-ping" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[120%] w-[120%] bg-[conic-gradient(from_0deg,_hsl(var(--secondary)/0.25),_transparent_30%,_hsl(var(--secondary)/0.25)_60%,_transparent_90%)] animate-spin [animation-duration:6s]" />
               </div>
-              <div className="relative text-center animate-in zoom-in-50 duration-500 px-6 py-5 bg-card/95 rounded-2xl shadow-2xl border-2 border-secondary">
-                <div className="text-5xl mb-2 animate-bounce">🎉🏆🎉</div>
-                <p className="text-2xl font-extrabold text-secondary mb-2 tracking-wide">WINNER!</p>
-                <Avatar className="h-20 w-20 mx-auto border-4 border-secondary shadow-lg mb-2">
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-bold">
-                    {winner.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+
+              {/* Floating party poppers */}
+              <div className="absolute top-[8%] left-[6%] text-5xl animate-bounce [animation-delay:0ms]">🎉</div>
+              <div className="absolute top-[10%] right-[8%] text-5xl animate-bounce [animation-delay:200ms]">🎊</div>
+              <div className="absolute top-[28%] left-[14%] text-3xl animate-bounce [animation-delay:400ms]">✨</div>
+              <div className="absolute top-[30%] right-[16%] text-3xl animate-bounce [animation-delay:600ms]">🥳</div>
+              <div className="absolute bottom-[14%] left-[10%] text-4xl animate-bounce [animation-delay:300ms]">🎊</div>
+              <div className="absolute bottom-[12%] right-[10%] text-4xl animate-bounce [animation-delay:500ms]">🎉</div>
+              <div className="absolute bottom-[28%] left-[22%] text-2xl animate-pulse">⭐</div>
+              <div className="absolute bottom-[26%] right-[24%] text-2xl animate-pulse">⭐</div>
+
+              {/* Confetti dots */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[
+                  "top-[12%] left-[30%] bg-secondary",
+                  "top-[18%] left-[60%] bg-primary",
+                  "top-[22%] left-[78%] bg-secondary",
+                  "top-[40%] left-[8%] bg-primary",
+                  "top-[55%] right-[6%] bg-secondary",
+                  "bottom-[18%] left-[40%] bg-primary",
+                  "bottom-[22%] right-[35%] bg-secondary",
+                  "bottom-[40%] left-[18%] bg-primary",
+                ].map((c, i) => (
+                  <span
+                    key={i}
+                    className={`absolute h-2 w-2 rounded-full ${c} animate-ping`}
+                    style={{ animationDelay: `${i * 120}ms` }}
+                  />
+                ))}
+              </div>
+
+              <div className="relative text-center animate-in zoom-in-50 duration-500 px-7 py-6 bg-card/95 rounded-2xl shadow-[0_20px_60px_-10px_hsl(var(--secondary)/0.6)] border-2 border-secondary">
+                {/* Top crown of poppers */}
+                <div className="flex items-center justify-center gap-3 mb-2 text-4xl">
+                  <span className="animate-bounce [animation-delay:0ms]">🎉</span>
+                  <span className="text-5xl drop-shadow-[0_4px_12px_hsl(var(--secondary)/0.6)]">🏆</span>
+                  <span className="animate-bounce [animation-delay:200ms]">🎉</span>
+                </div>
+                <p className="text-[10px] font-semibold tracking-[0.3em] text-muted-foreground uppercase">Auction Won</p>
+                <p className="text-3xl font-extrabold bg-gradient-to-r from-secondary via-primary to-secondary bg-clip-text text-transparent mb-3 tracking-wider">
+                  WINNER!
+                </p>
+                <div className="relative inline-block mb-2">
+                  <div className="absolute inset-0 rounded-full bg-secondary/40 blur-lg animate-pulse" />
+                  <Avatar className="relative h-20 w-20 mx-auto border-4 border-secondary shadow-lg">
+                    <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-bold">
+                      {winner.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
                 <p className="text-xl text-foreground font-bold">{winner}</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   won <span className="font-semibold text-foreground">{itemInfo.name}</span>
                 </p>
-                <p className="text-sm text-muted-foreground">
-                   at <span className="font-bold text-secondary">₹{currentBidInRupees.toLocaleString("en-IN")}</span>
-                </p>
-                <div className="text-2xl mt-1">✨🎊✨</div>
+                <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-secondary/20 via-secondary/30 to-secondary/20 border border-secondary/40">
+                  <span className="text-xs text-muted-foreground">at</span>
+                  <span className="text-base font-extrabold text-secondary">
+                    ₹{currentBidInRupees.toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="text-2xl mt-2 tracking-[0.4em]">✨🎊✨</div>
               </div>
             </div>
           )}
