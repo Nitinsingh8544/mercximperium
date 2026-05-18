@@ -28,6 +28,7 @@ interface LiveStreamVideoProps {
 const TOTAL_DURATION = 180;
 const EXPLAIN_DURATION = 150;
 const BID_DURATION = 30;
+const INR_CONVERSION_RATE = 93.1;
 
 // Stream-specific data mapping
 const streamSellerData: Record<number, { name: string; image: string; rating: number }> = {
@@ -109,6 +110,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
   const following = isFollowing(sellerInfo.name);
   const nextBid = currentBid + 5;
+  const currentBidInRupees = Math.round(currentBid * INR_CONVERSION_RATE);
+  const nextBidInRupees = Math.round(nextBid * INR_CONVERSION_RATE);
 
   // Reset timer + bid state for a fresh auction cycle (called per item & per stream change)
   const startNewCycle = useCallback(() => {
@@ -162,7 +165,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (hadBids && lastBidder) {
       setWinner(lastBidder);
       setShowWinner(true);
-      const finalPriceInr = Math.round(currentBid * 93.1);
+      const finalPriceInr = Math.round(currentBid * INR_CONVERSION_RATE);
       addWinner({
         streamId,
         itemName: itemInfo.name,
@@ -244,14 +247,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (curr === "You") {
       toast({
         title: "🎯 You're winning!",
-        description: `You're the top bidder at ₹${(currentBid * 93.1).toFixed(0)}. Hold your lead!`,
+        description: `You're the top bidder at ₹${Math.round(currentBid * INR_CONVERSION_RATE).toLocaleString("en-IN")}. Hold your lead!`,
       });
     } else if (prev === "You") {
       // You were outbid — release locked funds
       if (lockedAmount > 0) setLockedAmount(0);
       toast({
         title: "📉 You've been outbid!",
-        description: `${curr} is now winning at ₹${(currentBid * 93.1).toFixed(0)}. Place a higher bid to take the lead.`,
+        description: `${curr} is now winning at ₹${Math.round(currentBid * INR_CONVERSION_RATE).toLocaleString("en-IN")}. Place a higher bid to take the lead.`,
         variant: "destructive",
       });
     }
@@ -268,7 +271,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
   const availableBalance = Math.max(0, walletBalance - lockedAmount);
 
-  const handleBid = async (amount: number) => {
+  const handleBid = async (amount: number, lockAmountRupees = Math.round(amount * INR_CONVERSION_RATE)) => {
     // Bidding strictly disabled outside the active 30s bid window
     if (phase !== "bid" || timeLeft <= 0) {
       toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
@@ -276,7 +279,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     }
 
     // Wallet check — bid amount in ₹
-    const bidRupees = Math.round(amount * 93.1);
+    const bidRupees = Math.round(lockAmountRupees);
     // Required funds = bid - already locked from your previous bid in this cycle
     const requiredNow = Math.max(0, bidRupees - lockedAmount);
     if (requiredNow > availableBalance) {
@@ -305,16 +308,18 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   };
 
   const handleCustomBidSubmit = () => {
-    const amount = parseFloat(customBidAmount);
-    if (isNaN(amount) || amount <= currentBid) {
+    const amountInRupees = Math.round(parseFloat(customBidAmount));
+    if (isNaN(amountInRupees) || amountInRupees <= currentBidInRupees) {
       toast({
         title: "Invalid bid",
-        description: `Your bid must be greater than the current bid of ₹${(currentBid * 93.1).toFixed(0)}`,
+        description: `Your bid must be greater than the current bid of ₹${currentBidInRupees.toLocaleString("en-IN")}`,
         variant: "destructive",
       });
       return;
     }
-    handleBid(amount);
+
+    const internalBidAmount = amountInRupees / INR_CONVERSION_RATE;
+    handleBid(internalBidAmount, amountInRupees);
     setIsCustomBidOpen(false);
     setCustomBidAmount("");
   };
@@ -470,7 +475,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                   won <span className="font-semibold text-foreground">{itemInfo.name}</span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  at <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
+                   at <span className="font-bold text-secondary">₹{currentBidInRupees.toLocaleString("en-IN")}</span>
                 </p>
                 <div className="text-2xl mt-1">✨🎊✨</div>
               </div>
@@ -532,7 +537,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
                 <p className="text-white/40 text-xs mt-0.5">Shipping + Taxes are extra</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-white font-bold text-lg">₹{(currentBid * 93.1).toFixed(0)}</p>
+                 <p className="text-white font-bold text-lg">₹{currentBidInRupees.toLocaleString("en-IN")}</p>
                 <p className={`text-xs font-medium ${phase === "bid" ? "text-destructive-foreground animate-pulse" : "text-secondary"}`}>
                   {formatTime(displayTime > 0 ? displayTime : timeLeft)}
                 </p>
@@ -569,7 +574,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             onClick={() => handleBid(nextBid)}
             disabled={phase !== "bid"}
           >
-            Bid: ₹{(nextBid * 93.1).toFixed(0)}
+             Bid: ₹{nextBidInRupees.toLocaleString("en-IN")}
           </Button>
         </div>
       </div>
@@ -614,16 +619,16 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Current highest bid: <span className="font-bold text-secondary">₹{(currentBid * 93.1).toFixed(0)}</span>
+               Current highest bid: <span className="font-bold text-secondary">₹{currentBidInRupees.toLocaleString("en-IN")}</span>
             </p>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Your bid amount (₹)</label>
               <Input
                 type="number"
-                placeholder={`Enter more than ₹${(currentBid * 93.1).toFixed(0)}`}
+                 placeholder={`Enter more than ₹${currentBidInRupees.toLocaleString("en-IN")}`}
                 value={customBidAmount}
                 onChange={(e) => setCustomBidAmount(e.target.value)}
-                min={currentBid + 1}
+                 min={currentBidInRupees + 1}
                 onKeyDown={(e) => { if (e.key === "Enter") handleCustomBidSubmit(); }}
               />
             </div>
