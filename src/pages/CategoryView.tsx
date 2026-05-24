@@ -148,15 +148,29 @@ const CategoryView = () => {
           </div>
         </div>
 
-        {selectedCategories.length > 1 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {selectedCategories.map((c) => (
-              <Badge key={c.slug} variant="secondary" className="gap-1">
-                <span>{c.icon}</span> {c.name}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {selectedCategories.map((c) => (
+            <button
+              key={c.slug}
+              onClick={() => {
+                if (selectedCategories.length <= 1) return;
+                const next = selectedCategories
+                  .filter((x) => x.slug !== c.slug)
+                  .map((x) => x.slug)
+                  .join(",");
+                navigate(`/browse/${next}`);
+              }}
+              className="group inline-flex items-center gap-1 rounded-full bg-secondary text-secondary-foreground text-xs px-3 py-1 hover:bg-secondary/80 transition-colors"
+              title={selectedCategories.length > 1 ? "Click to remove" : ""}
+            >
+              <span>{c.icon}</span>
+              <span className="font-medium">{c.name}</span>
+              {selectedCategories.length > 1 && (
+                <span className="ml-1 opacity-70 group-hover:opacity-100">✕</span>
+              )}
+            </button>
+          ))}
+        </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "auction" | "live")}>
           <TabsList className="bg-muted">
