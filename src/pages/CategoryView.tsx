@@ -4,31 +4,43 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeft, Gavel, Radio } from "lucide-react";
+import { ArrowLeft, Gavel, Radio, Users, Eye } from "lucide-react";
 import {
   allAuctionStreams,
   allLiveStreams,
   getCategoryBySlug,
+  browseCategories,
 } from "@/lib/browseCategories";
 import type { StreamMeta } from "@/lib/streamRanking";
 
 const CategoryView = () => {
   const { slug = "" } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const category = getCategoryBySlug(slug);
+
+  const selectedCategories = useMemo(() => {
+    const slugs = slug.split(",").map((s) => s.trim()).filter(Boolean);
+    return slugs
+      .map((s) => getCategoryBySlug(s))
+      .filter((c): c is NonNullable<ReturnType<typeof getCategoryBySlug>> => Boolean(c));
+  }, [slug]);
+
   const [tab, setTab] = useState<"auction" | "live">("auction");
 
+  const matchesAny = (s: StreamMeta) =>
+    selectedCategories.some((c) => c.matches(s));
+
   const auctionItems = useMemo(
-    () => (category ? allAuctionStreams.filter(category.matches) : []),
-    [category]
+    () => (selectedCategories.length ? allAuctionStreams.filter(matchesAny) : []),
+    [selectedCategories]
   );
   const liveItems = useMemo(
-    () => (category ? allLiveStreams.filter(category.matches) : []),
-    [category]
+    () => (selectedCategories.length ? allLiveStreams.filter(matchesAny) : []),
+    [selectedCategories]
   );
 
-  if (!category) {
+  if (!selectedCategories.length) {
     return (
       <div className="min-h-screen bg-background">
         <AuthenticatedHeader />
@@ -42,38 +54,72 @@ const CategoryView = () => {
     );
   }
 
-  const StreamCard = ({ s, mode }: { s: StreamMeta; mode: "auction" | "live" }) => (
-    <Card
-      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-      onClick={() => navigate(`/shop-live/${s.id}`)}
-    >
-      <div className="relative aspect-[4/3] overflow-hidden">
-        <img
-          src={s.image}
-          alt={s.title}
-          loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <Badge
-          className={`absolute top-2 left-2 border-0 text-[10px] sm:text-xs ${
-            mode === "auction"
-              ? "bg-secondary text-secondary-foreground"
-              : "bg-red-600 text-white"
-          }`}
-        >
-          {mode === "auction" ? (
-            <><Gavel className="w-3 h-3 mr-1 inline" /> Auction · {s.viewers}</>
-          ) : (
-            <>Live · {s.viewers}</>
-          )}
-        </Badge>
-      </div>
-      <CardContent className="p-3">
-        <p className="font-medium text-xs sm:text-sm text-foreground line-clamp-1">{s.host}</p>
-        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{s.title}</p>
-      </CardContent>
-    </Card>
-  );
+  const StreamCard = ({ s, mode }: { s: StreamMeta; mode: "auction" | "live" }) => {
+    const goToStream = () =>
+      navigate(mode === "auction" ? `/live/${s.id}` : `/shop-live/${s.id}`);
+    const goToSeller = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigate(`/seller/${s.host}`);
+    };
+    return (
+      <Card
+        className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group border-border"
+        onClick={goToStream}
+      >
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img
+            src={s.image}
+            alt={s.title}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <Badge
+            className={`absolute top-2 left-2 border-0 text-[10px] sm:text-xs ${
+              mode === "auction"
+                ? "bg-secondary text-secondary-foreground"
+                : "bg-red-600 text-white"
+            }`}
+          >
+            {mode === "auction" ? (
+              <><Gavel className="w-3 h-3 mr-1 inline" /> Auction</>
+            ) : (
+              <><Radio className="w-3 h-3 mr-1 inline" /> Live</>
+            )}
+          </Badge>
+          <Badge className="absolute top-2 right-2 bg-black/60 text-white border-0 text-[10px] gap-1">
+            <Eye className="w-3 h-3" /> {s.viewers}
+          </Badge>
+        </div>
+        <CardContent className="p-3 space-y-2">
+          <p className="font-semibold text-sm text-foreground line-clamp-1">{s.title}</p>
+          <p className="text-xs text-muted-foreground line-clamp-2">
+            {mode === "auction"
+              ? `Live ${s.sellerNiche || s.category} auction. Place your bid before the timer runs out.`
+              : `Shop live ${s.sellerNiche || s.category} drops with exclusive in-stream pricing.`}
+          </p>
+          <button
+            onClick={goToSeller}
+            className="flex items-center gap-2 pt-1 w-full hover:bg-muted/50 -mx-1 px-1 py-1 rounded-md transition-colors"
+          >
+            <Avatar className="h-6 w-6 border border-border">
+              <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-semibold">
+                {s.host.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-xs font-medium text-foreground truncate">@{s.host}</span>
+            <Users className="w-3 h-3 ml-auto text-muted-foreground" />
+          </button>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const headerTitle =
+    selectedCategories.length === 1
+      ? selectedCategories[0].name
+      : `${selectedCategories.length} Categories`;
+  const headerIcon =
+    selectedCategories.length === 1 ? selectedCategories[0].icon : "🎯";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -90,17 +136,27 @@ const CategoryView = () => {
           <ArrowLeft className="w-4 h-4" /> Back to Browse
         </Button>
 
-        <div className="flex items-center gap-3 mb-5">
-          <div className="text-4xl sm:text-5xl">{category.icon}</div>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="text-4xl sm:text-5xl">{headerIcon}</div>
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
-              {category.name}
+              {headerTitle}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
               {auctionItems.length} auctions · {liveItems.length} live streams
             </p>
           </div>
         </div>
+
+        {selectedCategories.length > 1 && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {selectedCategories.map((c) => (
+              <Badge key={c.slug} variant="secondary" className="gap-1">
+                <span>{c.icon}</span> {c.name}
+              </Badge>
+            ))}
+          </div>
+        )}
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "auction" | "live")}>
           <TabsList className="bg-muted">
@@ -116,7 +172,7 @@ const CategoryView = () => {
             {auctionItems.length ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {auctionItems.map((s) => (
-                  <StreamCard key={s.id} s={s} mode="auction" />
+                  <StreamCard key={`a-${s.id}`} s={s} mode="auction" />
                 ))}
               </div>
             ) : (
@@ -130,7 +186,7 @@ const CategoryView = () => {
             {liveItems.length ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {liveItems.map((s) => (
-                  <StreamCard key={s.id} s={s} mode="live" />
+                  <StreamCard key={`l-${s.id}`} s={s} mode="live" />
                 ))}
               </div>
             ) : (
