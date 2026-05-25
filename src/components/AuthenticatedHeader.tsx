@@ -94,11 +94,23 @@ const AuthenticatedHeader = () => {
     };
   }, [searchQuery]);
 
+  const [userResults, setUserResults] = useState<ChatProfile[]>([]);
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) { setUserResults([]); return; }
+    const t = setTimeout(async () => {
+      const r = await searchUsers(q, user?.id);
+      setUserResults(r);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [searchQuery, user?.id]);
+
   const hasResults = 
     filteredResults.pages.length > 0 || 
     filteredResults.sellers.length > 0 || 
     filteredResults.categories.length > 0 || 
-    filteredResults.liveStreams.length > 0;
+    filteredResults.liveStreams.length > 0 ||
+    userResults.length > 0;
 
   const handleSelect = (path: string) => {
     navigate(path);
