@@ -1,5 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { searchUsers, ChatProfile } from "@/hooks/useDirectMessages";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCredits } from "@/hooks/useCredits";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
