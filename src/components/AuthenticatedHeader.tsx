@@ -1,5 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { searchUsers, ChatProfile } from "@/hooks/useDirectMessages";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCredits } from "@/hooks/useCredits";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/ui/button";
@@ -92,11 +94,23 @@ const AuthenticatedHeader = () => {
     };
   }, [searchQuery]);
 
+  const [userResults, setUserResults] = useState<ChatProfile[]>([]);
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q) { setUserResults([]); return; }
+    const t = setTimeout(async () => {
+      const r = await searchUsers(q, user?.id);
+      setUserResults(r);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [searchQuery, user?.id]);
+
   const hasResults = 
     filteredResults.pages.length > 0 || 
     filteredResults.sellers.length > 0 || 
     filteredResults.categories.length > 0 || 
-    filteredResults.liveStreams.length > 0;
+    filteredResults.liveStreams.length > 0 ||
+    userResults.length > 0;
 
   const handleSelect = (path: string) => {
     navigate(path);
@@ -173,6 +187,23 @@ const AuthenticatedHeader = () => {
                 ) : (
                   <Command className="border-none">
                     <CommandList>
+                      {userResults.length > 0 && (
+                        <CommandGroup heading="Users">
+                          {userResults.map((u) => (
+                            <CommandItem
+                              key={u.user_id}
+                              onSelect={() => handleSelect(`/u/${u.username || u.user_id}`)}
+                              className="cursor-pointer"
+                            >
+                              <Avatar className="mr-2 h-6 w-6"><AvatarImage src={u.avatar_url || undefined} /><AvatarFallback className="text-[10px]">{(u.username||u.name||"U").charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+                              <div className="flex flex-col">
+                                <span>{u.name || u.username}</span>
+                                <span className="text-xs text-muted-foreground">@{u.username}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
                       {filteredResults.pages.length > 0 && (
                         <CommandGroup heading="Pages">
                           {filteredResults.pages.map((page) => (
@@ -331,6 +362,23 @@ const AuthenticatedHeader = () => {
               ) : (
                 <Command className="border-none">
                   <CommandList>
+                    {userResults.length > 0 && (
+                      <CommandGroup heading="Users">
+                        {userResults.map((u) => (
+                          <CommandItem
+                            key={u.user_id}
+                            onSelect={() => handleSelect(`/u/${u.username || u.user_id}`)}
+                            className="cursor-pointer"
+                          >
+                            <Avatar className="mr-2 h-6 w-6"><AvatarImage src={u.avatar_url || undefined} /><AvatarFallback className="text-[10px]">{(u.username||u.name||"U").charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+                            <div className="flex flex-col">
+                              <span>{u.name || u.username}</span>
+                              <span className="text-xs text-muted-foreground">@{u.username}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
                     {filteredResults.pages.length > 0 && (
                       <CommandGroup heading="Pages">
                         {filteredResults.pages.slice(0, 3).map((page) => (
