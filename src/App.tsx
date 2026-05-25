@@ -37,6 +37,7 @@ import Credits from "./pages/Credits";
 import OrderDetail from "./pages/OrderDetail";
 import UserReports from "./pages/UserReports";
 import ContactUs from "./pages/ContactUs";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => (
             <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
             <Route path="/user-reports" element={<ProtectedRoute><UserReports /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><ContactUs /></ProtectedRoute>} />
+            <Route path="/u/:username" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
