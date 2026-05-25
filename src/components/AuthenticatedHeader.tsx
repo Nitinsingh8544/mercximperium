@@ -362,6 +362,23 @@ const AuthenticatedHeader = () => {
               ) : (
                 <Command className="border-none">
                   <CommandList>
+                    {userResults.length > 0 && (
+                      <CommandGroup heading="Users">
+                        {userResults.map((u) => (
+                          <CommandItem
+                            key={u.user_id}
+                            onSelect={() => handleSelect(`/u/${u.username || u.user_id}`)}
+                            className="cursor-pointer"
+                          >
+                            <Avatar className="mr-2 h-6 w-6"><AvatarImage src={u.avatar_url || undefined} /><AvatarFallback className="text-[10px]">{(u.username||u.name||"U").charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+                            <div className="flex flex-col">
+                              <span>{u.name || u.username}</span>
+                              <span className="text-xs text-muted-foreground">@{u.username}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    )}
                     {filteredResults.pages.length > 0 && (
                       <CommandGroup heading="Pages">
                         {filteredResults.pages.slice(0, 3).map((page) => (
