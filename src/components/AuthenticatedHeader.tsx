@@ -479,8 +479,22 @@ const AuthenticatedHeader = () => {
             <ShoppingCart className="w-5 h-5" />
             <span className="text-[10px]">Cart</span>
           </Link>
-          <Link to="/messages" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/messages" ? "text-primary" : "text-muted-foreground"}`}>
+          <Link to="/notifications" className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/notifications" ? "text-primary" : "text-muted-foreground"}`}>
+            <Bell className="w-5 h-5" />
+            {unreadNotifs > 0 && (
+              <span className="absolute top-0 right-1 min-w-[14px] h-3.5 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                {unreadNotifs > 9 ? "9+" : unreadNotifs}
+              </span>
+            )}
+            <span className="text-[10px]">Alerts</span>
+          </Link>
+          <Link to="/messages" className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/messages" ? "text-primary" : "text-muted-foreground"}`}>
             <MessageSquare className="w-5 h-5" />
+            {unreadMsgs > 0 && (
+              <span className="absolute top-0 right-1 min-w-[14px] h-3.5 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
+                {unreadMsgs > 9 ? "9+" : unreadMsgs}
+              </span>
+            )}
             <span className="text-[10px]">Inbox</span>
           </Link>
         </div>
