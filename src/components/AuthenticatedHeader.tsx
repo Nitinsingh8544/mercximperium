@@ -353,9 +353,16 @@ const AuthenticatedHeader = () => {
               onClick={() => setIsProfileOpen(true)}
               className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/profile" || location.pathname === "/profile-view" ? "bg-primary/10" : ""}`}
             >
-              <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground">
-                {userInitial}
-              </div>
+              {profile?.avatar_url ? (
+                <Avatar className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8">
+                  <AvatarImage src={profile.avatar_url} className="object-cover" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs sm:text-sm font-semibold">{userInitial}</AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center text-xs sm:text-sm font-semibold text-primary-foreground">
+                  {userInitial}
+                </div>
+              )}
             </Button>
 
             <ProfileSheet isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
