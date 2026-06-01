@@ -1,9 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { searchUsers, ChatProfile } from "@/hooks/useDirectMessages";
+import { searchUsers, ChatProfile, useDirectMessages } from "@/hooks/useDirectMessages";
+import { useNotifications } from "@/hooks/useNotifications";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCredits } from "@/hooks/useCredits";
 import { useWallet } from "@/hooks/useWallet";
+import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import appLogo from "@/assets/app-logo.jpg";
@@ -24,11 +26,15 @@ const AuthenticatedHeader = () => {
   const { user } = useAuth();
   const { credits } = useCredits();
   const { balance: walletBalance } = useWallet();
+  const { profile } = useProfile();
+  const { conversations } = useDirectMessages();
+  const { unread: unreadNotifs } = useNotifications();
+  const unreadMsgs = conversations.reduce((s, c) => s + (c.unread || 0), 0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
+  const userInitial = (profile?.name || profile?.username || user?.email || "U").charAt(0).toUpperCase();
 
   const pages = [
     { name: "Home", icon: Home, path: "/dashboard" },
@@ -293,13 +299,35 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
+            <Link to="/notifications" className="hidden sm:block">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`relative h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/notifications" ? "bg-primary/10" : ""}`}
+                aria-label="Notifications"
+              >
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                {unreadNotifs > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                    {unreadNotifs > 9 ? "9+" : unreadNotifs}
+                  </span>
+                )}
+              </Button>
+            </Link>
+
             <Link to="/messages" className="hidden sm:block">
               <Button 
                 variant="ghost" 
                 size="icon"
-                className={`h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/messages" ? "bg-primary/10" : ""}`}
+                className={`relative h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/messages" ? "bg-primary/10" : ""}`}
+                aria-label="Messages"
               >
                 <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
+                {unreadMsgs > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                    {unreadMsgs > 9 ? "9+" : unreadMsgs}
+                  </span>
+                )}
               </Button>
             </Link>
 
