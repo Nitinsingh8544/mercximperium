@@ -9,6 +9,8 @@ export interface DirectMessage {
   content: string;
   read: boolean;
   created_at: string;
+  media_url?: string | null;
+  media_type?: string | null;
 }
 
 export interface ChatProfile {
@@ -176,14 +178,44 @@ export const useConversation = (partnerId: string | null) => {
     };
   }, [user, partnerId]);
 
-  const send = async (content: string) => {
-    if (!user || !partnerId || !content.trim()) return;
+  const send = async (
+    content: string,
+    media?: { url: string; type: "image" | "video" } | null
+  ) => {
+    if (!user || !partnerId) return;
+    if (!content.trim() && !media) return;
     await supabase.from("direct_messages").insert({
       sender_id: user.id,
       recipient_id: partnerId,
       content: content.trim(),
+      media_url: media?.url ?? null,
+      media_type: media?.type ?? null,
     });
   };
+
+  return { messages, loading, send, reload: load };
+};
+
+export const uploadChatMedia = async (
+  file: File,
+  userId: string
+): Promise<{ url: string; type: "image" | "video" } | null> => {
+  const ext = file.name.split(".").pop() || "bin";
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage
+    .from("chat-media")
+    .upload(path, file, { contentType: file.type, upsert: false });
+  if (error) {
+    console.error("Upload error", error);
+    return null;
+  }
+  const { data } = await supabase.storage
+    .from("chat-media")
+    .createSignedUrl(path, 60 * 60 * 24 * 365);
+  if (!data?.signedUrl) return null;
+  const type: "image" | "video" = file.type.startsWith("video") ? "video" : "image";
+  return { url: data.signedUrl, type };
+};
 
   return { messages, loading, send, reload: load };
 };
