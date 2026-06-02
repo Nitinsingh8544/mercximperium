@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { MessageSquare, Search, Send, ArrowLeft, Loader2 } from "lucide-react";
+import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 import {
   useDirectMessages,
   useConversation,
