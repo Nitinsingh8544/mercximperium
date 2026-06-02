@@ -206,7 +206,7 @@ const Messages = () => {
                           active={activePartner?.user_id === c.partner.user_id}
                           onClick={() => openChat(c.partner)}
                           partner={c.partner}
-                          preview={c.lastMessage.content}
+                          preview={c.lastMessage.content || (c.lastMessage.media_type === "video" ? "🎥 Video" : "📷 Photo")}
                           unread={c.unread}
                           initials={initials(c.partner)}
                         />
@@ -263,7 +263,7 @@ const Messages = () => {
                     active={activePartner?.user_id === c.partner.user_id}
                     onClick={() => openChat(c.partner)}
                     partner={c.partner}
-                    preview={c.lastMessage.content}
+                    preview={c.lastMessage.content || (c.lastMessage.media_type === "video" ? "🎥 Video" : "📷 Photo")}
                     unread={c.unread}
                     initials={initials(c.partner)}
                   />
