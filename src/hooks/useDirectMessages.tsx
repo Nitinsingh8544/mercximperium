@@ -217,8 +217,6 @@ export const uploadChatMedia = async (
   return { url: data.signedUrl, type };
 };
 
-  return { messages, loading, send, reload: load };
-};
 
 export const searchUsers = async (query: string, excludeUserId?: string) => {
   const q = query.trim();
