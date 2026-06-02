@@ -142,7 +142,7 @@ const ProfileView = () => {
 
       <EditProfileModal 
         isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+        onClose={() => { setIsEditModalOpen(false); refetchProfile(); }} 
       />
     </div>
   );
