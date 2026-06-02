@@ -461,15 +461,6 @@ const Messages = () => {
   );
 };
 
-              </>
-            )}
-          </section>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const ConversationRow = ({
   partner,
   preview,
