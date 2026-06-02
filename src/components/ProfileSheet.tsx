@@ -85,8 +85,12 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
               className="flex items-center gap-3 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
               onClick={() => handleNavigation("/profile-view")}
             >
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-base font-bold text-primary-foreground">
-                {userInitial}
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-base font-bold text-primary-foreground overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt={userName} className="w-full h-full object-cover" />
+                ) : (
+                  userInitial
+                )}
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-foreground text-left">{userName}</h3>
