@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Bell, Package, Tag, Gift, Percent, Check } from "lucide-react";
+import { Bell, Package, Tag, Gift, Percent, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotifications, AppNotification } from "@/hooks/useNotifications";
 import { useNavigate } from "react-router-dom";
@@ -99,10 +99,21 @@ const Notifications = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
-            Notifications
-          </h1>
+        <div className="flex items-center justify-between mb-6 gap-3">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/messages")}
+              aria-label="Back to messages"
+              className="h-9 w-9"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
+              Notifications
+            </h1>
+          </div>
           {unread > 0 && (
             <Button variant="outline" size="sm" onClick={markAllRead}>
               <Check className="w-4 h-4 mr-1" /> Mark all read
