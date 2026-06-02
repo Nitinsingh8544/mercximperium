@@ -299,21 +299,6 @@ const AuthenticatedHeader = () => {
               </Button>
             </Link>
 
-            <Link to="/notifications" className="hidden sm:block">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`relative h-8 w-8 sm:h-9 sm:w-9 ${location.pathname === "/notifications" ? "bg-primary/10" : ""}`}
-                aria-label="Notifications"
-              >
-                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-                {unreadNotifs > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
-                    {unreadNotifs > 9 ? "9+" : unreadNotifs}
-                  </span>
-                )}
-              </Button>
-            </Link>
 
             <Link to="/messages" className="hidden sm:block">
               <Button 

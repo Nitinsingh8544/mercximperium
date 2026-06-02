@@ -40,8 +40,12 @@ const ProfileView = () => {
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="flex items-start gap-3 sm:gap-4">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-primary flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold text-primary-foreground flex-shrink-0">
-              {userInitial}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-primary flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold text-primary-foreground flex-shrink-0 overflow-hidden">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                userInitial
+              )}
             </div>
             <div className="sm:hidden flex-1">
               <h2 className="text-lg font-bold text-foreground">{displayName}</h2>
