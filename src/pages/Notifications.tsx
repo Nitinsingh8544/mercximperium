@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { Bell, Package, Tag, Gift, Percent, Check } from "lucide-react";
+import { Bell, Package, Tag, Gift, Percent, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotifications, AppNotification } from "@/hooks/useNotifications";
 import { useNavigate } from "react-router-dom";
