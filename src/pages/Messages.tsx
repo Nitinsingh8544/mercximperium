@@ -118,7 +118,21 @@ const Messages = () => {
             } w-full md:w-80 flex-col border-r border-border`}
           >
             <div className="p-3 border-b border-border">
-              <h1 className="text-lg font-bold text-foreground mb-2">Messages</h1>
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-lg font-bold text-foreground">Messages</h1>
+                <button
+                  onClick={() => navigate("/notifications")}
+                  className="relative p-2 rounded-full hover:bg-muted transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-5 h-5 text-foreground" />
+                  {unreadNotifs > 0 && (
+                    <span className="absolute top-0 right-0 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                      {unreadNotifs > 9 ? "9+" : unreadNotifs}
+                    </span>
+                  )}
+                </button>
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
