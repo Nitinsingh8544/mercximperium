@@ -23,6 +23,7 @@ const Messages = () => {
   const initialUsername = params.get("username");
 
   const { conversations, loading } = useDirectMessages();
+  const { unread: unreadNotifs } = useNotifications();
   const [activePartner, setActivePartner] = useState<ChatProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<ChatProfile[]>([]);
