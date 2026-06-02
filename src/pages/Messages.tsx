@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell, ImageIcon, Smile, X, Paperclip } from "lucide-react";
+import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell, ImageIcon, Smile, X } from "lucide-react";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
