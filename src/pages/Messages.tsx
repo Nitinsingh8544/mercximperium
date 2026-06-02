@@ -333,26 +333,106 @@ const Messages = () => {
                   )}
                   {messages.map((m) => {
                     const mine = m.sender_id === user?.id;
+                    const hasMedia = !!m.media_url;
+                    const hasText = !!m.content?.trim();
                     return (
                       <div
                         key={m.id}
                         className={`flex ${mine ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-                            mine
-                              ? "bg-primary text-primary-foreground rounded-br-sm"
-                              : "bg-muted text-foreground rounded-bl-sm"
+                          className={`max-w-[75%] overflow-hidden ${
+                            hasMedia && !hasText
+                              ? "rounded-2xl"
+                              : `rounded-2xl ${
+                                  mine
+                                    ? "bg-primary text-primary-foreground rounded-br-sm"
+                                    : "bg-muted text-foreground rounded-bl-sm"
+                                } ${hasMedia ? "p-1" : "px-3 py-2"} text-sm`
                           }`}
                         >
-                          {m.content}
+                          {hasMedia && m.media_type === "image" && (
+                            <img
+                              src={m.media_url!}
+                              alt="attachment"
+                              className="rounded-xl max-h-72 w-auto object-cover"
+                            />
+                          )}
+                          {hasMedia && m.media_type === "video" && (
+                            <video
+                              src={m.media_url!}
+                              controls
+                              className="rounded-xl max-h-72 w-auto"
+                            />
+                          )}
+                          {hasText && (
+                            <p className={`whitespace-pre-wrap break-words ${hasMedia ? "px-2 py-1.5" : ""}`}>
+                              {m.content}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
                   })}
                 </div>
 
+                {pendingMedia && (
+                  <div className="px-3 pt-2 border-t border-border">
+                    <div className="inline-flex items-start gap-2 p-2 rounded-lg bg-muted/50 relative">
+                      {pendingMedia.file.type.startsWith("video") ? (
+                        <video src={pendingMedia.preview} className="h-20 w-20 object-cover rounded-md" />
+                      ) : (
+                        <img src={pendingMedia.preview} alt="preview" className="h-20 w-20 object-cover rounded-md" />
+                      )}
+                      <button
+                        onClick={() => {
+                          URL.revokeObjectURL(pendingMedia.preview);
+                          setPendingMedia(null);
+                        }}
+                        className="absolute -top-2 -right-2 bg-foreground text-background rounded-full p-0.5"
+                        aria-label="Remove attachment"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-3 border-t border-border flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handlePickFile}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Attach media"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </Button>
+                  <Popover open={emojiOpen} onOpenChange={setEmojiOpen}>
+                    <PopoverTrigger asChild>
+                      <Button type="button" variant="ghost" size="icon" aria-label="Emoji">
+                        <Smile className="w-5 h-5" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" align="start" className="p-0 border-0 w-auto">
+                      <EmojiPicker
+                        onEmojiClick={handleEmoji}
+                        theme={Theme.AUTO}
+                        height={360}
+                        width={320}
+                        searchDisabled={false}
+                        skinTonesDisabled
+                        previewConfig={{ showPreview: false }}
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <Input
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
@@ -365,10 +445,22 @@ const Messages = () => {
                     placeholder={`Message @${activePartner.username || "user"}`}
                     className="flex-1"
                   />
-                  <Button onClick={handleSend} disabled={!draft.trim()}>
-                    <Send className="w-4 h-4" />
+                  <Button
+                    onClick={handleSend}
+                    disabled={(!draft.trim() && !pendingMedia) || uploading}
+                  >
+                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   </Button>
                 </div>
+              </>
+            )}
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
               </>
             )}
           </section>
