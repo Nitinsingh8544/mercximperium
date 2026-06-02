@@ -3,17 +3,21 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell } from "lucide-react";
+import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell, ImageIcon, Smile, X, Paperclip } from "lucide-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
   useDirectMessages,
   useConversation,
   searchUsers,
+  uploadChatMedia,
   ChatProfile,
 } from "@/hooks/useDirectMessages";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -29,6 +33,10 @@ const Messages = () => {
   const [searchResults, setSearchResults] = useState<ChatProfile[]>([]);
   const [searching, setSearching] = useState(false);
   const [draft, setDraft] = useState("");
+  const [pendingMedia, setPendingMedia] = useState<{ file: File; preview: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { messages, send } = useConversation(activePartner?.user_id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -95,10 +103,38 @@ const Messages = () => {
   };
 
   const handleSend = async () => {
-    if (!draft.trim() || !activePartner) return;
+    if ((!draft.trim() && !pendingMedia) || !activePartner || !user) return;
     const text = draft;
+    const media = pendingMedia;
     setDraft("");
-    await send(text);
+    setPendingMedia(null);
+    let uploaded: { url: string; type: "image" | "video" } | null = null;
+    if (media) {
+      setUploading(true);
+      uploaded = await uploadChatMedia(media.file, user.id);
+      setUploading(false);
+      if (!uploaded) {
+        toast.error("Failed to upload media");
+        return;
+      }
+      URL.revokeObjectURL(media.preview);
+    }
+    await send(text, uploaded);
+  };
+
+  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("File too large (max 25MB)");
+      return;
+    }
+    setPendingMedia({ file, preview: URL.createObjectURL(file) });
+  };
+
+  const handleEmoji = (emoji: EmojiClickData) => {
+    setDraft((d) => d + emoji.emoji);
   };
 
   const initials = (p: ChatProfile) =>
