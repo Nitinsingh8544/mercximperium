@@ -7,7 +7,7 @@ import { Share, Camera, Loader2 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 
 const ProfileView = () => {
-  const { profile, loading } = useProfile();
+  const { profile, loading, refetchProfile } = useProfile();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const userInitial = profile?.username?.charAt(0).toUpperCase() || profile?.name?.charAt(0).toUpperCase() || "U";
