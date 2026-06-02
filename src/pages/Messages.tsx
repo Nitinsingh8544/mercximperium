@@ -3,17 +3,21 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
-import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell } from "lucide-react";
+import { MessageSquare, Search, Send, ArrowLeft, Loader2, Bell, ImageIcon, Smile, X } from "lucide-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import {
   useDirectMessages,
   useConversation,
   searchUsers,
+  uploadChatMedia,
   ChatProfile,
 } from "@/hooks/useDirectMessages";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Messages = () => {
   const navigate = useNavigate();
@@ -29,6 +33,10 @@ const Messages = () => {
   const [searchResults, setSearchResults] = useState<ChatProfile[]>([]);
   const [searching, setSearching] = useState(false);
   const [draft, setDraft] = useState("");
+  const [pendingMedia, setPendingMedia] = useState<{ file: File; preview: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { messages, send } = useConversation(activePartner?.user_id ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -95,10 +103,38 @@ const Messages = () => {
   };
 
   const handleSend = async () => {
-    if (!draft.trim() || !activePartner) return;
+    if ((!draft.trim() && !pendingMedia) || !activePartner || !user) return;
     const text = draft;
+    const media = pendingMedia;
     setDraft("");
-    await send(text);
+    setPendingMedia(null);
+    let uploaded: { url: string; type: "image" | "video" } | null = null;
+    if (media) {
+      setUploading(true);
+      uploaded = await uploadChatMedia(media.file, user.id);
+      setUploading(false);
+      if (!uploaded) {
+        toast.error("Failed to upload media");
+        return;
+      }
+      URL.revokeObjectURL(media.preview);
+    }
+    await send(text, uploaded);
+  };
+
+  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("File too large (max 25MB)");
+      return;
+    }
+    setPendingMedia({ file, preview: URL.createObjectURL(file) });
+  };
+
+  const handleEmoji = (emoji: EmojiClickData) => {
+    setDraft((d) => d + emoji.emoji);
   };
 
   const initials = (p: ChatProfile) =>
@@ -170,7 +206,7 @@ const Messages = () => {
                           active={activePartner?.user_id === c.partner.user_id}
                           onClick={() => openChat(c.partner)}
                           partner={c.partner}
-                          preview={c.lastMessage.content}
+                          preview={c.lastMessage.content || (c.lastMessage.media_type === "video" ? "🎥 Video" : "📷 Photo")}
                           unread={c.unread}
                           initials={initials(c.partner)}
                         />
@@ -227,7 +263,7 @@ const Messages = () => {
                     active={activePartner?.user_id === c.partner.user_id}
                     onClick={() => openChat(c.partner)}
                     partner={c.partner}
-                    preview={c.lastMessage.content}
+                    preview={c.lastMessage.content || (c.lastMessage.media_type === "video" ? "🎥 Video" : "📷 Photo")}
                     unread={c.unread}
                     initials={initials(c.partner)}
                   />
@@ -297,26 +333,106 @@ const Messages = () => {
                   )}
                   {messages.map((m) => {
                     const mine = m.sender_id === user?.id;
+                    const hasMedia = !!m.media_url;
+                    const hasText = !!m.content?.trim();
                     return (
                       <div
                         key={m.id}
                         className={`flex ${mine ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-                            mine
-                              ? "bg-primary text-primary-foreground rounded-br-sm"
-                              : "bg-muted text-foreground rounded-bl-sm"
+                          className={`max-w-[75%] overflow-hidden ${
+                            hasMedia && !hasText
+                              ? "rounded-2xl"
+                              : `rounded-2xl ${
+                                  mine
+                                    ? "bg-primary text-primary-foreground rounded-br-sm"
+                                    : "bg-muted text-foreground rounded-bl-sm"
+                                } ${hasMedia ? "p-1" : "px-3 py-2"} text-sm`
                           }`}
                         >
-                          {m.content}
+                          {hasMedia && m.media_type === "image" && (
+                            <img
+                              src={m.media_url!}
+                              alt="attachment"
+                              className="rounded-xl max-h-72 w-auto object-cover"
+                            />
+                          )}
+                          {hasMedia && m.media_type === "video" && (
+                            <video
+                              src={m.media_url!}
+                              controls
+                              className="rounded-xl max-h-72 w-auto"
+                            />
+                          )}
+                          {hasText && (
+                            <p className={`whitespace-pre-wrap break-words ${hasMedia ? "px-2 py-1.5" : ""}`}>
+                              {m.content}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
                   })}
                 </div>
 
+                {pendingMedia && (
+                  <div className="px-3 pt-2 border-t border-border">
+                    <div className="inline-flex items-start gap-2 p-2 rounded-lg bg-muted/50 relative">
+                      {pendingMedia.file.type.startsWith("video") ? (
+                        <video src={pendingMedia.preview} className="h-20 w-20 object-cover rounded-md" />
+                      ) : (
+                        <img src={pendingMedia.preview} alt="preview" className="h-20 w-20 object-cover rounded-md" />
+                      )}
+                      <button
+                        onClick={() => {
+                          URL.revokeObjectURL(pendingMedia.preview);
+                          setPendingMedia(null);
+                        }}
+                        className="absolute -top-2 -right-2 bg-foreground text-background rounded-full p-0.5"
+                        aria-label="Remove attachment"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-3 border-t border-border flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    onChange={handlePickFile}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Attach media"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </Button>
+                  <Popover open={emojiOpen} onOpenChange={setEmojiOpen}>
+                    <PopoverTrigger asChild>
+                      <Button type="button" variant="ghost" size="icon" aria-label="Emoji">
+                        <Smile className="w-5 h-5" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" align="start" className="p-0 border-0 w-auto">
+                      <EmojiPicker
+                        onEmojiClick={handleEmoji}
+                        theme={Theme.AUTO}
+                        height={360}
+                        width={320}
+                        searchDisabled={false}
+                        skinTonesDisabled
+                        previewConfig={{ showPreview: false }}
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <Input
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
@@ -329,8 +445,11 @@ const Messages = () => {
                     placeholder={`Message @${activePartner.username || "user"}`}
                     className="flex-1"
                   />
-                  <Button onClick={handleSend} disabled={!draft.trim()}>
-                    <Send className="w-4 h-4" />
+                  <Button
+                    onClick={handleSend}
+                    disabled={(!draft.trim() && !pendingMedia) || uploading}
+                  >
+                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   </Button>
                 </div>
               </>

@@ -234,25 +234,31 @@ export type Database = {
       }
       direct_messages: {
         Row: {
-          content: string
+          content: string | null
           created_at: string
           id: string
+          media_type: string | null
+          media_url: string | null
           read: boolean
           recipient_id: string
           sender_id: string
         }
         Insert: {
-          content: string
+          content?: string | null
           created_at?: string
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           read?: boolean
           recipient_id: string
           sender_id: string
         }
         Update: {
-          content?: string
+          content?: string | null
           created_at?: string
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           read?: boolean
           recipient_id?: string
           sender_id?: string
