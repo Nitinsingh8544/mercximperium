@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, MessageCircle, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useFollows } from "@/hooks/useFollows";
 import { toast } from "@/hooks/use-toast";
+import BlockReportMenu from "@/components/seller/BlockReportMenu";
 
 interface PublicProfile {
   user_id: string;
