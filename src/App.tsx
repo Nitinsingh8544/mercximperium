@@ -38,6 +38,7 @@ import OrderDetail from "./pages/OrderDetail";
 import UserReports from "./pages/UserReports";
 import ContactUs from "./pages/ContactUs";
 import UserProfile from "./pages/UserProfile";
+import AccountHealth from "./pages/AccountHealth";
 
 const queryClient = new QueryClient();
 
