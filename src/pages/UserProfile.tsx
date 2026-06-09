@@ -6,7 +6,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, MessageCircle, Share2, UserPlus, UserCheck } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useFollows } from "@/hooks/useFollows";
 import { toast } from "@/hooks/use-toast";
 import BlockReportMenu from "@/components/seller/BlockReportMenu";
