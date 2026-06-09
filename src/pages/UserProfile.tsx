@@ -6,7 +6,7 @@ import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, MessageCircle, Share2, UserPlus, UserCheck } from "lucide-react";
+import { ArrowLeft, Loader2, MessageCircle, Share2, UserPlus, UserCheck } from "lucide-react";
 import { useFollows } from "@/hooks/useFollows";
 import { toast } from "@/hooks/use-toast";
 import BlockReportMenu from "@/components/seller/BlockReportMenu";
@@ -84,6 +84,19 @@ const UserProfile = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-24 sm:pt-28 pb-8 relative z-10">
+        <div className="flex items-center gap-2 mb-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            className="h-9 w-9"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <span className="text-sm text-muted-foreground">Back</span>
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Avatar className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0">
             <AvatarImage src={profile.avatar_url || undefined} />
