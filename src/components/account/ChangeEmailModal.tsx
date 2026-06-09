@@ -29,8 +29,21 @@ const ChangeEmailModal = ({ open, onOpenChange }: ChangeEmailModalProps) => {
 
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error("No active session");
+
+      // Re-verify current password before allowing an email change
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (verifyError) {
+        toast({ title: "Incorrect current password", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({ email: newEmail });
-      
       if (error) throw error;
 
       toast({ title: "Email update request sent. Check your new email for confirmation." });
