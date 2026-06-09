@@ -124,6 +124,7 @@ const SellerProfileModal = ({
               >
                 <Share className="w-5 h-5" />
               </Button>
+              <BlockReportMenu username={sellerName} />
             </div>
 
             <Tabs defaultValue="products" className="w-full">
