@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Share, ArrowLeft, Star } from "lucide-react";
 import ShareProfileModal from "./ShareProfileModal";
 import MessageChatModal from "./MessageChatModal";
+import BlockReportMenu from "./BlockReportMenu";
 import { useFollows } from "@/hooks/useFollows";
 
 interface SellerProfileModalProps {
