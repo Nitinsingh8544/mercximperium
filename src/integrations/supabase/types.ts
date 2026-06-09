@@ -466,6 +466,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_username: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blocked_username: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blocked_username?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           balance: number
