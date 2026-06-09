@@ -156,6 +156,7 @@ const UserProfile = () => {
               >
                 <Share2 className="w-4 h-4" />
               </Button>
+              <BlockReportMenu username={handle} />
             </div>
           )}
         </div>
