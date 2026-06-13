@@ -218,6 +218,13 @@ const AuctionPanel = ({ streamId, sellerName }: AuctionPanelProps) => {
           </p>
         </div>
       )}
+
+      <SetupRequiredModal
+        open={setupOpen}
+        onOpenChange={setSetupOpen}
+        onAddPayment={() => setAddPayOpen(true)}
+      />
+      <AddPaymentMethodModal open={addPayOpen} onOpenChange={setAddPayOpen} />
     </div>
   );
 };
