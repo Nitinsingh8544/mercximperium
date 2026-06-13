@@ -28,7 +28,7 @@ const brandColor: Record<string, string> = {
 const AccountPayments = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { methods, loading, setDefault, removeMethod } = usePaymentMethods();
+  const { methods, loading, setDefault, removeMethod, refetch } = usePaymentMethods();
   const [addOpen, setAddOpen] = useState(false);
   const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
   const userName = user?.email?.split("@")[0] || "User";
