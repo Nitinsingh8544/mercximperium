@@ -170,7 +170,7 @@ const AccountPayments = () => {
         </main>
       </div>
 
-      <AddPaymentMethodModal open={addOpen} onOpenChange={setAddOpen} />
+      <AddPaymentMethodModal open={addOpen} onOpenChange={setAddOpen} onAdded={refetch} />
     </div>
   );
 };
