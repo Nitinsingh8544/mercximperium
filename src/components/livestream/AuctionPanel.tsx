@@ -7,7 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Gavel, Timer, TrendingUp, Trophy, AlertCircle } from "lucide-react";
 import { useAuctionItems } from "@/hooks/useAuctionItems";
 import { useAuth } from "@/hooks/useAuth";
+import { usePaymentMethods } from "@/hooks/usePaymentMethods";
 import { toast } from "@/hooks/use-toast";
+import SetupRequiredModal from "@/components/account/SetupRequiredModal";
+import AddPaymentMethodModal from "@/components/account/AddPaymentMethodModal";
 
 interface AuctionPanelProps {
   streamId: number;
@@ -17,8 +20,11 @@ interface AuctionPanelProps {
 const AuctionPanel = ({ streamId, sellerName }: AuctionPanelProps) => {
   const { user } = useAuth();
   const { activeItem, bidHistory, timeLeft, loading, placeBid, items } = useAuctionItems(streamId);
+  const { methods, loading: methodsLoading } = usePaymentMethods();
   const [bidAmount, setBidAmount] = useState("");
   const [bidding, setBidding] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
+  const [addPayOpen, setAddPayOpen] = useState(false);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -30,6 +36,11 @@ const AuctionPanel = ({ streamId, sellerName }: AuctionPanelProps) => {
     const amount = parseFloat(bidAmount);
     if (isNaN(amount) || amount <= 0) {
       toast({ title: "Invalid amount", description: "Please enter a valid bid amount", variant: "destructive" });
+      return;
+    }
+
+    if (!methodsLoading && methods.length === 0) {
+      setSetupOpen(true);
       return;
     }
 
