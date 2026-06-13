@@ -42,20 +42,10 @@ export const useWallet = () => {
           .limit(50),
       ]);
 
-      if (cred) {
-        setBalance(Number(cred.wallet_balance) || 0);
-      } else {
-        const { data: created } = await supabase
-          .from("user_credits")
-          .insert({ user_id: user.id, balance: 1000, wallet_balance: 0 })
-          .select("wallet_balance")
-          .single();
-        if (created) setBalance(Number(created.wallet_balance) || 0);
-      }
-
+      setBalance(cred ? Number(cred.wallet_balance) || 0 : 0);
       setTransactions((tx as WalletTransaction[]) || []);
     } catch (e) {
-      console.error("Wallet fetch error", e);
+      if (import.meta.env.DEV) console.error("Wallet fetch error", e);
     } finally {
       setLoading(false);
     }
@@ -65,120 +55,38 @@ export const useWallet = () => {
     fetchAll();
   }, [fetchAll]);
 
-  const writeBalance = async (newBalance: number) => {
-    if (!user) return { error: new Error("Not authenticated") };
-    return supabase
-      .from("user_credits")
-      .update({ wallet_balance: newBalance })
-      .eq("user_id", user.id);
+  const invokeWallet = async (payload: Record<string, unknown>) => {
+    const { data, error } = await supabase.functions.invoke("wallet-operations", { body: payload });
+    if (error) return { success: false, error: error.message };
+    if (data?.error) return { success: false, error: data.error };
+    return { success: true, data };
   };
 
-  const addMoney = async (
-    rupees: number,
-    paymentMethod: string,
-    reference?: string
-  ): Promise<{ success: boolean; error?: string }> => {
+  const addMoney = async (rupees: number, paymentMethod: string, reference?: string) => {
     if (!user) return { success: false, error: "Not authenticated" };
     if (rupees <= 0) return { success: false, error: "Enter a valid amount" };
-
-    const amount = Math.round(rupees);
-    const newBalance = balance + amount;
-
-    const { error: updErr } = await writeBalance(newBalance);
-    if (updErr) return { success: false, error: updErr.message };
-
-    const { data: txRow, error: txErr } = await supabase
-      .from("wallet_transactions")
-      .insert({
-        user_id: user.id,
-        type: "credit",
-        amount,
-        description: `Wallet top-up of ₹${rupees.toLocaleString()}`,
-        payment_method: paymentMethod,
-        reference: reference || null,
-        balance_after: newBalance,
-      })
-      .select()
-      .single();
-    if (txErr) return { success: false, error: txErr.message };
-
-    setBalance(newBalance);
-    if (txRow) setTransactions((prev) => [txRow as WalletTransaction, ...prev]);
-    return { success: true };
+    const res = await invokeWallet({ action: "add_money", amount: Math.round(rupees), payment_method: paymentMethod, reference });
+    if (res.success) await fetchAll();
+    return res;
   };
 
-  const spend = async (
-    rupees: number,
-    description: string,
-    reference?: string
-  ): Promise<{ success: boolean; error?: string }> => {
+  const spend = async (rupees: number, description: string, reference?: string) => {
     if (!user) return { success: false, error: "Not authenticated" };
     if (rupees <= 0) return { success: false, error: "Invalid amount" };
     if (rupees > balance) return { success: false, error: "Insufficient balance" };
-
-    const newBalance = balance - rupees;
-    const { error: updErr } = await writeBalance(newBalance);
-    if (updErr) return { success: false, error: updErr.message };
-
-    const { data: txRow, error: txErr } = await supabase
-      .from("wallet_transactions")
-      .insert({
-        user_id: user.id,
-        type: "debit",
-        amount: rupees,
-        description,
-        reference: reference || null,
-        balance_after: newBalance,
-      })
-      .select()
-      .single();
-    if (txErr) return { success: false, error: txErr.message };
-
-    setBalance(newBalance);
-    if (txRow) setTransactions((prev) => [txRow as WalletTransaction, ...prev]);
-    return { success: true };
+    const res = await invokeWallet({ action: "spend", amount: rupees, description, reference });
+    if (res.success) await fetchAll();
+    return res;
   };
 
-  const withdraw = async (
-    rupees: number,
-    method: string,
-    reference?: string
-  ): Promise<{ success: boolean; error?: string }> => {
+  const withdraw = async (rupees: number, method: string, reference?: string) => {
     if (!user) return { success: false, error: "Not authenticated" };
     if (rupees <= 0) return { success: false, error: "Enter a valid amount" };
     if (rupees > balance) return { success: false, error: "Insufficient balance" };
-
-    const newBalance = balance - rupees;
-    const { error: updErr } = await writeBalance(newBalance);
-    if (updErr) return { success: false, error: updErr.message };
-
-    const { data: txRow, error: txErr } = await supabase
-      .from("wallet_transactions")
-      .insert({
-        user_id: user.id,
-        type: "debit",
-        amount: rupees,
-        description: `Withdrawal of ₹${rupees.toLocaleString()} to ${method}`,
-        payment_method: method,
-        reference: reference || null,
-        balance_after: newBalance,
-      })
-      .select()
-      .single();
-    if (txErr) return { success: false, error: txErr.message };
-
-    setBalance(newBalance);
-    if (txRow) setTransactions((prev) => [txRow as WalletTransaction, ...prev]);
-    return { success: true };
+    const res = await invokeWallet({ action: "withdraw", amount: rupees, payment_method: method, reference });
+    if (res.success) await fetchAll();
+    return res;
   };
 
-  return {
-    balance,
-    transactions,
-    loading,
-    addMoney,
-    spend,
-    withdraw,
-    refetch: fetchAll,
-  };
+  return { balance, transactions, loading, addMoney, spend, withdraw, refetch: fetchAll };
 };

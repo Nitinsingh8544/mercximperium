@@ -69,6 +69,7 @@ export type Database = {
           item_name: string
           item_order: number
           min_increment: number
+          seller_id: string | null
           seller_image: string | null
           seller_name: string | null
           starting_price: number
@@ -89,6 +90,7 @@ export type Database = {
           item_name: string
           item_order?: number
           min_increment?: number
+          seller_id?: string | null
           seller_image?: string | null
           seller_name?: string | null
           starting_price?: number
@@ -109,6 +111,7 @@ export type Database = {
           item_name?: string
           item_order?: number
           min_increment?: number
+          seller_id?: string | null
           seller_image?: string | null
           seller_name?: string | null
           starting_price?: number
