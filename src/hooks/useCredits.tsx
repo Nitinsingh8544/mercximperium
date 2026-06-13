@@ -58,42 +58,28 @@ export const useCredits = () => {
 
   const applyCredits = async (creditsToUse: number): Promise<boolean> => {
     if (!user || creditsToUse > credits || creditsToUse <= 0) return false;
-
     try {
-      const newBalance = credits - creditsToUse;
-      const { error } = await supabase
-        .from("user_credits")
-        .update({ balance: newBalance })
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      setCredits(newBalance);
+      const { data, error } = await supabase.functions.invoke("wallet-operations", {
+        body: { action: "apply_credits", amount: creditsToUse },
+      });
+      if (error || data?.error) return false;
+      setCredits(Number(data.credits) || 0);
       return true;
-    } catch (error) {
-      console.error("Error applying credits:", error);
+    } catch {
       return false;
     }
   };
 
   const earnCredits = async (orderAmount: number): Promise<number> => {
-    if (!user) return 0;
-
-    // Earn 2 credits per ₹10 spent (i.e., 1 credit per ₹5)
-    const earned = Math.floor(orderAmount / 5);
-    if (earned <= 0) return 0;
-
+    if (!user || orderAmount <= 0) return 0;
     try {
-      const newBalance = credits + earned;
-      const { error } = await supabase
-        .from("user_credits")
-        .update({ balance: newBalance })
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      setCredits(newBalance);
-      return earned;
-    } catch (error) {
-      console.error("Error earning credits:", error);
+      const { data, error } = await supabase.functions.invoke("wallet-operations", {
+        body: { action: "earn_credits", amount: orderAmount },
+      });
+      if (error || data?.error) return 0;
+      setCredits(Number(data.credits) || 0);
+      return Number(data.earned) || 0;
+    } catch {
       return 0;
     }
   };

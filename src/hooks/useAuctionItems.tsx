@@ -85,108 +85,37 @@ export const useAuctionItems = (streamId: number) => {
     }
   }, []);
 
-  // Activate an auction item (set status to active, set timer)
+  // Activate an auction item (via edge function)
   const activateItem = useCallback(async (itemId: string) => {
-    const item = items.find((i) => i.id === itemId) || (await supabase
-      .from("auction_items")
-      .select("*")
-      .eq("id", itemId)
-      .single()
-      .then(r => r.data as unknown as AuctionItem));
-
-    if (!item) return;
-
-    const now = new Date();
-    const endsAt = new Date(now.getTime() + (item.auction_duration_seconds || 60) * 1000);
-
-    await supabase
-      .from("auction_items")
-      .update({
-        status: "active",
-        auction_started_at: now.toISOString(),
-        auction_ends_at: endsAt.toISOString(),
-      })
-      .eq("id", itemId);
-
-    const updatedItem = { ...item, status: "active", auction_started_at: now.toISOString(), auction_ends_at: endsAt.toISOString() };
+    const { data, error } = await supabase.functions.invoke("auction-operations", {
+      body: { action: "activate", item_id: itemId },
+    });
+    if (error || data?.error) return;
+    const updatedItem = data.item as AuctionItem;
     setActiveItem(updatedItem);
     setBidHistory([]);
     fetchBidHistory(itemId);
-  }, [items, fetchBidHistory]);
+  }, [fetchBidHistory]);
 
-  // Place a bid
+  // Place a bid (via edge function)
   const placeBid = useCallback(async (bidAmount: number) => {
     if (!user || !activeItem) return { error: new Error("Not ready") };
-
-    if (bidAmount < activeItem.current_price + activeItem.min_increment) {
-      return { error: new Error(`Minimum bid is ₹${activeItem.current_price + activeItem.min_increment}`) };
-    }
-
-    // Get username from profile
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("user_id", user.id)
-      .single();
-
-    const username = profile?.username || user.email?.split("@")[0] || "User";
-
-    // Insert bid history
-    const { error: bidError } = await supabase
-      .from("bid_history")
-      .insert({
-        auction_item_id: activeItem.id,
-        user_id: user.id,
-        username,
-        bid_amount: bidAmount,
-      });
-
-    if (bidError) return { error: bidError };
-
-    // Update current price on the item
-    await supabase
-      .from("auction_items")
-      .update({ current_price: bidAmount })
-      .eq("id", activeItem.id);
-
+    const { data, error } = await supabase.functions.invoke("auction-operations", {
+      body: { action: "place_bid", item_id: activeItem.id, bid_amount: bidAmount },
+    });
+    if (error) return { error };
+    if (data?.error) return { error: new Error(data.error) };
     setActiveItem((prev) => prev ? { ...prev, current_price: bidAmount } : prev);
-
     return { error: null };
   }, [user, activeItem]);
 
-  // End current auction and move to next
+  // End current auction and move to next (via edge function)
   const endAuction = useCallback(async () => {
     if (!activeItem) return;
+    await supabase.functions.invoke("auction-operations", {
+      body: { action: "end_auction", item_id: activeItem.id },
+    });
 
-    // Find the last bidder as winner
-    const lastBid = bidHistory[bidHistory.length - 1];
-
-    await supabase
-      .from("auction_items")
-      .update({
-        status: "sold",
-        winner_user_id: lastBid?.user_id || null,
-      })
-      .eq("id", activeItem.id);
-
-    // If there was a winner, create an auction_bids entry for their Activity page
-    if (lastBid) {
-      await supabase
-        .from("auction_bids")
-        .insert({
-          user_id: lastBid.user_id,
-          stream_id: activeItem.stream_id,
-          item_name: activeItem.item_name,
-          item_image: activeItem.item_image,
-          item_description: activeItem.item_description,
-          bid_amount: activeItem.current_price,
-          is_winning: true,
-          seller_name: activeItem.seller_name,
-          seller_image: activeItem.seller_image,
-        });
-    }
-
-    // Activate next pending item
     const nextPending = items.find(
       (i) => i.status === "pending" && i.item_order > activeItem.item_order
     );
@@ -196,10 +125,8 @@ export const useAuctionItems = (streamId: number) => {
       setActiveItem(null);
       setTimeLeft(0);
     }
-
-    // Refresh items
     fetchItems();
-  }, [activeItem, bidHistory, items, activateItem, fetchItems]);
+  }, [activeItem, items, activateItem, fetchItems]);
 
   // Timer countdown
   useEffect(() => {
