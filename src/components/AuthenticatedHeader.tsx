@@ -12,6 +12,7 @@ import appLogo from "@/assets/app-logo.jpg";
 import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, ShoppingCart, Settings, CreditCard, User, Video, Tag, Users, Wallet, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
+import BottomNav from "@/components/BottomNav";
 import {
   Command,
   CommandEmpty,
@@ -125,6 +126,7 @@ const AuthenticatedHeader = () => {
   };
 
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40">
       <div className="container mx-auto px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
@@ -449,43 +451,12 @@ const AuthenticatedHeader = () => {
             </div>
           )}
         </div>
-
-        {/* Mobile Bottom Navigation Bar */}
-        <div className="sm:hidden flex items-center justify-around py-2 mt-2 border-t border-border/40">
-          <Link to="/dashboard" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/dashboard" ? "text-primary" : "text-muted-foreground"}`}>
-            <Home className="w-5 h-5" />
-            <span className="text-[10px]">Home</span>
-          </Link>
-          <Link to="/browse" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/browse" ? "text-primary" : "text-muted-foreground"}`}>
-            <ShoppingBag className="w-5 h-5" />
-            <span className="text-[10px]">Browse</span>
-          </Link>
-          <Link to="/activity" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/activity" ? "text-primary" : "text-muted-foreground"}`}>
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px]">Cart</span>
-          </Link>
-          <Link to="/notifications" className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/notifications" ? "text-primary" : "text-muted-foreground"}`}>
-            <Bell className="w-5 h-5" />
-            {unreadNotifs > 0 && (
-              <span className="absolute top-0 right-1 min-w-[14px] h-3.5 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
-                {unreadNotifs > 9 ? "9+" : unreadNotifs}
-              </span>
-            )}
-            <span className="text-[10px]">Alerts</span>
-          </Link>
-          <Link to="/messages" className={`relative flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg ${location.pathname === "/messages" ? "text-primary" : "text-muted-foreground"}`}>
-            <MessageSquare className="w-5 h-5" />
-            {unreadMsgs > 0 && (
-              <span className="absolute top-0 right-1 min-w-[14px] h-3.5 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center">
-                {unreadMsgs > 9 ? "9+" : unreadMsgs}
-              </span>
-            )}
-            <span className="text-[10px]">Inbox</span>
-          </Link>
-        </div>
       </div>
     </header>
+    <BottomNav />
+    </>
   );
 };
 
 export default AuthenticatedHeader;
+
