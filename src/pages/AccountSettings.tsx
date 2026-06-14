@@ -27,7 +27,6 @@ const AccountSettings = () => {
 
   const [preferences, setPreferences] = useState({
     directMessages: true,
-    receiveGifts: false,
     activityStatus: true,
     suggestAccount: true,
   });
@@ -49,12 +48,6 @@ const AccountSettings = () => {
       title: "Direct Messages",
       description: "Turn this on if you'd like to receive direct messages from other users.",
       key: "directMessages" as const,
-    },
-    {
-      icon: Gift,
-      title: "Receive gifts",
-      description: "Turn this on to be discoverable to receive gift purchases from other users.",
-      key: "receiveGifts" as const,
     },
     {
       icon: Users,
