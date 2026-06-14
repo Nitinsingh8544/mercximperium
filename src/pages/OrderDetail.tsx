@@ -67,12 +67,11 @@ const OrderDetail = () => {
 
   const handleCancel = async () => {
     if (!order) return;
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
-      .eq("id", order.id);
-    if (error) {
-      toast({ title: "Failed to cancel order", variant: "destructive" });
+    const { data, error } = await supabase.functions.invoke("orders-operations", {
+      body: { action: "cancel", order_id: order.id },
+    });
+    if (error || data?.error) {
+      toast({ title: "Failed to cancel order", description: data?.error || error?.message, variant: "destructive" });
       return;
     }
     setOrder({ ...order, status: "cancelled", cancelled_at: new Date().toISOString() });
