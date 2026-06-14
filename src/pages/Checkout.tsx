@@ -199,14 +199,13 @@ const Checkout = () => {
     // Earn credits based on the final order amount (1 credit per ₹5 spent)
     const earned = await earnCredits(orderTotal);
 
-    // Persist orders to DB (one row per item) so they appear in Activity → Orders
+    // Persist orders via secure edge function (server validates & inserts)
     if (user) {
       const addrText = selectedAddress
         ? `${selectedAddress.name}, ${selectedAddress.addressLine1}${selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ""}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.postalCode}, ${selectedAddress.country}`
         : null;
       const { supabase } = await import("@/integrations/supabase/client");
       const rows = items.map((it) => ({
-        user_id: user.id,
         product_title: it.title,
         product_image: it.image || null,
         product_price: it.price,
@@ -216,9 +215,10 @@ const Checkout = () => {
         total_amount: it.price * it.quantity,
         payment_method: paymentMethod,
         shipping_address: addrText,
-        status: "ordered",
       }));
-      await supabase.from("orders").insert(rows);
+      await supabase.functions.invoke("orders-operations", {
+        body: { action: "create", orders: rows },
+      });
     }
 
     const orderDesc = items.length > 1 ? `${items.length} items` : item.title;
