@@ -12,6 +12,7 @@ import appLogo from "@/assets/app-logo.jpg";
 import { Search, Heart, MessageSquare, Bell, Home, ShoppingBag, ShoppingCart, Settings, CreditCard, User, Video, Tag, Users, Wallet, Coins } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import ProfileSheet from "@/components/ProfileSheet";
+import BottomNav from "@/components/BottomNav";
 import {
   Command,
   CommandEmpty,
