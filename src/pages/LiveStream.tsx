@@ -6,6 +6,7 @@ import LiveStreamShop from "@/components/livestream/LiveStreamShop";
 import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import AuctionWinnersPanel from "@/components/livestream/AuctionWinnersPanel";
+import MobileLiveFeed from "@/components/livestream/MobileLiveFeed";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag, Gavel, ChevronLeft, ChevronRight } from "lucide-react";
 import { auctionStreams } from "@/lib/streamRanking";
