@@ -148,23 +148,16 @@ const LiveStream = () => {
           </div>
         </div>
 
-        <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-          <LiveStreamVideo 
-            key={`mvideo-${streamId}`}
-            currentBid={currentBid} 
-            onBid={(amount) => setCurrentBid(amount)} 
+        <div className="lg:hidden mt-2">
+          <MobileLiveFeed
             streamId={streamId}
-            onPrev={handlePrev}
-            onNext={handleNext}
-            hasPrev={hasPrev}
-            hasNext={hasNext}
+            currentBid={currentBid}
+            onBid={(amount) => setCurrentBid(amount)}
+            sellerInfo={sellerInfo}
           />
-          <AuctionWinnersPanel streamId={streamId} />
-          <LiveStreamShop key={`mshop-${streamId}`} streamId={streamId} sellerInfo={sellerInfo} />
-          <LiveStreamChat key={`mchat-${streamId}`} streamId={streamChatId} />
         </div>
 
-        <div className="max-w-[1600px] mx-auto mt-6">
+        <div className="hidden lg:block max-w-[1600px] mx-auto mt-6">
           <RecommendedStreams currentStreamId={streamId} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
