@@ -151,7 +151,7 @@ const LiveStream = () => {
           </div>
         </div>
 
-        <div className="lg:hidden mt-2">
+        <div className="lg:hidden fixed inset-0 z-50 bg-background">
           <MobileLiveFeed
             streamId={streamId}
             currentBid={currentBid}
