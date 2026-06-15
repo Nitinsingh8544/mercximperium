@@ -6,6 +6,7 @@ import LiveStreamShop from "@/components/livestream/LiveStreamShop";
 import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import AuctionWinnersPanel from "@/components/livestream/AuctionWinnersPanel";
+import MobileLiveFeed from "@/components/livestream/MobileLiveFeed";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag, Gavel, ChevronLeft, ChevronRight } from "lucide-react";
 import { auctionStreams } from "@/lib/streamRanking";
@@ -71,15 +72,15 @@ const LiveStream = () => {
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
-      <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6 pb-8">
-        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between">
+      <div className="pt-16 md:pt-20 px-2 sm:px-4 lg:px-6 pb-0 lg:pb-8">
+        <div className="max-w-[1600px] mx-auto mb-2 lg:mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2 text-foreground hover:bg-muted">
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2 text-foreground hover:bg-muted h-8 px-2">
               <ArrowLeft className="w-4 h-4" />
-              Back
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            {/* Prev / Next auction navigation */}
-            <div className="flex items-center gap-1 ml-2">
+            {/* Prev / Next auction navigation - desktop only */}
+            <div className="hidden lg:flex items-center gap-1 ml-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -108,18 +109,19 @@ const LiveStream = () => {
             <Button
               variant={mode === "live" ? "default" : "ghost"}
               size="sm"
-              className={`h-8 text-xs gap-1.5 ${mode === "live" ? "bg-primary text-primary-foreground" : ""}`}
+              className={`h-7 lg:h-8 text-xs gap-1.5 px-2 ${mode === "live" ? "bg-primary text-primary-foreground" : ""}`}
               onClick={() => handleModeSwitch("live")}
             >
               <Gavel className="h-3.5 w-3.5" />
               Auction
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 text-xs gap-1.5" onClick={() => handleModeSwitch("shopLive")}>
+            <Button variant="ghost" size="sm" className="h-7 lg:h-8 text-xs gap-1.5 px-2" onClick={() => handleModeSwitch("shopLive")}>
               <ShoppingBag className="h-3.5 w-3.5" />
               Shop Live
             </Button>
           </div>
         </div>
+
         
         <div className="max-w-[1600px] mx-auto">
           {/* Desktop 3-column layout */}
@@ -147,23 +149,16 @@ const LiveStream = () => {
           </div>
         </div>
 
-        <div className="lg:hidden mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-          <LiveStreamVideo 
-            key={`mvideo-${streamId}`}
-            currentBid={currentBid} 
-            onBid={(amount) => setCurrentBid(amount)} 
+        <div className="lg:hidden mt-2">
+          <MobileLiveFeed
             streamId={streamId}
-            onPrev={handlePrev}
-            onNext={handleNext}
-            hasPrev={hasPrev}
-            hasNext={hasNext}
+            currentBid={currentBid}
+            onBid={(amount) => setCurrentBid(amount)}
+            sellerInfo={sellerInfo}
           />
-          <AuctionWinnersPanel streamId={streamId} />
-          <LiveStreamShop key={`mshop-${streamId}`} streamId={streamId} sellerInfo={sellerInfo} />
-          <LiveStreamChat key={`mchat-${streamId}`} streamId={streamChatId} />
         </div>
 
-        <div className="max-w-[1600px] mx-auto mt-6">
+        <div className="hidden lg:block max-w-[1600px] mx-auto mt-6">
           <RecommendedStreams currentStreamId={streamId} onStreamSelect={handleStreamSelect} />
         </div>
       </div>
