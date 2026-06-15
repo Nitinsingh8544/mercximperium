@@ -19,12 +19,11 @@ interface MobileLiveFeedProps {
   sellerInfo: { name: string; image: string };
 }
 
-// Build the vertical feed order: current stream first, then the rest of auctionStreams
+// Build the vertical feed using natural order of auctionStreams.
+// This allows reverse (up) scrolling to previous streams as well.
 const buildFeed = (currentId: number) => {
   const ids = auctionStreams.map((s) => s.id);
-  const list = ids.includes(currentId) ? ids : [currentId, ...ids];
-  // Move currentId to front, then preserve order of the others
-  return [currentId, ...list.filter((id) => id !== currentId)];
+  return ids.includes(currentId) ? ids : [currentId, ...ids];
 };
 
 const getMeta = (id: number) =>
