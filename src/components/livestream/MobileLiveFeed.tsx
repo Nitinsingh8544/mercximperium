@@ -19,12 +19,11 @@ interface MobileLiveFeedProps {
   sellerInfo: { name: string; image: string };
 }
 
-// Build the vertical feed order: current stream first, then the rest of auctionStreams
+// Build the vertical feed using natural order of auctionStreams.
+// This allows reverse (up) scrolling to previous streams as well.
 const buildFeed = (currentId: number) => {
   const ids = auctionStreams.map((s) => s.id);
-  const list = ids.includes(currentId) ? ids : [currentId, ...ids];
-  // Move currentId to front, then preserve order of the others
-  return [currentId, ...list.filter((id) => id !== currentId)];
+  return ids.includes(currentId) ? ids : [currentId, ...ids];
 };
 
 const getMeta = (id: number) =>
@@ -253,6 +252,20 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   const feed = useMemo(() => buildFeed(streamId), [streamId]);
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const didInitialScroll = useRef(false);
+
+  // On first mount (or when arriving at a new streamId via URL), jump to that slide
+  // without smooth scroll so the user lands directly on the active auction and can
+  // scroll up to previous or down to next streams.
+  useEffect(() => {
+    if (didInitialScroll.current) return;
+    const el = slideRefs.current.get(streamId);
+    const root = containerRef.current;
+    if (el && root) {
+      root.scrollTo({ top: el.offsetTop, behavior: "auto" });
+      didInitialScroll.current = true;
+    }
+  }, [streamId, feed]);
 
   // Observe slides to switch route when one comes into view
   useEffect(() => {
@@ -282,7 +295,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-[calc(100dvh-7.5rem)] overflow-y-auto snap-y snap-mandatory -mx-2 sm:-mx-4 rounded-none scroll-smooth"
+      className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory"
       style={{ scrollbarWidth: "none" }}
     >
       {feed.map((id) => (
@@ -293,7 +306,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
             if (el) slideRefs.current.set(id, el);
             else slideRefs.current.delete(id);
           }}
-          className="h-full w-full snap-start"
+          className="h-[100dvh] w-full snap-start"
         >
           {id === streamId ? (
             <ActiveSlide {...props} streamId={id} />
