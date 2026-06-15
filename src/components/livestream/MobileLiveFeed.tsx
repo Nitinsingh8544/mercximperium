@@ -206,14 +206,10 @@ const ActiveSlide = ({
   );
 };
 
-// Lightweight wrapper to keep this file's import surface obvious
-const FullChat = ({ streamId }: { streamId: number }) => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const LiveStreamChat = require("./LiveStreamChat").default as React.FC<{
-    streamId?: string;
-  }>;
-  return <LiveStreamChat streamId={`live-${streamId}`} />;
-};
+// Re-export the imported chat to keep the active slide's JSX tidy
+const FullChat = ({ streamId }: { streamId: number }) => (
+  <LiveStreamChat streamId={`live-${streamId}`} />
+);
 
 const PreviewSlide = ({ id }: { id: number }) => {
   const meta = getMeta(id);
