@@ -70,10 +70,12 @@ const LiveStream = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AuthenticatedHeader />
+      <div className="hidden lg:block">
+        <AuthenticatedHeader />
+      </div>
       
-      <div className="pt-16 md:pt-20 px-2 sm:px-4 lg:px-6 pb-0 lg:pb-8">
-        <div className="max-w-[1600px] mx-auto mb-2 lg:mb-3 flex items-center justify-between">
+      <div className="lg:pt-20 px-0 lg:px-6 pb-0 lg:pb-8">
+        <div className="hidden lg:flex max-w-[1600px] mx-auto mb-2 lg:mb-3 items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="gap-2 text-foreground hover:bg-muted h-8 px-2">
               <ArrowLeft className="w-4 h-4" />
