@@ -10,6 +10,7 @@ import { getStreamById as getStreamDataById } from "@/data/streamData";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
 import BottomNav from "@/components/BottomNav";
+import MobileShopFeed from "@/components/livestream/MobileShopFeed";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag, Gavel } from "lucide-react";
 import { findStreamById, streamsWithMeta } from "@/lib/streamRanking";
