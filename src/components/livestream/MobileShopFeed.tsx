@@ -54,7 +54,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[152px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[380px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
         {recent.map((c) => (
           <div
             key={c.id}
