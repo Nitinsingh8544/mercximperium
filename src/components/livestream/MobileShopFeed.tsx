@@ -179,7 +179,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
       )}
 
       {/* Right action stack */}
-      <div className="absolute right-3 bottom-[230px] z-20 flex flex-col items-center gap-2.5">
+      <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
         <Button
           size="icon"
           onClick={(e) => {
