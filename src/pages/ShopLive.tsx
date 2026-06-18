@@ -185,19 +185,21 @@ const ShopLive = () => {
         </div>
 
         {/* Mobile layout */}
-        <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
-          <ShopLiveVideo
-            hostName={currentStream.host}
-            hostAvatar={undefined}
-            streamImage={currentStream.image.replace('w=400', 'w=800')}
-            streamTitle={currentStream.title}
-            streamDate={`${currentStream.viewers} viewers`}
-            products={mode === "sales" ? streamProducts : []}
-            onNext={goNext}
-            onPrev={goPrev}
-            hasNext={hasNext}
-            hasPrev={hasPrev}
-          />
+        <div className="lg:hidden mt-2 space-y-4 px-2 max-w-[1600px] mx-auto">
+          <div className="h-[calc(100dvh-9rem)] min-h-[480px]">
+            <ShopLiveVideo
+              hostName={currentStream.host}
+              hostAvatar={undefined}
+              streamImage={currentStream.image.replace('w=400', 'w=800')}
+              streamTitle={currentStream.title}
+              streamDate={`${currentStream.viewers} viewers`}
+              products={mode === "sales" ? streamProducts : []}
+              onNext={goNext}
+              onPrev={goPrev}
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+            />
+          </div>
           {mode === "sales" ? (
             <ShopLiveChat streamId={chatStreamId} />
           ) : (
@@ -208,6 +210,10 @@ const ShopLive = () => {
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
+      </div>
+
+      <div className="lg:hidden">
+        <BottomNav />
       </div>
     </div>
   );
