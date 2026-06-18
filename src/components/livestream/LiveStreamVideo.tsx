@@ -365,23 +365,24 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <img src={itemInfo.image} alt="Product showcase" className="w-full h-full object-cover" />
           </div>
 
-          {/* Streamer Info Overlay - top left */}
-          <div className="absolute top-4 left-4 max-lg:left-16 z-10">
-            <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}>
-              <Avatar className="h-10 w-10 border-2 border-secondary">
+          {/* Streamer Info Overlay - top left (mobile: compact, no follow inline) */}
+          <div className="absolute top-4 left-4 max-lg:left-14 max-lg:top-3 z-10">
+            <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}>
+              <Avatar className="h-9 w-9 max-lg:h-8 max-lg:w-8 border-2 border-secondary">
                 <AvatarImage src={sellerInfo.image} />
                 <AvatarFallback className="bg-primary text-primary-foreground">SS</AvatarFallback>
               </Avatar>
-              <div>
-                <p className="font-semibold text-white text-sm">{sellerInfo.name}</p>
-                <div className="flex items-center gap-1 text-sm">
+              <div className="min-w-0">
+                <p className="font-semibold text-white text-sm leading-tight truncate max-w-[110px]">{sellerInfo.name}</p>
+                <div className="flex items-center gap-1 text-xs">
                   <Star className="h-3 w-3 fill-secondary text-secondary" />
                   <span className="text-white/80">{sellerInfo.rating}</span>
                 </div>
               </div>
+              {/* Follow inline only on desktop */}
               <Button
                 size="sm"
-                className={`ml-2 rounded-full text-xs font-semibold ${following ? "bg-white/20 text-white border border-white/30 hover:bg-white/30" : "bg-secondary text-secondary-foreground hover:bg-secondary/90"}`}
+                className={`ml-2 rounded-full text-xs font-semibold max-lg:hidden ${following ? "bg-white/20 text-white border border-white/30 hover:bg-white/30" : "bg-secondary text-secondary-foreground hover:bg-secondary/90"}`}
                 onClick={(e) => { e.stopPropagation(); toggleFollow(sellerInfo.name, "auction"); }}
               >
                 {following ? "Following" : "Follow"}
@@ -389,14 +390,21 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           </div>
 
-          {/* Countdown Timer - top right */}
-          <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2">
-            {/* Viewer count */}
-            <div className="bg-destructive text-destructive-foreground px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5">
-              LIVE · 38
+          {/* Top right cluster: uniform pills (Follow on mobile + LIVE + Phase) */}
+          <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1.5">
+            <div className="flex items-center gap-1.5">
+              <Button
+                size="sm"
+                onClick={(e) => { e.stopPropagation(); toggleFollow(sellerInfo.name, "auction"); }}
+                className={`lg:hidden h-7 px-3 rounded-full text-[11px] font-semibold ${following ? "bg-white/20 text-white border border-white/30 hover:bg-white/30" : "bg-secondary text-secondary-foreground hover:bg-secondary/90"}`}
+              >
+                {following ? "Following" : "Follow"}
+              </Button>
+              <div className="h-7 px-3 rounded-full bg-destructive text-destructive-foreground text-[11px] font-bold flex items-center">
+                LIVE · 38
+              </div>
             </div>
-            {/* Phase & Timer */}
-            <div className={`px-3 py-1.5 rounded-lg text-sm font-bold backdrop-blur-sm ${phase === "bid" ? "bg-destructive/90 text-white animate-pulse" : "bg-primary/70 text-white"}`}>
+            <div className={`h-7 px-3 rounded-full text-[11px] font-bold backdrop-blur-sm flex items-center ${phase === "bid" ? "bg-destructive/90 text-white animate-pulse" : "bg-primary/70 text-white"}`}>
               {phase === "explain" ? "📢 Explaining" : "🔥 BIDDING"} · {formatTime(displayTime > 0 ? displayTime : timeLeft)}
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
   Volume2,
   VolumeX,
   Eye,
+  ChevronRight,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -115,8 +116,29 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const products = data?.products || [];
   const following = isFollowing(meta.host);
 
+  // Swipe-right → seller profile
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    const dy = t.clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (dx > 80 && Math.abs(dy) < 60) {
+      navigate(`/seller/${encodeURIComponent(meta!.host)}`);
+    }
+  };
+
   return (
-    <div className="relative h-full w-full bg-foreground overflow-hidden">
+    <div
+      className="relative h-full w-full bg-foreground overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Background image */}
       <img
         src={meta.image.replace("w=400", "w=800")}
@@ -285,33 +307,57 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </Button>
       </div>
 
-      {/* Horizontal product strip at bottom */}
+      {/* Left-bottom products menu trigger */}
       {products.length > 0 && (
-        <div className="absolute left-0 right-0 bottom-3 z-20 px-3">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            {products.slice(0, 8).map((p) => (
-              <button
-                key={p.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedProduct(p);
-                }}
-                className="shrink-0 w-[92px] rounded-lg overflow-hidden bg-card border-2 border-secondary/70 text-left"
+        <div className="absolute left-3 bottom-3 z-20">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                onClick={(e) => e.stopPropagation()}
+                className="h-11 px-3 rounded-full bg-foreground/55 backdrop-blur-md text-white hover:bg-foreground/75 border border-white/20 flex items-center gap-2"
+                aria-label="Stream products"
               >
-                <div className="w-full h-[92px] bg-muted">
-                  <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                <ShoppingBag className="h-4 w-4" />
+                <span className="text-[11px] font-semibold">{products.length} items</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col">
+              <SheetHeader className="px-4 pt-4 pb-2">
+                <SheetTitle>Items in this live</SheetTitle>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto px-3 pb-4">
+                <div className="grid grid-cols-2 gap-3">
+                  {products.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setSelectedProduct(p)}
+                      className="text-left rounded-lg border border-border bg-card overflow-hidden"
+                    >
+                      <div className="aspect-square bg-muted">
+                        <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs font-medium text-foreground line-clamp-2">{p.title}</p>
+                        <p className="text-sm font-bold text-primary mt-1">
+                          {p.currency}{p.price.toLocaleString()}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <div className="px-1.5 py-1 bg-card">
-                  <p className="text-[10px] font-medium text-foreground truncate">{p.title}</p>
-                  <p className="text-[11px] font-bold text-primary">
-                    {p.currency}{p.price.toLocaleString()}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+                <Button
+                  onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
+                  className="w-full mt-4 h-11 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 flex items-center justify-center gap-2 font-semibold"
+                >
+                  More from {meta.host}
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       )}
+
 
       <ChatOverlay streamId={streamId} />
 
