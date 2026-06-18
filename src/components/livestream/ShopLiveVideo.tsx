@@ -102,8 +102,8 @@ const ShopLiveVideo = ({ hostName = "Sponsored Live", hostAvatar, streamImage, s
 
   return (
     <>
-      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-card border border-border h-full flex flex-col">
-        <div className="relative flex-1 min-h-0 bg-gradient-to-br from-muted to-card">
+      <div ref={containerRef} className="relative rounded-xl overflow-hidden bg-card border border-border lg:h-full flex flex-col">
+        <div className="relative flex-1 min-h-0 max-lg:flex-none max-lg:aspect-[9/14] bg-gradient-to-br from-muted to-card">
           <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
             <Badge variant="destructive" className="bg-red-600 text-white flex items-center gap-1">
               <Eye className="h-3 w-3" />
