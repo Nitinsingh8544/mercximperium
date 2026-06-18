@@ -72,7 +72,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
           </div>
         ))}
       </div>
-      <div className="absolute left-3 right-3 bottom-3 z-20">
+      <div className="absolute left-3 right-[72px] bottom-3 z-20">
         <div className="relative">
           <Input
             value={message}
