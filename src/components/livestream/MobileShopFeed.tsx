@@ -278,7 +278,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
       </div>
 
       {/* Host bar */}
-      <div className="absolute left-3 right-3 bottom-[130px] z-20 flex items-center gap-2">
+      <div className="absolute left-3 right-[72px] bottom-[52px] z-20 flex items-center gap-2">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
