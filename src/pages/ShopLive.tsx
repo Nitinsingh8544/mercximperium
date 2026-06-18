@@ -74,45 +74,21 @@ const ShopLive = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile: full-screen reel feed */}
+      <div className="lg:hidden fixed inset-x-0 top-0 bottom-14 z-40">
+        <MobileShopFeed streamId={currentStream.id} />
+      </div>
+      <div className="lg:hidden">
+        <BottomNav />
+      </div>
+
+      {/* Desktop layout */}
       <div className="hidden lg:block">
         <AuthenticatedHeader />
       </div>
 
-      <div className="lg:pt-20 px-0 sm:px-4 lg:px-6 pb-20 lg:pb-8">
-        {/* Mobile top bar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/60 flex items-center justify-between px-3 py-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/shop-live")}
-            className="gap-1.5 text-foreground hover:bg-muted h-9 px-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="text-xs">Back</span>
-          </Button>
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-            <Button
-              variant={mode === "sales" ? "default" : "ghost"}
-              size="sm"
-              className={`h-7 text-[11px] gap-1 px-2 ${mode === "sales" ? "bg-primary text-primary-foreground" : ""}`}
-              onClick={() => setMode("sales")}
-            >
-              <ShoppingBag className="h-3 w-3" />
-              Sales
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-[11px] gap-1 px-2"
-              onClick={() => navigate("/dashboard")}
-            >
-              <Gavel className="h-3 w-3" />
-              Auction
-            </Button>
-          </div>
-        </div>
-
-        <div className="hidden lg:flex max-w-[1600px] mx-auto mb-3 items-center justify-between px-2 sm:px-0">
+      <div className="hidden lg:block lg:pt-20 px-0 sm:px-4 lg:px-6 pb-20 lg:pb-8">
+        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between px-2 sm:px-0">
           <Button
             variant="ghost"
             size="sm"
@@ -145,10 +121,9 @@ const ShopLive = () => {
             </Button>
           </div>
         </div>
-        
+
         <div className="max-w-[1600px] mx-auto">
-          {/* Main 3-column layout: Following | Stream | Chat - all same height */}
-          <div className="hidden lg:grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4 h-[672px]">
+          <div className="grid lg:grid-cols-[200px_1fr_320px] xl:grid-cols-[220px_1fr_350px] gap-3 sm:gap-4 h-[672px]">
             <div className="h-full overflow-hidden">
               <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
             </div>
@@ -183,35 +158,6 @@ const ShopLive = () => {
             <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           </div>
         </div>
-
-        {/* Mobile layout */}
-        <div className="lg:hidden mt-2 space-y-4 px-2 max-w-[1600px] mx-auto">
-          <ShopLiveVideo
-            hostName={currentStream.host}
-            hostAvatar={undefined}
-            streamImage={currentStream.image.replace('w=400', 'w=800')}
-            streamTitle={currentStream.title}
-            streamDate={`${currentStream.viewers} viewers`}
-            products={mode === "sales" ? streamProducts : []}
-            onNext={goNext}
-            onPrev={goPrev}
-            hasNext={hasNext}
-            hasPrev={hasPrev}
-          />
-          {mode === "sales" ? (
-            <ShopLiveChat streamId={chatStreamId} />
-          ) : (
-            <AuctionPanel streamId={currentStream.id} sellerName={currentStream.host} />
-          )}
-          <FeaturedCreators onCreatorSelect={handleCreatorSelect} activeStreamId={currentStream.id} />
-          <RecommendedStreams currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
-          <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
-          <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
-        </div>
-      </div>
-
-      <div className="lg:hidden">
-        <BottomNav />
       </div>
     </div>
   );
