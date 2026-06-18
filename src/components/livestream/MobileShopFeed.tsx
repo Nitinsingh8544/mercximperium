@@ -116,8 +116,29 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const products = data?.products || [];
   const following = isFollowing(meta.host);
 
+  // Swipe-right → seller profile
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.current.x;
+    const dy = t.clientY - touchStart.current.y;
+    touchStart.current = null;
+    if (dx > 80 && Math.abs(dy) < 60) {
+      navigate(`/seller/${encodeURIComponent(meta!.host)}`);
+    }
+  };
+
   return (
-    <div className="relative h-full w-full bg-foreground overflow-hidden">
+    <div
+      className="relative h-full w-full bg-foreground overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Background image */}
       <img
         src={meta.image.replace("w=400", "w=800")}
