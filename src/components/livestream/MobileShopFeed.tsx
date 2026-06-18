@@ -54,7 +54,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[230px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[380px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
         {recent.map((c) => (
           <div
             key={c.id}
@@ -72,7 +72,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
           </div>
         ))}
       </div>
-      <div className="absolute left-3 right-3 bottom-[180px] z-20">
+      <div className="absolute left-3 right-[72px] bottom-3 z-20">
         <div className="relative">
           <Input
             value={message}
@@ -179,7 +179,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
       )}
 
       {/* Right action stack */}
-      <div className="absolute right-3 bottom-[230px] z-20 flex flex-col items-center gap-2.5">
+      <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
         <Button
           size="icon"
           onClick={(e) => {
@@ -278,7 +278,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
       </div>
 
       {/* Host bar */}
-      <div className="absolute left-3 right-3 bottom-[130px] z-20 flex items-center gap-2">
+      <div className="absolute left-3 right-[72px] bottom-[52px] z-20 flex items-center gap-2">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
@@ -309,7 +309,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
 
       {/* Left-bottom products menu trigger */}
       {products.length > 0 && (
-        <div className="absolute left-3 bottom-3 z-20">
+        <div className="absolute left-3 bottom-[100px] z-20">
           <Sheet>
             <SheetTrigger asChild>
               <Button
