@@ -366,7 +366,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
 
           {/* Streamer Info Overlay - top left */}
-          <div className="absolute top-4 left-4 z-10">
+          <div className="absolute top-4 left-4 max-lg:left-16 z-10">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate(`/seller/${encodeURIComponent(sellerInfo.name)}`)}>
               <Avatar className="h-10 w-10 border-2 border-secondary">
                 <AvatarImage src={sellerInfo.image} />
