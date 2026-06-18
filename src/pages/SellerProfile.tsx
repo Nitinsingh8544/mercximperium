@@ -144,22 +144,25 @@ const SellerProfile = () => {
           </div>
 
           {/* Tabs section */}
-          <div className="mt-6 bg-card rounded-xl border border-border p-6">
+          <div className="mt-6 bg-card rounded-xl border border-border p-3 sm:p-6">
             <Tabs defaultValue="products" className="w-full">
-              <TabsList className="w-full bg-muted mb-6">
-                <TabsTrigger value="products" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-                  <ShoppingBag className="w-4 h-4 mr-2" />
-                  Products
+              <TabsList className="w-full bg-muted mb-6 h-auto p-1 gap-1">
+                <TabsTrigger value="products" className="flex-1 min-w-0 px-2 sm:px-3 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                  <ShoppingBag className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Products</span>
+                  <span className="sm:hidden ml-1">Items</span>
                 </TabsTrigger>
-                <TabsTrigger value="reviews" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-                  <Star className="w-4 h-4 mr-2" />
-                  Reviews
+                <TabsTrigger value="reviews" className="flex-1 min-w-0 px-2 sm:px-3 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                  <Star className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Reviews</span>
+                  <span className="sm:hidden ml-1">Reviews</span>
                 </TabsTrigger>
-                <TabsTrigger value="auctions" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
-                  <Gavel className="w-4 h-4 mr-2" />
-                  Auctions
+                <TabsTrigger value="auctions" className="flex-1 min-w-0 px-2 sm:px-3 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                  <Gavel className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Auctions</span>
+                  <span className="sm:hidden ml-1">Bids</span>
                 </TabsTrigger>
-                <TabsTrigger value="about" className="flex-1 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
+                <TabsTrigger value="about" className="flex-1 min-w-0 px-2 sm:px-3 text-xs sm:text-sm data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground">
                   About
                 </TabsTrigger>
               </TabsList>
