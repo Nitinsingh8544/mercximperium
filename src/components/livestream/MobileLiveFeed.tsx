@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Trophy, MessageCircle, Send } from "lucide-react";
+import { ShoppingBag, Trophy, MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +127,7 @@ const ActiveSlide = ({
   onBid,
   sellerInfo,
 }: MobileLiveFeedProps) => {
+  const navigate = useNavigate();
   return (
     <div className="relative h-full w-full">
       <LiveStreamVideo
@@ -136,8 +137,18 @@ const ActiveSlide = ({
         streamId={streamId}
       />
 
+      {/* Back to dashboard */}
+      <Button
+        size="icon"
+        onClick={() => navigate("/dashboard")}
+        aria-label="Back"
+        className="absolute top-3 left-3 z-30 h-9 w-9 rounded-full bg-foreground/55 backdrop-blur-md text-white hover:bg-foreground/75 border border-white/20"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </Button>
+
       {/* Floating action stack on the right (above timer block sits at top) */}
-      <div className="absolute right-3 bottom-[170px] z-20 flex flex-col items-center gap-3">
+      <div className="absolute right-3 bottom-[160px] z-20 flex flex-col items-center gap-2.5">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -295,7 +306,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-[100dvh] w-full overflow-y-auto snap-y snap-mandatory"
+      className="h-full w-full overflow-y-auto snap-y snap-mandatory"
       style={{ scrollbarWidth: "none" }}
     >
       {feed.map((id) => (
@@ -306,7 +317,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
             if (el) slideRefs.current.set(id, el);
             else slideRefs.current.delete(id);
           }}
-          className="h-[100dvh] w-full snap-start"
+          className="h-full w-full snap-start"
         >
           {id === streamId ? (
             <ActiveSlide {...props} streamId={id} />
