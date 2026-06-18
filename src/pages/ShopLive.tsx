@@ -9,6 +9,7 @@ import AuctionPanel from "@/components/livestream/AuctionPanel";
 import { getStreamById as getStreamDataById } from "@/data/streamData";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import ExploreMoreSection from "@/components/livestream/ExploreMoreSection";
+import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag, Gavel } from "lucide-react";
 import { findStreamById, streamsWithMeta } from "@/lib/streamRanking";
@@ -73,10 +74,45 @@ const ShopLive = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AuthenticatedHeader />
-      
-      <div className="pt-32 sm:pt-28 md:pt-20 px-2 sm:px-4 lg:px-6 pb-24 lg:pb-8">
-        <div className="max-w-[1600px] mx-auto mb-3 flex items-center justify-between">
+      <div className="hidden lg:block">
+        <AuthenticatedHeader />
+      </div>
+
+      <div className="lg:pt-20 px-0 sm:px-4 lg:px-6 pb-20 lg:pb-8">
+        {/* Mobile top bar */}
+        <div className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/60 flex items-center justify-between px-3 py-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/shop-live")}
+            className="gap-1.5 text-foreground hover:bg-muted h-9 px-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-xs">Back</span>
+          </Button>
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+            <Button
+              variant={mode === "sales" ? "default" : "ghost"}
+              size="sm"
+              className={`h-7 text-[11px] gap-1 px-2 ${mode === "sales" ? "bg-primary text-primary-foreground" : ""}`}
+              onClick={() => setMode("sales")}
+            >
+              <ShoppingBag className="h-3 w-3" />
+              Sales
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[11px] gap-1 px-2"
+              onClick={() => navigate("/dashboard")}
+            >
+              <Gavel className="h-3 w-3" />
+              Auction
+            </Button>
+          </div>
+        </div>
+
+        <div className="hidden lg:flex max-w-[1600px] mx-auto mb-3 items-center justify-between px-2 sm:px-0">
           <Button
             variant="ghost"
             size="sm"
@@ -149,19 +185,21 @@ const ShopLive = () => {
         </div>
 
         {/* Mobile layout */}
-        <div className="lg:hidden mt-4 space-y-4 max-w-[1600px] mx-auto">
-          <ShopLiveVideo
-            hostName={currentStream.host}
-            hostAvatar={undefined}
-            streamImage={currentStream.image.replace('w=400', 'w=800')}
-            streamTitle={currentStream.title}
-            streamDate={`${currentStream.viewers} viewers`}
-            products={mode === "sales" ? streamProducts : []}
-            onNext={goNext}
-            onPrev={goPrev}
-            hasNext={hasNext}
-            hasPrev={hasPrev}
-          />
+        <div className="lg:hidden mt-2 space-y-4 px-2 max-w-[1600px] mx-auto">
+          <div className="h-[calc(100dvh-9rem)] min-h-[480px]">
+            <ShopLiveVideo
+              hostName={currentStream.host}
+              hostAvatar={undefined}
+              streamImage={currentStream.image.replace('w=400', 'w=800')}
+              streamTitle={currentStream.title}
+              streamDate={`${currentStream.viewers} viewers`}
+              products={mode === "sales" ? streamProducts : []}
+              onNext={goNext}
+              onPrev={goPrev}
+              hasNext={hasNext}
+              hasPrev={hasPrev}
+            />
+          </div>
           {mode === "sales" ? (
             <ShopLiveChat streamId={chatStreamId} />
           ) : (
@@ -172,6 +210,10 @@ const ShopLive = () => {
           <RecommendedSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
           <ExploreMoreSection currentStreamId={currentStream.id} onStreamSelect={handleStreamSelect} />
         </div>
+      </div>
+
+      <div className="lg:hidden">
+        <BottomNav />
       </div>
     </div>
   );

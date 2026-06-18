@@ -7,6 +7,7 @@ import LiveStreamChat from "@/components/livestream/LiveStreamChat";
 import RecommendedStreams from "@/components/livestream/RecommendedStreams";
 import AuctionWinnersPanel from "@/components/livestream/AuctionWinnersPanel";
 import MobileLiveFeed from "@/components/livestream/MobileLiveFeed";
+import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingBag, Gavel, ChevronLeft, ChevronRight } from "lucide-react";
 import { auctionStreams } from "@/lib/streamRanking";
@@ -151,13 +152,16 @@ const LiveStream = () => {
           </div>
         </div>
 
-        <div className="lg:hidden fixed inset-0 z-50 bg-background">
+        <div className="lg:hidden fixed inset-x-0 top-0 bottom-14 z-40 bg-background">
           <MobileLiveFeed
             streamId={streamId}
             currentBid={currentBid}
             onBid={(amount) => setCurrentBid(amount)}
             sellerInfo={sellerInfo}
           />
+        </div>
+        <div className="lg:hidden">
+          <BottomNav />
         </div>
 
         <div className="hidden lg:block max-w-[1600px] mx-auto mt-6">
