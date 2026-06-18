@@ -309,7 +309,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
 
       {/* Left-bottom products menu trigger */}
       {products.length > 0 && (
-        <div className="absolute left-3 bottom-3 z-20">
+        <div className="absolute left-3 bottom-[100px] z-20">
           <Sheet>
             <SheetTrigger asChild>
               <Button
