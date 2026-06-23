@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import LiveStreamVideo from "./LiveStreamVideo";
 import LiveStreamShop from "./LiveStreamShop";
 import AuctionWinnersPanel from "./AuctionWinnersPanel";
-import LiveStreamChat from "./LiveStreamChat";
+
 import { auctionStreams } from "@/lib/streamRanking";
 import { useLiveComments } from "@/hooks/useLiveComments";
 
