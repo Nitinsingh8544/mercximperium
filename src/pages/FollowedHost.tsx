@@ -4,18 +4,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import AuthenticatedHeader from "@/components/AuthenticatedHeader";
 import { useFollows } from "@/hooks/useFollows";
-import { useProfile } from "@/hooks/useProfile";
 import { Users, UserMinus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const FollowedHost = () => {
-  const { profile } = useProfile();
   const { follows, loading, toggleFollow } = useFollows();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const fullName = profile?.name || profile?.username || "there";
-  const firstName = fullName.split(" ")[0];
 
   const handleUnfollow = async (sellerName: string, source: string) => {
     await toggleFollow(sellerName, source);
