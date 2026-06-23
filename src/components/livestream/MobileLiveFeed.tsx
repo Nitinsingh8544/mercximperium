@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Trophy, Send, ArrowLeft } from "lucide-react";
+import { ShoppingBag, Trophy, Send, ArrowLeft, Volume2, VolumeX } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import LiveStreamVideo from "./LiveStreamVideo";
 import LiveStreamShop from "./LiveStreamShop";
 import AuctionWinnersPanel from "./AuctionWinnersPanel";
+
 
 import { auctionStreams } from "@/lib/streamRanking";
 import { useLiveComments } from "@/hooks/useLiveComments";
@@ -44,8 +45,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
   const { comments, sendComment } = useLiveComments(`live-${streamId}`);
   const [message, setMessage] = useState("");
 
-  // Show the last few real comments + a couple of seeded joins for liveliness
-  const recent = comments.slice(-4);
+  // Show only real user-typed comments + a couple of seeded joins for liveliness
+  const recent = comments.slice(-5);
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -55,8 +56,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      {/* Floating chat messages on the left, ABOVE the product info strip */}
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[280px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
+      {/* Floating chat messages on the left, above the say-something input */}
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[150px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
         {[
           { name: "baseset_jett", text: "joined 👋" },
           { name: "hairysax", text: "joined 👋" },
@@ -79,7 +80,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
         {recent.map((c) => (
           <div
             key={c.id}
-            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full"
+            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full animate-in fade-in slide-in-from-bottom-2"
           >
             <Avatar className="h-6 w-6">
               <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
@@ -94,8 +95,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
         ))}
       </div>
 
-      {/* Say something input, ABOVE the product info strip */}
-      <div className="absolute left-3 right-3 bottom-[230px] z-20">
+      {/* Say something input - sits just above the bid bar, under the item info */}
+      <div className="absolute left-3 right-3 bottom-[96px] z-20">
         <div className="relative">
           <Input
             value={message}
@@ -104,7 +105,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
               if (e.key === "Enter") handleSend();
             }}
             placeholder="Say something..."
-            className="h-9 pr-10 rounded-full bg-foreground/30 backdrop-blur-md border border-white/30 text-white placeholder:text-white/70"
+            className="h-9 pr-10 rounded-full bg-foreground/50 backdrop-blur-md border border-white/30 text-white placeholder:text-white/70"
           />
           <Button
             size="icon"
@@ -128,6 +129,17 @@ const ActiveSlide = ({
   sellerInfo,
 }: MobileLiveFeedProps) => {
   const navigate = useNavigate();
+  const [muted, setMuted] = useState(false);
+  const [showMuteHint, setShowMuteHint] = useState(false);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const toggleMute = () => {
+    setMuted((m) => !m);
+    setShowMuteHint(true);
+    if (hintTimer.current) clearTimeout(hintTimer.current);
+    hintTimer.current = setTimeout(() => setShowMuteHint(false), 800);
+  };
+
   return (
     <div className="relative h-full w-full">
       <LiveStreamVideo
@@ -136,6 +148,21 @@ const ActiveSlide = ({
         onBid={onBid}
         streamId={streamId}
       />
+
+      {/* Tap-to-mute layer - sits above the video image but below interactive controls */}
+      <button
+        type="button"
+        aria-label={muted ? "Unmute" : "Mute"}
+        onClick={toggleMute}
+        className="absolute left-0 right-0 top-14 bottom-[260px] z-[6] bg-transparent"
+      />
+
+      {/* Mute state hint flash */}
+      {showMuteHint && (
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[7] h-16 w-16 rounded-full bg-foreground/60 backdrop-blur-md flex items-center justify-center animate-in fade-in zoom-in-50">
+          {muted ? <VolumeX className="h-8 w-8 text-white" /> : <Volume2 className="h-8 w-8 text-white" />}
+        </div>
+      )}
 
       {/* Back to dashboard */}
       <Button
@@ -147,8 +174,8 @@ const ActiveSlide = ({
         <ArrowLeft className="h-5 w-5" />
       </Button>
 
-      {/* Floating action stack on the right - lifted above the chat overlay/input */}
-      <div className="absolute right-3 bottom-[290px] z-20 flex flex-col items-center gap-2.5">
+      {/* Floating action stack on the right - sits above the chat overlay */}
+      <div className="absolute right-3 bottom-[210px] z-30 flex flex-col items-center gap-2.5">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -194,6 +221,7 @@ const ActiveSlide = ({
     </div>
   );
 };
+
 
 
 const PreviewSlide = ({ id }: { id: number }) => {

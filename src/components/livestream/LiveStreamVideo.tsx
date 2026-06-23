@@ -427,8 +427,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Video Controls - right side vertical */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+          {/* Video Controls - right side vertical (desktop only; mobile uses MobileLiveFeed stack) */}
+          <div className="hidden lg:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col gap-2 z-10">
             <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={() => setIsMuted(!isMuted)}>
               {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
             </Button>
@@ -438,14 +438,12 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={() => setIsNoteOpen(true)}>
               <StickyNote className="h-5 w-5" />
             </Button>
-            {/* Like */}
             <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={handleLike}>
               <div className="flex flex-col items-center">
                 <ThumbsUp className={`h-4 w-4 ${liked ? "fill-white" : ""}`} />
                 <span className="text-[9px] mt-0.5">{likes}</span>
               </div>
             </Button>
-            {/* Dislike */}
             <Button variant="ghost" size="icon" className="bg-primary/40 backdrop-blur-sm text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground rounded-full" onClick={handleDislike}>
               <div className="flex flex-col items-center">
                 <ThumbsDown className={`h-4 w-4 ${disliked ? "fill-white" : ""}`} />
@@ -453,6 +451,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
               </div>
             </Button>
           </div>
+
 
           {/* Paused overlay */}
           {!isPlaying && (
