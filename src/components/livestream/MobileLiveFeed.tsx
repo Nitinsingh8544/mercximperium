@@ -55,8 +55,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      {/* Floating chat messages on the left, above bid bar */}
-      <div className="pointer-events-none absolute left-3 right-24 bottom-[150px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
+      {/* Floating chat messages on the left, ABOVE the product info strip */}
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[280px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
         {[
           { name: "baseset_jett", text: "joined 👋" },
           { name: "hairysax", text: "joined 👋" },
@@ -94,8 +94,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
         ))}
       </div>
 
-      {/* Say something input, above bid bar */}
-      <div className="absolute left-3 right-3 bottom-[96px] z-20">
+      {/* Say something input, ABOVE the product info strip */}
+      <div className="absolute left-3 right-3 bottom-[230px] z-20">
         <div className="relative">
           <Input
             value={message}
