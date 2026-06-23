@@ -272,9 +272,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const availableBalance = Math.max(0, walletBalance - lockedAmount);
 
   const handleBid = async (amount: number, lockAmountRupees = Math.round(amount * INR_CONVERSION_RATE)) => {
-    // Bidding strictly disabled outside the active 30s bid window
-    if (phase !== "bid" || timeLeft <= 0) {
-      toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
+    // Allow bidding anytime the auction is live (timer hasn't ended).
+    if (timeLeft <= 0) {
+      toast({ title: "Bidding closed", description: "This auction has ended.", variant: "destructive" });
       return;
     }
 
