@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Trophy, Send, ArrowLeft, Volume2, VolumeX } from "lucide-react";
+import { ShoppingBag, Trophy, Send, ArrowLeft, Volume2, VolumeX, Wallet as WalletIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import LiveStreamVideo from "./LiveStreamVideo";
 import LiveStreamShop from "./LiveStreamShop";
 import AuctionWinnersPanel from "./AuctionWinnersPanel";
+import ProductDetailModal from "./ProductDetailModal";
 
 
 import { auctionStreams } from "@/lib/streamRanking";
 import { useLiveComments } from "@/hooks/useLiveComments";
+import { useWallet } from "@/hooks/useWallet";
 
 interface MobileLiveFeedProps {
   streamId: number;
@@ -20,8 +22,25 @@ interface MobileLiveFeedProps {
   sellerInfo: { name: string; image: string };
 }
 
+const INR_CONVERSION_RATE = 93.1;
+
+// Match the static item data inside LiveStreamVideo so the mobile item bar shows
+// exactly what the auction is currently selling.
+const streamItemData: Record<number, { name: string; description: string; image: string; itemNumber: string }> = {
+  301: { name: "Victorian Mahogany Cabinet", description: "CIRCA 1870 ORIGINAL", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800", itemNumber: "01" },
+  302: { name: "1986 Fleer Michael Jordan RC", description: "PSA 9 MINT CONDITION", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800", itemNumber: "05" },
+  303: { name: "Natural Blue Sapphire 3.2ct", description: "GIA CERTIFIED SRI LANKAN", image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800", itemNumber: "02" },
+  304: { name: "1967 Mustang GT500 Engine", description: "MATCHING NUMBERS ORIGINAL", image: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800", itemNumber: "04" },
+  305: { name: "Original Oil on Canvas", description: "SIGNED CONTEMPORARY PIECE", image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800", itemNumber: "03" },
+  306: { name: "Château Margaux 1982", description: "750ML PERFECT STORAGE", image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=800", itemNumber: "01" },
+  307: { name: "Signed Muhammad Ali Gloves", description: "JSA AUTHENTICATED", image: "https://images.unsplash.com/photo-1594897030264-ab7d87efc473?w=800", itemNumber: "06" },
+  308: { name: "1909-S VDB Lincoln Penny", description: "PCGS VF-35 GRADED", image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=800", itemNumber: "02" },
+  309: { name: "Rolex Daytona Ref. 6239", description: "PAUL NEWMAN DIAL 1968", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800", itemNumber: "01" },
+  310: { name: "Nike Air Mag 2016 DS", description: "SIZE 11 SELF-LACING", image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800", itemNumber: "03" },
+};
+const defaultItem = { name: "RB CRIMSON JORDAN RETRO 3 SZ: 14", description: "USED REP BOX AS-482", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800", itemNumber: "03" };
+
 // Build the vertical feed using natural order of auctionStreams.
-// This allows reverse (up) scrolling to previous streams as well.
 const buildFeed = (currentId: number) => {
   const ids = auctionStreams.map((s) => s.id);
   return ids.includes(currentId) ? ids : [currentId, ...ids];
@@ -45,7 +64,6 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
   const { comments, sendComment } = useLiveComments(`live-${streamId}`);
   const [message, setMessage] = useState("");
 
-  // Show only real user-typed comments + a couple of seeded joins for liveliness
   const recent = comments.slice(-5);
 
   const handleSend = async () => {
@@ -56,8 +74,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      {/* Floating chat messages on the left, above the say-something input */}
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[150px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
+      {/* Floating chat messages on the left - above the item info bar */}
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[220px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
         {[
           { name: "baseset_jett", text: "joined 👋" },
           { name: "hairysax", text: "joined 👋" },
@@ -95,8 +113,8 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
         ))}
       </div>
 
-      {/* Say something input - sits just above the bid bar, under the item info */}
-      <div className="absolute left-3 right-3 bottom-[96px] z-20">
+      {/* Say something input - sits just above the bid bar, below the item info */}
+      <div className="absolute left-3 right-3 bottom-[80px] z-20">
         <div className="relative">
           <Input
             value={message}
@@ -131,7 +149,12 @@ const ActiveSlide = ({
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
   const [showMuteHint, setShowMuteHint] = useState(false);
+  const [productOpen, setProductOpen] = useState(false);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { balance: walletBalance } = useWallet();
+
+  const itemInfo = streamItemData[streamId] || defaultItem;
+  const currentBidInRupees = Math.round(currentBid * INR_CONVERSION_RATE);
 
   const toggleMute = () => {
     setMuted((m) => !m);
@@ -149,12 +172,12 @@ const ActiveSlide = ({
         streamId={streamId}
       />
 
-      {/* Tap-to-mute layer - sits above the video image but below interactive controls */}
+      {/* Tap-to-mute layer - kept clear of bottom controls (bid bar, say-something, item bar, action stack) */}
       <button
         type="button"
         aria-label={muted ? "Unmute" : "Mute"}
         onClick={toggleMute}
-        className="absolute left-0 right-0 top-14 bottom-[260px] z-[6] bg-transparent"
+        className="absolute left-0 right-0 top-14 bottom-[400px] z-[6] bg-transparent"
       />
 
       {/* Mute state hint flash */}
@@ -175,7 +198,15 @@ const ActiveSlide = ({
       </Button>
 
       {/* Floating action stack on the right - sits above the chat overlay */}
-      <div className="absolute right-3 bottom-[210px] z-30 flex flex-col items-center gap-2.5">
+      <div className="absolute right-3 bottom-[300px] z-30 flex flex-col items-center gap-2.5">
+        {/* Wallet pill */}
+        <div className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
+          <WalletIcon className="h-4 w-4 text-secondary" />
+          <span className="text-[10px] font-bold text-white leading-none">
+            ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
+          </span>
+        </div>
+
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -217,7 +248,47 @@ const ActiveSlide = ({
         </Sheet>
       </div>
 
+      {/* Item info bar - sits above the say-something input. Tap opens product details. */}
+      <button
+        type="button"
+        onClick={() => setProductOpen(true)}
+        className="absolute left-3 right-3 bottom-[130px] z-20 text-left"
+      >
+        <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-foreground/60 backdrop-blur-md border border-white/15 shadow-lg">
+          <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
+            <img src={itemInfo.image} alt={itemInfo.name} className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-semibold text-sm leading-tight truncate">
+              {itemInfo.itemNumber}. {itemInfo.name}
+            </p>
+            <p className="text-white/70 text-[11px] truncate">{itemInfo.description}</p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-white font-bold text-sm leading-tight">
+              ₹{currentBidInRupees.toLocaleString("en-IN")}
+            </p>
+            <p className="text-secondary text-[10px] font-semibold">Tap for details</p>
+          </div>
+        </div>
+      </button>
+
       <ChatOverlay streamId={streamId} />
+
+      <ProductDetailModal
+        isOpen={productOpen}
+        onClose={() => setProductOpen(false)}
+        product={{
+          id: streamId,
+          image: itemInfo.image,
+          title: itemInfo.name,
+          price: currentBidInRupees,
+          originalPrice: Math.round(currentBidInRupees * 1.2),
+          currency: "₹",
+        }}
+        sellerName={sellerInfo.name}
+        sellerAvatar={sellerInfo.image}
+      />
     </div>
   );
 };
@@ -268,9 +339,6 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   const slideRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const didInitialScroll = useRef(false);
 
-  // On first mount (or when arriving at a new streamId via URL), jump to that slide
-  // without smooth scroll so the user lands directly on the active auction and can
-  // scroll up to previous or down to next streams.
   useEffect(() => {
     if (didInitialScroll.current) return;
     const el = slideRefs.current.get(streamId);
@@ -281,7 +349,6 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
     }
   }, [streamId, feed]);
 
-  // Observe slides to switch route when one comes into view
   useEffect(() => {
     const root = containerRef.current;
     if (!root) return;
