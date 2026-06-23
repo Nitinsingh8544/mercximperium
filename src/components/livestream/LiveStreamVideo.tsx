@@ -272,9 +272,9 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const availableBalance = Math.max(0, walletBalance - lockedAmount);
 
   const handleBid = async (amount: number, lockAmountRupees = Math.round(amount * INR_CONVERSION_RATE)) => {
-    // Bidding strictly disabled outside the active 30s bid window
-    if (phase !== "bid" || timeLeft <= 0) {
-      toast({ title: "Bidding closed", description: "Bidding is not active right now.", variant: "destructive" });
+    // Allow bidding anytime the auction is live (timer hasn't ended).
+    if (timeLeft <= 0) {
+      toast({ title: "Bidding closed", description: "This auction has ended.", variant: "destructive" });
       return;
     }
 
@@ -619,14 +619,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
             onClick={() => setIsCustomBidOpen(true)}
-            disabled={phase !== "bid"}
+            disabled={timeLeft <= 0}
           >
             Custom
           </Button>
           <Button
             className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full"
             onClick={() => handleBid(nextBid)}
-            disabled={phase !== "bid"}
+            disabled={timeLeft <= 0}
           >
              Bid: ₹{nextBidInRupees.toLocaleString("en-IN")}
           </Button>

@@ -55,31 +55,19 @@ const Dashboard = () => {
           </h1>
         </div>
 
-        {/* Horizontal Navigation for Mobile */}
-        <div className="flex overflow-x-auto gap-2 pb-3 mb-4 lg:hidden scrollbar-hide -mx-3 px-3">
-          <Link 
-            to="/dashboard" 
-            className="shrink-0 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap"
+        {/* Horizontal Navigation for Mobile - only Auction & Shop Live */}
+        <div className="grid grid-cols-2 gap-2 pb-3 mb-4 lg:hidden">
+          <Link
+            to="/dashboard"
+            className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium text-center"
           >
             Auction
           </Link>
-          <Link 
-            to="/shop-live" 
-            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
+          <Link
+            to="/shop-live"
+            className="px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium text-center hover:bg-muted/80"
           >
             Shop Live
-          </Link>
-          <Link 
-            to="/followed" 
-            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
-          >
-            Followed Host
-          </Link>
-          <Link 
-            to="/browse" 
-            className="shrink-0 px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap hover:bg-muted/80"
-          >
-            Browse Categories
           </Link>
         </div>
 
