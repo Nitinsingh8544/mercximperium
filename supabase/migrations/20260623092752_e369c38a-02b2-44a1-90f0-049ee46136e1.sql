@@ -1,0 +1,2 @@
+CREATE POLICY "Users can insert their own bids" ON public.auction_bids FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own bids" ON public.auction_bids FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
