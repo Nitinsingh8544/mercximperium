@@ -58,7 +58,7 @@ const ProfileSheet = ({ isOpen, onClose }: ProfileSheetProps) => {
     { icon: Store, label: "Complete Seller Setup", onClick: () => handleNavigation("/become-seller") },
     { icon: CreditCard, label: "Payments & Shipping", onClick: () => handleNavigation("/payments") },
     { icon: Bookmark, label: "Saved", onClick: () => handleNavigation("/saved") },
-    { icon: Gavel, label: "Bids & Offers", onClick: () => handleNavigation("/bids") },
+    { icon: Users, label: "Followed Hosts", onClick: () => handleNavigation("/followed") },
     { icon: ShoppingBag, label: "Purchases", onClick: () => handleNavigation("/activity") },
     { icon: Shield, label: "Account Health", onClick: () => handleNavigation("/account-health") },
     { icon: Coins, label: "Credits", onClick: () => handleNavigation("/credits") },
