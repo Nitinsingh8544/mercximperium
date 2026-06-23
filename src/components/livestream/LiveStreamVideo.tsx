@@ -575,8 +575,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             </div>
           )}
 
-          {/* Product Info Overlay - bottom of video */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-primary/90 via-primary/70 to-transparent pt-8">
+          {/* Product Info Overlay - bottom of video (desktop only; mobile renders this in MobileLiveFeed) */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-primary/90 via-primary/70 to-transparent pt-8 max-lg:hidden">
             <div className="flex items-end gap-3 px-4 pb-2">
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
                 <img src={itemInfo.image} alt={itemInfo.name} className="w-full h-full object-cover" />
@@ -599,8 +599,8 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
         </div>
 
-        {/* Wallet status row */}
-        <div className="flex items-center justify-between px-3 pt-2 pb-1 bg-primary text-primary-foreground text-[11px]">
+        {/* Wallet status row (desktop only; mobile shows wallet pill in MobileLiveFeed action stack) */}
+        <div className="flex items-center justify-between px-3 pt-2 pb-1 bg-primary text-primary-foreground text-[11px] max-lg:hidden">
           <div className="flex items-center gap-1.5">
             <WalletIcon className="h-3 w-3" />
             <span>Available: <span className="font-semibold">₹{availableBalance.toLocaleString("en-IN")}</span></span>
