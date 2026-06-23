@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, ShoppingBag, Radio, Heart, User } from "lucide-react";
+import { Home, ShoppingBag, MessageSquare, Heart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { to: "/dashboard", icon: Home, label: "Home" },
   { to: "/browse", icon: ShoppingBag, label: "Browse" },
-  { to: "/shop-live", icon: Radio, label: "Live" },
+  { to: "/messages", icon: MessageSquare, label: "Messages" },
   { to: "/activity", icon: Heart, label: "Activity" },
   { to: "/profile-view", icon: User, label: "Profile" },
 ];
