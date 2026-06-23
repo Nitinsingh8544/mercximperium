@@ -147,13 +147,13 @@ const ActiveSlide = ({
         <ArrowLeft className="h-5 w-5" />
       </Button>
 
-      {/* Floating action stack on the right (above timer block sits at top) */}
-      <div className="absolute right-3 bottom-[160px] z-20 flex flex-col items-center gap-2.5">
+      {/* Floating action stack on the right - lifted above the chat overlay/input */}
+      <div className="absolute right-3 bottom-[290px] z-20 flex flex-col items-center gap-2.5">
         <Sheet>
           <SheetTrigger asChild>
             <Button
               size="icon"
-              className="h-12 w-12 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
+              className="h-11 w-11 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
               aria-label="Shop"
             >
               <ShoppingBag className="h-5 w-5" />
@@ -173,7 +173,7 @@ const ActiveSlide = ({
           <SheetTrigger asChild>
             <Button
               size="icon"
-              className="h-12 w-12 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
+              className="h-11 w-11 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
               aria-label="Winners"
             >
               <Trophy className="h-5 w-5" />
@@ -185,27 +185,6 @@ const ActiveSlide = ({
             </SheetHeader>
             <div className="px-3 pb-4">
               <AuctionWinnersPanel streamId={streamId} />
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              size="icon"
-              className="h-12 w-12 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
-              aria-label="Chat"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col">
-            <SheetHeader className="px-4 pt-4 pb-2">
-              <SheetTitle>Live Chat</SheetTitle>
-            </SheetHeader>
-            <div className="flex-1 overflow-hidden px-3 pb-4">
-              {/* Lazy import the real chat */}
-              <FullChat streamId={streamId} />
             </div>
           </SheetContent>
         </Sheet>
