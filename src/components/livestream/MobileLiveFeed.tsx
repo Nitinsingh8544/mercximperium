@@ -195,10 +195,6 @@ const ActiveSlide = ({
   );
 };
 
-// Re-export the imported chat to keep the active slide's JSX tidy
-const FullChat = ({ streamId }: { streamId: number }) => (
-  <LiveStreamChat streamId={`live-${streamId}`} />
-);
 
 const PreviewSlide = ({ id }: { id: number }) => {
   const meta = getMeta(id);
