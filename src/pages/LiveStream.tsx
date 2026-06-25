@@ -67,6 +67,10 @@ const LiveStream = () => {
     navigate(`/live/${newStreamId}`);
   };
 
+  const handleBidUpdate = useCallback((amount: number) => {
+    setCurrentBid(amount);
+  }, []);
+
   const sellerInfo = streamSellerData[streamId] || { name: "Seller", image: "" };
 
   return (
@@ -138,7 +142,7 @@ const LiveStream = () => {
             <div className="h-full min-w-0 overflow-hidden" key={`video-${streamId}`}>
               <LiveStreamVideo 
                 currentBid={currentBid} 
-                onBid={(amount) => setCurrentBid(amount)} 
+                onBid={handleBidUpdate} 
                 streamId={streamId}
                 onPrev={handlePrev}
                 onNext={handleNext}
@@ -156,7 +160,7 @@ const LiveStream = () => {
           <MobileLiveFeed
             streamId={streamId}
             currentBid={currentBid}
-            onBid={(amount) => setCurrentBid(amount)}
+            onBid={handleBidUpdate}
             sellerInfo={sellerInfo}
           />
         </div>

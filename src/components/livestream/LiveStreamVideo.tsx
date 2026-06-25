@@ -81,6 +81,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const [showWinner, setShowWinner] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [nextItemCountdown, setNextItemCountdown] = useState<number | null>(null);
+  const [isSubmittingBid, setIsSubmittingBid] = useState(false);
   const winnerRecordedRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { isFollowing, toggleFollow } = useFollows();
@@ -220,10 +221,11 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         clearInterval(cdInterval);
         setNextItemCountdown(null);
         const next = advanceQueue(streamId, outcome);
-        if (!next) {
-          // No more items — leave winner badge, stop overlays
+          if (!next) {
+            // Mobile routes may not have the queue mounted yet; restart the live cycle instead of leaving bidding closed.
           setShowWinner(false);
           setFadeOut(false);
+            startNewCycle();
         }
       }, 3000);
 
@@ -234,7 +236,12 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     }, splashDuration);
 
     return () => clearTimeout(splashTimer);
-  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue, lockedAmount, walletSpend, toast]);
+  }, [timeLeft, lastBidder, streamId, itemInfo.name, itemInfo.image, currentBid, bidCount, addWinner, advanceQueue, lockedAmount, walletSpend, toast, startNewCycle]);
+
+  useEffect(() => {
+    if (!activeQueueItem?.startingPrice) return;
+    onBid(activeQueueItem.startingPrice / INR_CONVERSION_RATE);
+  }, [activeQueueItem?.id, activeQueueItem?.startingPrice, onBid]);
 
   // Notify on winning/losing whenever the top bidder changes
   useEffect(() => {
@@ -272,10 +279,11 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
   const availableBalance = Math.max(0, walletBalance - lockedAmount);
 
   const handleBid = async (amount: number, lockAmountRupees = Math.round(amount * INR_CONVERSION_RATE)) => {
+    if (isSubmittingBid) return false;
     // Allow bidding anytime the auction is live (timer hasn't ended).
     if (timeLeft <= 0) {
       toast({ title: "Bidding closed", description: "This auction has ended.", variant: "destructive" });
-      return;
+      return false;
     }
 
     // Wallet check — bid amount in ₹
@@ -285,29 +293,39 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     if (requiredNow > availableBalance) {
       setInsufficientNeed(bidRupees);
       setInsufficientOpen(true);
-      return;
+      return false;
     }
 
-    const result = await placeBid({
-      stream_id: streamId,
-      item_name: itemInfo.name,
-      item_image: itemInfo.image,
-      item_description: itemInfo.description,
-      bid_amount: amount,
-      seller_name: sellerInfo.name,
-      seller_image: sellerInfo.image,
-    });
+    setIsSubmittingBid(true);
+    try {
+      const result = await placeBid({
+        stream_id: streamId,
+        item_name: itemInfo.name,
+        item_image: itemInfo.image,
+        item_description: itemInfo.description,
+        bid_amount: amount,
+        seller_name: sellerInfo.name,
+        seller_image: sellerInfo.image,
+      });
 
-    if (!result.error) {
+      if (result.error) {
+        const message = result.error instanceof Error ? result.error.message : "Please try again.";
+        toast({ title: "Bid failed", description: message, variant: "destructive" });
+        return false;
+      }
+
       onBid(amount);
       setLastBidder("You");
       setBidCount(c => c + 1);
       // Lock the new bid amount (replaces prior lock for this cycle)
       setLockedAmount(bidRupees);
+      return true;
+    } finally {
+      setIsSubmittingBid(false);
     }
   };
 
-  const handleCustomBidSubmit = () => {
+  const handleCustomBidSubmit = async () => {
     const amountInRupees = Math.round(parseFloat(customBidAmount));
     if (isNaN(amountInRupees) || amountInRupees <= currentBidInRupees) {
       toast({
@@ -319,9 +337,11 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
     }
 
     const internalBidAmount = amountInRupees / INR_CONVERSION_RATE;
-    handleBid(internalBidAmount, amountInRupees);
-    setIsCustomBidOpen(false);
-    setCustomBidAmount("");
+    const success = await handleBid(internalBidAmount, amountInRupees);
+    if (success) {
+      setIsCustomBidOpen(false);
+      setCustomBidAmount("");
+    }
   };
 
   const handleLike = () => {
@@ -618,14 +638,14 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
             onClick={() => setIsCustomBidOpen(true)}
-            disabled={timeLeft <= 0}
+            disabled={timeLeft <= 0 || isSubmittingBid}
           >
             Custom
           </Button>
           <Button
             className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full"
             onClick={() => handleBid(nextBid)}
-            disabled={timeLeft <= 0}
+            disabled={timeLeft <= 0 || isSubmittingBid}
           >
              Bid: ₹{nextBidInRupees.toLocaleString("en-IN")}
           </Button>
@@ -688,7 +708,7 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCustomBidOpen(false)}>Cancel</Button>
-            <Button onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold">Place Bid</Button>
+            <Button disabled={isSubmittingBid} onClick={handleCustomBidSubmit} className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold">Place Bid</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
