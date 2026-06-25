@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 interface Body {
-  action: 'create' | 'activate' | 'place_bid' | 'end_auction' | 'update' | 'track_stream_bid';
+  action: string;
   item_id?: string;
   stream_id?: number;
   bid_amount?: number;
@@ -117,15 +117,21 @@ Deno.serve(async (req) => {
       return ok({ success: true });
     }
 
-    if (body.action === 'track_stream_bid' && typeof body.stream_id === 'number' && typeof body.bid_amount === 'number' && body.item_name) {
-      if (body.bid_amount <= 0 || !Number.isFinite(body.bid_amount)) return fail('Invalid bid amount');
+    const isStreamBidAction = ['track_stream_bid', 'record_stream_bid', 'place_stream_bid'].includes(String(body.action));
+    if (isStreamBidAction) {
+      const streamId = Number(body.stream_id);
+      const bidAmount = Number(body.bid_amount);
+      if (!Number.isInteger(streamId) || streamId <= 0) return fail('Invalid stream id');
+      if (!Number.isFinite(bidAmount) || bidAmount <= 0) return fail('Invalid bid amount');
+      if (!body.item_name || typeof body.item_name !== 'string') return fail('Missing item name');
+
       const { data, error } = await admin.from('auction_bids').insert({
         user_id: user.id,
-        stream_id: body.stream_id,
+        stream_id: streamId,
         item_name: body.item_name,
         item_image: body.item_image || null,
         item_description: body.item_description || null,
-        bid_amount: body.bid_amount,
+        bid_amount: bidAmount,
         is_winning: true,
         seller_name: body.seller_name || null,
         seller_image: body.seller_image || null,
