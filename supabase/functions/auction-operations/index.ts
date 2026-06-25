@@ -117,6 +117,23 @@ Deno.serve(async (req) => {
       return ok({ success: true });
     }
 
+    if (body.action === 'track_stream_bid' && typeof body.stream_id === 'number' && typeof body.bid_amount === 'number' && body.item_name) {
+      if (body.bid_amount <= 0 || !Number.isFinite(body.bid_amount)) return fail('Invalid bid amount');
+      const { data, error } = await admin.from('auction_bids').insert({
+        user_id: user.id,
+        stream_id: body.stream_id,
+        item_name: body.item_name,
+        item_image: body.item_image || null,
+        item_description: body.item_description || null,
+        bid_amount: body.bid_amount,
+        is_winning: true,
+        seller_name: body.seller_name || null,
+        seller_image: body.seller_image || null,
+      }).select().single();
+      if (error) return fail(error.message);
+      return ok({ success: true, bid: data });
+    }
+
     return fail('Unknown action');
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
