@@ -6,11 +6,16 @@ const corsHeaders = {
 };
 
 interface Body {
-  action: 'create' | 'activate' | 'place_bid' | 'end_auction' | 'update';
+  action: 'create' | 'activate' | 'place_bid' | 'end_auction' | 'update' | 'track_stream_bid';
   item_id?: string;
   stream_id?: number;
   bid_amount?: number;
   data?: Record<string, unknown>;
+  item_name?: string;
+  item_image?: string;
+  item_description?: string;
+  seller_name?: string;
+  seller_image?: string;
 }
 
 Deno.serve(async (req) => {
