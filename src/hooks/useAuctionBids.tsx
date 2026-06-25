@@ -60,25 +60,22 @@ export const useAuctionBids = () => {
     if (!user) return { error: new Error("Not authenticated") };
 
     try {
-      const { data, error } = await supabase
-        .from("auction_bids")
-        .insert({
-          user_id: user.id,
+      const { data, error } = await supabase.functions.invoke("auction-operations", {
+        body: {
+          action: "track_stream_bid",
           stream_id: bid.stream_id,
           item_name: bid.item_name,
-          item_image: bid.item_image || null,
-          item_description: bid.item_description || null,
+          item_image: bid.item_image,
+          item_description: bid.item_description,
           bid_amount: bid.bid_amount,
-          is_winning: true,
-          seller_name: bid.seller_name || null,
-          seller_image: bid.seller_image || null,
-        })
-        .select()
-        .single();
+          seller_name: bid.seller_name,
+          seller_image: bid.seller_image,
+        },
+      });
 
       if (error) throw error;
-      setBids((prev) => [data as AuctionBid, ...prev]);
-      return { error: null, data };
+      if (data?.bid) setBids((prev) => [data.bid as AuctionBid, ...prev]);
+      return { error: null, data: data?.bid };
     } catch (error) {
       console.error("Error placing bid:", error);
       return { error };
