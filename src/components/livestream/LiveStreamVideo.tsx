@@ -633,17 +633,17 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
         </div>
 
         {/* Bid Buttons */}
-        <div className="flex gap-2 p-3 pt-2 bg-primary">
+        <div className="flex gap-2 p-3 pt-2 bg-primary max-lg:absolute max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:bg-transparent max-lg:z-30 max-lg:p-3 max-lg:pt-2">
           <Button
             variant="outline"
-            className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5"
+            className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5 max-lg:bg-foreground/60 max-lg:backdrop-blur-md max-lg:border-white/30 max-lg:text-white"
             onClick={() => setIsCustomBidOpen(true)}
             disabled={timeLeft <= 0 || isSubmittingBid}
           >
             Custom
           </Button>
           <Button
-            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full"
+            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full max-lg:shadow-[0_8px_24px_-6px_hsl(var(--secondary)/0.7)]"
             onClick={() => handleBid(nextBid)}
             disabled={timeLeft <= 0 || isSubmittingBid}
           >

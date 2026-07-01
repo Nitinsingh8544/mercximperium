@@ -203,7 +203,7 @@ const Activity = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 pt-28 sm:pt-24 pb-8 relative z-10">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">Activity</h1>
         </div>

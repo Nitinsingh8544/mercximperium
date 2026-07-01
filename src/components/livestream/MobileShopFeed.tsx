@@ -7,6 +7,9 @@ import {
   Send,
   Share2,
   ThumbsUp,
+  ThumbsDown,
+  Heart,
+
   Play,
   Pause,
   Volume2,
@@ -109,7 +112,11 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const [likeCount, setLikeCount] = useState(1284);
+  const [showHeart, setShowHeart] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
 
   if (!meta) return null;
 
@@ -178,8 +185,15 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </div>
       )}
 
+      {showHeart && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-30">
+          <Heart className="h-24 w-24 text-destructive fill-current animate-in zoom-in-50 fade-in duration-300" />
+        </div>
+      )}
+
       {/* Right action stack */}
       <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
+
         <Button
           size="icon"
           onClick={(e) => {
@@ -191,19 +205,51 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         >
           {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </Button>
+        <div className="flex flex-col items-center">
+          <Button
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLiked((l) => {
+                const next = !l;
+                setLikeCount((c) => c + (next ? 1 : -1));
+                if (next) {
+                  if (disliked) setDisliked(false);
+                  setShowHeart(true);
+                  setTimeout(() => setShowHeart(false), 700);
+                }
+                return next;
+              });
+            }}
+            className={`h-11 w-11 rounded-full backdrop-blur-md border border-white/20 text-white hover:bg-foreground/70 ${
+              liked ? "bg-destructive/80" : "bg-foreground/50"
+            }`}
+            aria-label="Like"
+          >
+            <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
+          </Button>
+          <span className="text-[10px] font-semibold text-white mt-0.5 drop-shadow">
+            {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
+          </span>
+        </div>
         <Button
           size="icon"
           onClick={(e) => {
             e.stopPropagation();
-            setLiked((l) => !l);
+            setDisliked((d) => {
+              const next = !d;
+              if (next && liked) { setLiked(false); setLikeCount((c) => c - 1); }
+              return next;
+            });
           }}
           className={`h-11 w-11 rounded-full backdrop-blur-md border border-white/20 text-white hover:bg-foreground/70 ${
-            liked ? "bg-primary/80" : "bg-foreground/50"
+            disliked ? "bg-primary/80" : "bg-foreground/50"
           }`}
-          aria-label="Like"
+          aria-label="Dislike"
         >
-          <ThumbsUp className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
+          <ThumbsDown className={`h-5 w-5 ${disliked ? "fill-current" : ""}`} />
         </Button>
+
         <Button
           size="icon"
           onClick={(e) => {
@@ -450,7 +496,7 @@ const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto snap-y snap-mandatory"
+      className="h-full w-full overflow-y-auto snap-y snap-proximity"
       style={{ scrollbarWidth: "none" }}
     >
       {feed.map((id) => (

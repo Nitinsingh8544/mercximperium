@@ -75,7 +75,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
   return (
     <>
       {/* Floating chat messages on the left - above the item info bar */}
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[220px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[170px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
         {[
           { name: "baseset_jett", text: "joined 👋" },
           { name: "hairysax", text: "joined 👋" },
@@ -114,7 +114,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
       </div>
 
       {/* Say something input - sits just above the bid bar, below the item info */}
-      <div className="absolute left-3 right-3 bottom-[80px] z-20">
+      <div className="absolute left-3 right-3 bottom-[64px] z-20">
         <div className="relative">
           <Input
             value={message}
@@ -198,15 +198,7 @@ const ActiveSlide = ({
       </Button>
 
       {/* Floating action stack on the right - sits above the chat overlay */}
-      <div className="absolute right-3 bottom-[300px] z-30 flex flex-col items-center gap-2.5">
-        {/* Wallet pill */}
-        <div className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
-          <WalletIcon className="h-4 w-4 text-secondary" />
-          <span className="text-[10px] font-bold text-white leading-none">
-            ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
-          </span>
-        </div>
-
+      <div className="absolute right-3 bottom-[130px] z-30 flex flex-col items-center gap-2">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -246,13 +238,22 @@ const ActiveSlide = ({
             </div>
           </SheetContent>
         </Sheet>
+
+        {/* Wallet pill moved to bottom of stack */}
+        <div className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
+          <WalletIcon className="h-4 w-4 text-secondary" />
+          <span className="text-[10px] font-bold text-white leading-none">
+            ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
+          </span>
+        </div>
       </div>
+
 
       {/* Item info bar - sits above the say-something input. Tap opens product details. */}
       <button
         type="button"
         onClick={() => setProductOpen(true)}
-        className="absolute left-3 right-3 bottom-[130px] z-20 text-left"
+        className="absolute left-3 right-3 bottom-[108px] z-20 text-left"
       >
         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-foreground/60 backdrop-blur-md border border-white/15 shadow-lg">
           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
@@ -376,7 +377,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto snap-y snap-mandatory"
+      className="h-full w-full overflow-y-auto snap-y snap-proximity"
       style={{ scrollbarWidth: "none" }}
     >
       {feed.map((id) => (
