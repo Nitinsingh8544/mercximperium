@@ -377,7 +377,7 @@ const MobileLiveFeed = (props: MobileLiveFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto snap-y snap-mandatory"
+      className="h-full w-full overflow-y-auto snap-y snap-proximity"
       style={{ scrollbarWidth: "none" }}
     >
       {feed.map((id) => (
