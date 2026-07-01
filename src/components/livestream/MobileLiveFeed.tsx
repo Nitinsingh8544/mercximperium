@@ -198,15 +198,7 @@ const ActiveSlide = ({
       </Button>
 
       {/* Floating action stack on the right - sits above the chat overlay */}
-      <div className="absolute right-3 bottom-[300px] z-30 flex flex-col items-center gap-2.5">
-        {/* Wallet pill */}
-        <div className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
-          <WalletIcon className="h-4 w-4 text-secondary" />
-          <span className="text-[10px] font-bold text-white leading-none">
-            ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
-          </span>
-        </div>
-
+      <div className="absolute right-3 bottom-[130px] z-30 flex flex-col items-center gap-2">
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -246,7 +238,16 @@ const ActiveSlide = ({
             </div>
           </SheetContent>
         </Sheet>
+
+        {/* Wallet pill moved to bottom of stack */}
+        <div className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
+          <WalletIcon className="h-4 w-4 text-secondary" />
+          <span className="text-[10px] font-bold text-white leading-none">
+            ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
+          </span>
+        </div>
       </div>
+
 
       {/* Item info bar - sits above the say-something input. Tap opens product details. */}
       <button
