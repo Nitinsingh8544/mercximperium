@@ -47,10 +47,10 @@ const Dashboard = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Welcome Section */}
-        <div className="mb-4 sm:mb-6 md:mb-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">
+        <div className="mb-2 sm:mb-4 md:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Hi {firstName}!
           </h1>
         </div>
