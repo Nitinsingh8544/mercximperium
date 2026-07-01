@@ -7,6 +7,9 @@ import {
   Send,
   Share2,
   ThumbsUp,
+  ThumbsDown,
+  Heart,
+
   Play,
   Pause,
   Volume2,
