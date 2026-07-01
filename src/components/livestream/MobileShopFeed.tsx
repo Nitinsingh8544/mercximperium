@@ -185,8 +185,15 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </div>
       )}
 
+      {showHeart && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-30">
+          <Heart className="h-24 w-24 text-destructive fill-current animate-in zoom-in-50 fade-in duration-300" />
+        </div>
+      )}
+
       {/* Right action stack */}
       <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
+
         <Button
           size="icon"
           onClick={(e) => {
