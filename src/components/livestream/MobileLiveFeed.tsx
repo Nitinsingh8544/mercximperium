@@ -253,7 +253,7 @@ const ActiveSlide = ({
       <button
         type="button"
         onClick={() => setProductOpen(true)}
-        className="absolute left-3 right-3 bottom-[130px] z-20 text-left"
+        className="absolute left-3 right-3 bottom-[108px] z-20 text-left"
       >
         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-foreground/60 backdrop-blur-md border border-white/15 shadow-lg">
           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/20">
