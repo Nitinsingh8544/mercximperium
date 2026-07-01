@@ -75,7 +75,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
   return (
     <>
       {/* Floating chat messages on the left - above the item info bar */}
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[220px] z-20 flex flex-col gap-1.5 max-h-40 overflow-hidden">
+      <div className="pointer-events-none absolute left-3 right-20 bottom-[170px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
         {[
           { name: "baseset_jett", text: "joined 👋" },
           { name: "hairysax", text: "joined 👋" },
