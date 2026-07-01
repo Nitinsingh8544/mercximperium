@@ -112,7 +112,11 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const [likeCount, setLikeCount] = useState(1284);
+  const [showHeart, setShowHeart] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
 
   if (!meta) return null;
 
