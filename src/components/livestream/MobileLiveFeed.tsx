@@ -114,7 +114,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
       </div>
 
       {/* Say something input - sits just above the bid bar, below the item info */}
-      <div className="absolute left-3 right-3 bottom-[80px] z-20">
+      <div className="absolute left-3 right-3 bottom-[64px] z-20">
         <div className="relative">
           <Input
             value={message}
