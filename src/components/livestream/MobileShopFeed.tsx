@@ -198,19 +198,51 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         >
           {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </Button>
+        <div className="flex flex-col items-center">
+          <Button
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLiked((l) => {
+                const next = !l;
+                setLikeCount((c) => c + (next ? 1 : -1));
+                if (next) {
+                  if (disliked) setDisliked(false);
+                  setShowHeart(true);
+                  setTimeout(() => setShowHeart(false), 700);
+                }
+                return next;
+              });
+            }}
+            className={`h-11 w-11 rounded-full backdrop-blur-md border border-white/20 text-white hover:bg-foreground/70 ${
+              liked ? "bg-destructive/80" : "bg-foreground/50"
+            }`}
+            aria-label="Like"
+          >
+            <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
+          </Button>
+          <span className="text-[10px] font-semibold text-white mt-0.5 drop-shadow">
+            {likeCount >= 1000 ? `${(likeCount / 1000).toFixed(1)}k` : likeCount}
+          </span>
+        </div>
         <Button
           size="icon"
           onClick={(e) => {
             e.stopPropagation();
-            setLiked((l) => !l);
+            setDisliked((d) => {
+              const next = !d;
+              if (next && liked) { setLiked(false); setLikeCount((c) => c - 1); }
+              return next;
+            });
           }}
           className={`h-11 w-11 rounded-full backdrop-blur-md border border-white/20 text-white hover:bg-foreground/70 ${
-            liked ? "bg-primary/80" : "bg-foreground/50"
+            disliked ? "bg-primary/80" : "bg-foreground/50"
           }`}
-          aria-label="Like"
+          aria-label="Dislike"
         >
-          <ThumbsUp className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
+          <ThumbsDown className={`h-5 w-5 ${disliked ? "fill-current" : ""}`} />
         </Button>
+
         <Button
           size="icon"
           onClick={(e) => {
