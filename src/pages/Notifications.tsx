@@ -98,7 +98,7 @@ const Notifications = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 pt-28 sm:pt-24 pb-8 relative z-10">
         <div className="flex items-center justify-between mb-6 gap-3">
           <div className="flex items-center gap-2">
             <Button
