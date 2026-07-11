@@ -327,7 +327,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
       </div>
 
       {/* Host bar — moved to TOP under the back button / LIVE badges */}
-      <div className="absolute left-14 right-3 top-3 z-20 flex items-center gap-2">
+      <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
         <div
           className="flex items-center gap-2 cursor-pointer min-w-0"
           onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
