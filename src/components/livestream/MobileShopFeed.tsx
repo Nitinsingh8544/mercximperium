@@ -47,6 +47,7 @@ const buildFeed = (currentId: number) => {
 const ChatOverlay = ({ streamId }: { streamId: number }) => {
   const { comments, sendComment } = useLiveComments(`shop-live-${streamId}`);
   const [message, setMessage] = useState("");
+  // FIFO: keep only the 3 most recent (oldest dropped), rendered newest at bottom
   const recent = comments.slice(-3);
 
   const handleSend = async () => {
@@ -57,11 +58,12 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[380px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
+      {/* Chat stack anchored just above the input, grows upward (newest sits at bottom) */}
+      <div className="pointer-events-none absolute left-3 right-20 bottom-16 z-20 flex flex-col justify-end gap-1.5 max-h-40 overflow-hidden">
         {recent.map((c) => (
           <div
             key={c.id}
-            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full"
+            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full animate-in fade-in slide-in-from-bottom-2"
           >
             <Avatar className="h-6 w-6">
               <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
