@@ -193,8 +193,9 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </div>
       )}
 
-      {/* Right action stack */}
-      <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
+      {/* Right action stack — moved lower to make room for the top host bar */}
+      <div className="absolute right-3 bottom-[96px] z-20 flex flex-col items-center gap-2.5">
+
 
         <Button
           size="icon"
