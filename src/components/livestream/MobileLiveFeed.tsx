@@ -197,8 +197,9 @@ const ActiveSlide = ({
         <ArrowLeft className="h-5 w-5" />
       </Button>
 
-      {/* Floating action stack on the right - sits above the chat overlay */}
-      <div className="absolute right-3 bottom-[130px] z-30 flex flex-col items-center gap-2">
+      {/* Floating action stack on the right - lifted above the item info bar to avoid overlap */}
+      <div className="absolute right-3 bottom-[210px] z-30 flex flex-col items-center gap-2">
+
         <Sheet>
           <SheetTrigger asChild>
             <Button

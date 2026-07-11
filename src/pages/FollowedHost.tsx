@@ -25,7 +25,7 @@ const FollowedHost = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-24 sm:pb-8 relative z-10">
 
 
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">

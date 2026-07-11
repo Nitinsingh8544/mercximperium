@@ -47,6 +47,7 @@ const buildFeed = (currentId: number) => {
 const ChatOverlay = ({ streamId }: { streamId: number }) => {
   const { comments, sendComment } = useLiveComments(`shop-live-${streamId}`);
   const [message, setMessage] = useState("");
+  // FIFO: keep only the 3 most recent (oldest dropped), rendered newest at bottom
   const recent = comments.slice(-3);
 
   const handleSend = async () => {
@@ -57,11 +58,12 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 
   return (
     <>
-      <div className="pointer-events-none absolute left-3 right-20 bottom-[380px] z-20 flex flex-col gap-1.5 max-h-32 overflow-hidden">
+      {/* Chat stack anchored just above the input, grows upward (newest sits at bottom) */}
+      <div className="pointer-events-none absolute left-3 right-20 bottom-16 z-20 flex flex-col justify-end gap-1.5 max-h-40 overflow-hidden">
         {recent.map((c) => (
           <div
             key={c.id}
-            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full"
+            className="flex items-start gap-2 bg-foreground/40 backdrop-blur-sm rounded-2xl pl-1 pr-3 py-1 w-fit max-w-full animate-in fade-in slide-in-from-bottom-2"
           >
             <Avatar className="h-6 w-6">
               <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
@@ -191,8 +193,9 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </div>
       )}
 
-      {/* Right action stack */}
-      <div className="absolute right-3 bottom-[148px] z-20 flex flex-col items-center gap-2.5">
+      {/* Right action stack — moved lower to make room for the top host bar */}
+      <div className="absolute right-3 bottom-[96px] z-20 flex flex-col items-center gap-2.5">
+
 
         <Button
           size="icon"
@@ -323,10 +326,10 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </Sheet>
       </div>
 
-      {/* Host bar */}
-      <div className="absolute left-3 right-3 bottom-[52px] z-20 flex items-center gap-2">
+      {/* Host bar — moved to TOP under the back button / LIVE badges */}
+      <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
         <div
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex items-center gap-2 cursor-pointer min-w-0"
           onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
         >
           <Avatar className="h-9 w-9 border-2 border-secondary">
@@ -336,8 +339,8 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="text-white text-sm font-semibold truncate">{meta.host}</p>
-            <p className="text-white/80 text-[11px] truncate">{meta.title}</p>
+            <p className="text-white text-sm font-semibold truncate drop-shadow">{meta.host}</p>
+            <p className="text-white/80 text-[11px] truncate drop-shadow">{meta.title}</p>
           </div>
         </div>
         <Button
@@ -355,7 +358,8 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
 
       {/* Left-bottom products menu trigger */}
       {products.length > 0 && (
-        <div className="absolute left-3 bottom-[100px] z-20">
+        <div className="absolute left-3 bottom-[64px] z-20">
+
           <Sheet>
             <SheetTrigger asChild>
               <Button

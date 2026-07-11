@@ -134,14 +134,14 @@ const ShopLiveLanding = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-24 sm:pb-8 relative z-10">
         {/* Back button */}
-        <div className="mb-3">
+        <div className="mb-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate(-1)}
-            className="gap-2 text-foreground hover:bg-muted"
+            className="gap-2 h-8 text-foreground hover:bg-muted"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -149,7 +149,8 @@ const ShopLiveLanding = () => {
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="mb-4 space-y-3">
+        <div className="mb-3 space-y-2">
+
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
