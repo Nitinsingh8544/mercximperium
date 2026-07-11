@@ -326,10 +326,10 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </Sheet>
       </div>
 
-      {/* Host bar */}
-      <div className="absolute left-3 right-3 bottom-[52px] z-20 flex items-center gap-2">
+      {/* Host bar — moved to TOP under the back button / LIVE badges */}
+      <div className="absolute left-14 right-3 top-3 z-20 flex items-center gap-2">
         <div
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex items-center gap-2 cursor-pointer min-w-0"
           onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
         >
           <Avatar className="h-9 w-9 border-2 border-secondary">
@@ -339,8 +339,8 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="text-white text-sm font-semibold truncate">{meta.host}</p>
-            <p className="text-white/80 text-[11px] truncate">{meta.title}</p>
+            <p className="text-white text-sm font-semibold truncate drop-shadow">{meta.host}</p>
+            <p className="text-white/80 text-[11px] truncate drop-shadow">{meta.title}</p>
           </div>
         </div>
         <Button
