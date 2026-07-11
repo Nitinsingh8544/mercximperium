@@ -280,11 +280,15 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
 
   const handleBid = async (amount: number, lockAmountRupees = Math.round(amount * INR_CONVERSION_RATE)) => {
     if (isSubmittingBid) return false;
-    // Allow bidding anytime the auction is live (timer hasn't ended).
     if (timeLeft <= 0) {
       toast({ title: "Bidding closed", description: "This auction has ended.", variant: "destructive" });
       return false;
     }
+    if (phase !== "bid") {
+      toast({ title: "Not bidding yet", description: "Hold on — bidding opens in the final 30 seconds.", variant: "destructive" });
+      return false;
+    }
+
 
     // Wallet check — bid amount in ₹
     const bidRupees = Math.round(lockAmountRupees);
