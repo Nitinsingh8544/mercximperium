@@ -642,16 +642,16 @@ const LiveStreamVideo = ({ currentBid, onBid, streamId = 1, onNext, onPrev, hasN
             variant="outline"
             className="flex-shrink-0 border-primary-foreground/20 text-primary-foreground bg-transparent hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full px-5 max-lg:bg-foreground/60 max-lg:backdrop-blur-md max-lg:border-white/30 max-lg:text-white"
             onClick={() => setIsCustomBidOpen(true)}
-            disabled={timeLeft <= 0 || isSubmittingBid}
+            disabled={phase !== "bid" || timeLeft <= 0 || isSubmittingBid}
           >
             Custom
           </Button>
           <Button
-            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full max-lg:shadow-[0_8px_24px_-6px_hsl(var(--secondary)/0.7)]"
+            className="flex-1 bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-base rounded-full max-lg:shadow-[0_8px_24px_-6px_hsl(var(--secondary)/0.7)] disabled:opacity-60"
             onClick={() => handleBid(nextBid)}
-            disabled={timeLeft <= 0 || isSubmittingBid}
+            disabled={phase !== "bid" || timeLeft <= 0 || isSubmittingBid}
           >
-             Bid: ₹{nextBidInRupees.toLocaleString("en-IN")}
+            {phase === "bid" ? `Bid: ₹${nextBidInRupees.toLocaleString("en-IN")}` : `Bidding opens in ${formatTime(timeLeft - BID_DURATION)}`}
           </Button>
         </div>
       </div>
