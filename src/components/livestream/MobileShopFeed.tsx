@@ -162,24 +162,60 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         onClick={() => setIsPlaying((p) => !p)}
       />
 
-      {/* Top bar: back + LIVE/viewers */}
-      <Button
-        size="icon"
-        onClick={() => navigate("/shop-live")}
-        aria-label="Back"
-        className="absolute top-3 left-3 z-30 h-9 w-9 rounded-full bg-foreground/55 backdrop-blur-md text-white hover:bg-foreground/75 border border-white/20"
-      >
-        <ArrowLeft className="h-5 w-5" />
-      </Button>
+      {/* Top bar: back + seller profile + follow + live/viewers */}
+      <div className="absolute top-3 left-3 right-3 z-30 flex items-center gap-2">
+        <Button
+          size="icon"
+          onClick={() => navigate("/shop-live")}
+          aria-label="Back"
+          className="h-9 w-9 shrink-0 rounded-full bg-foreground/55 backdrop-blur-md text-white hover:bg-foreground/75 border border-white/20"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
 
-      <div className="absolute top-3 right-3 z-30 flex items-center gap-2">
-        <Badge className="bg-destructive text-destructive-foreground text-[11px] font-bold gap-1">
-          <Eye className="h-3 w-3" /> {meta.viewers}
-        </Badge>
-        <Badge className="bg-destructive text-destructive-foreground text-[11px] font-bold">
-          LIVE
-        </Badge>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div
+            className="flex items-center gap-2 min-w-0 cursor-pointer"
+            onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
+          >
+            <Avatar className="h-8 w-8 shrink-0 border-2 border-secondary">
+              <AvatarImage src={meta.image} />
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                {meta.host[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="text-white text-[13px] font-semibold truncate drop-shadow leading-tight">
+                {meta.host}
+              </p>
+              <p className="text-white/80 text-[10px] truncate drop-shadow leading-tight">
+                {meta.title}
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => toggleFollow(meta.host, "shop_live")}
+            className={`h-6 px-2.5 shrink-0 rounded-full text-[10px] font-semibold ${
+              following
+                ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+            }`}
+          >
+            {following ? "Following" : "+ Follow"}
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold gap-1 px-1.5">
+            <Eye className="h-3 w-3" /> {meta.viewers}
+          </Badge>
+          <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5">
+            LIVE
+          </Badge>
+        </div>
       </div>
+
 
       {/* Play indicator (only when paused) */}
       {!isPlaying && (
