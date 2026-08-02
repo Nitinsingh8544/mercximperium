@@ -365,35 +365,6 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
         </Sheet>
       </div>
 
-      {/* Host bar — moved to TOP under the back button / LIVE badges */}
-      <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
-        <div
-          className="flex items-center gap-2 cursor-pointer min-w-0"
-          onClick={() => navigate(`/seller/${encodeURIComponent(meta.host)}`)}
-        >
-          <Avatar className="h-9 w-9 border-2 border-secondary">
-            <AvatarImage src={meta.image} />
-            <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-              {meta.host[0].toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <p className="text-white text-sm font-semibold truncate drop-shadow">{meta.host}</p>
-            <p className="text-white/80 text-[11px] truncate drop-shadow">{meta.title}</p>
-          </div>
-        </div>
-        <Button
-          size="sm"
-          onClick={() => toggleFollow(meta.host, "shop_live")}
-          className={`ml-auto h-7 rounded-full text-[11px] font-semibold ${
-            following
-              ? "bg-white/20 text-white border border-white/30 hover:bg-white/30"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/90"
-          }`}
-        >
-          {following ? "Following" : "+ Follow"}
-        </Button>
-      </div>
 
       {/* Left-bottom products menu trigger */}
       {products.length > 0 && (
