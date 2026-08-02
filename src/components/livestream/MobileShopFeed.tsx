@@ -474,8 +474,8 @@ const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto snap-y snap-proximity"
-      style={{ scrollbarWidth: "none" }}
+      className="h-full w-full overflow-x-hidden overflow-y-scroll overscroll-y-contain snap-y snap-mandatory touch-pan-y"
+      style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
     >
       {feed.map((id) => (
         <div
@@ -485,7 +485,7 @@ const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
             if (el) slideRefs.current.set(id, el);
             else slideRefs.current.delete(id);
           }}
-          className="h-full w-full snap-start"
+          className="h-full min-h-full w-full shrink-0 snap-start snap-always overflow-hidden"
         >
           <ActiveSlide key={id} streamId={id} />
         </div>
