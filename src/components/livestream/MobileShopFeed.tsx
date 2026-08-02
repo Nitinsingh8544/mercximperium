@@ -432,7 +432,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
 };
 
 const PreviewSlide = ({ id }: { id: number }) => {
-  const meta = streamsWithMeta.find((s) => s.id === id);
+  const meta = findStreamById(id);
   if (!meta) return null;
   return (
     <div className="relative h-full w-full bg-foreground overflow-hidden">
