@@ -28,7 +28,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { streamsWithMeta } from "@/lib/streamRanking";
+import { streamsWithMeta, recommendedPool, exploreStreams, findStreamById } from "@/lib/streamRanking";
 import { getStreamById } from "@/data/streamData";
 import { useFollows } from "@/hooks/useFollows";
 import { useLiveComments } from "@/hooks/useLiveComments";
@@ -39,9 +39,15 @@ interface MobileShopFeedProps {
   streamId: number;
 }
 
+// Every shop-live stream that can be opened from the landing grid
+const allShopStreams = [...streamsWithMeta, ...recommendedPool, ...exploreStreams].filter(
+  (s, i, arr) => arr.findIndex((x) => x.id === s.id) === i
+);
+
+// Feed always starts with the stream the user tapped, then all the others
 const buildFeed = (currentId: number) => {
-  const ids = streamsWithMeta.map((s) => s.id);
-  return ids.includes(currentId) ? ids : [currentId, ...ids];
+  const rest = allShopStreams.map((s) => s.id).filter((id) => id !== currentId);
+  return [currentId, ...rest];
 };
 
 const ChatOverlay = ({ streamId }: { streamId: number }) => {
