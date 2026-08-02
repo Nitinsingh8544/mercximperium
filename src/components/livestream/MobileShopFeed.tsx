@@ -112,10 +112,7 @@ const ChatOverlay = ({ streamId }: { streamId: number }) => {
 const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const navigate = useNavigate();
   const { isFollowing, toggleFollow } = useFollows();
-  const meta = useMemo(
-    () => streamsWithMeta.find((s) => s.id === streamId),
-    [streamId]
-  );
+  const meta = useMemo(() => findStreamById(streamId), [streamId]);
   const data = useMemo(() => getStreamById(streamId), [streamId]);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
