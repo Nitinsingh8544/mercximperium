@@ -206,12 +206,12 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
           </Button>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold gap-1 px-1.5">
-            <Eye className="h-3 w-3" /> {meta.viewers}
-          </Badge>
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5">
             LIVE
+          </Badge>
+          <Badge className="bg-foreground/55 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold gap-1 px-1.5">
+            <Eye className="h-3 w-3" /> {meta.viewers}
           </Badge>
         </div>
       </div>
@@ -431,42 +431,6 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   );
 };
 
-const PreviewSlide = ({ id }: { id: number }) => {
-  const meta = findStreamById(id);
-  if (!meta) return null;
-  return (
-    <div className="relative h-full w-full bg-foreground overflow-hidden">
-      <img
-        src={meta.image.replace("w=400", "w=800")}
-        alt={meta.title}
-        className="absolute inset-0 w-full h-full object-cover opacity-80"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-foreground/40" />
-      <div className="absolute top-4 left-4 flex items-center gap-2 z-10">
-        <Avatar className="h-9 w-9 border-2 border-secondary">
-          <AvatarImage src={meta.image} />
-          <AvatarFallback className="bg-primary text-primary-foreground">
-            {meta.host[0].toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="text-white text-sm font-semibold">{meta.host}</p>
-          <p className="text-white/70 text-xs">Live shopping</p>
-        </div>
-      </div>
-      <div className="absolute top-4 right-4 z-10">
-        <Badge className="bg-destructive text-destructive-foreground text-[11px] font-bold">
-          LIVE · {meta.viewers}
-        </Badge>
-      </div>
-      <div className="absolute bottom-10 left-0 right-0 px-5 z-10 text-center">
-        <p className="text-white font-bold text-lg drop-shadow">{meta.title}</p>
-        <p className="text-white/70 text-xs mt-1">Swipe to load this stream</p>
-      </div>
-    </div>
-  );
-};
 
 const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
   const navigate = useNavigate();
@@ -523,7 +487,7 @@ const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
           }}
           className="h-full w-full snap-start"
         >
-          {id === streamId ? <ActiveSlide streamId={id} /> : <PreviewSlide id={id} />}
+          <ActiveSlide key={id} streamId={id} />
         </div>
       ))}
     </div>
