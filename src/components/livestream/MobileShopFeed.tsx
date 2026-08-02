@@ -206,12 +206,12 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
           </Button>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold gap-1 px-1.5">
-            <Eye className="h-3 w-3" /> {meta.viewers}
-          </Badge>
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <Badge className="bg-destructive text-destructive-foreground text-[10px] font-bold px-1.5">
             LIVE
+          </Badge>
+          <Badge className="bg-foreground/55 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold gap-1 px-1.5">
+            <Eye className="h-3 w-3" /> {meta.viewers}
           </Badge>
         </div>
       </div>
@@ -523,7 +523,7 @@ const MobileShopFeed = ({ streamId }: MobileShopFeedProps) => {
           }}
           className="h-full w-full snap-start"
         >
-          {id === streamId ? <ActiveSlide streamId={id} /> : <PreviewSlide id={id} />}
+          <ActiveSlide key={id} streamId={id} />
         </div>
       ))}
     </div>
