@@ -126,7 +126,7 @@ const CategoryView = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5" />
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-8 relative z-10">
         <Button
           variant="ghost"
           size="sm"
