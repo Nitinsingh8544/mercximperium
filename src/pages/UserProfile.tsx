@@ -83,7 +83,7 @@ const UserProfile = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5" />
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-24 sm:pt-28 pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 pb-8 relative z-10">
         <div className="flex items-center gap-2 mb-4">
           <Button
             variant="ghost"

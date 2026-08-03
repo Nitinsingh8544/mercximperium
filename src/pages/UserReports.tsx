@@ -101,7 +101,7 @@ const UserReports = () => {
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
-      <div className="container mx-auto max-w-4xl px-4 pt-28 md:pt-24 pb-10">
+      <div className="container mx-auto max-w-4xl px-4 pt-20 md:pt-24 pb-10">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />

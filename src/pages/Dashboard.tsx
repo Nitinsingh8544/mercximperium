@@ -47,16 +47,16 @@ const Dashboard = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Welcome Section */}
-        <div className="mb-2 sm:mb-4 md:mb-6">
+        <div className="mb-1 sm:mb-3 md:mb-4">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Hi {firstName}!
           </h1>
         </div>
 
         {/* Horizontal Navigation for Mobile - only Auction & Shop Live */}
-        <div className="grid grid-cols-2 gap-2 pb-3 mb-4 lg:hidden">
+        <div className="grid grid-cols-2 gap-2 mb-3 lg:hidden">
           <Link
             to="/dashboard"
             className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium text-center"

@@ -60,7 +60,7 @@ const Browse = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-24 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-24 sm:pb-8 relative z-10">
         <div className="flex items-end justify-between gap-3 mb-4 sm:mb-6 flex-wrap">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
             Browse by Category

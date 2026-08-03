@@ -50,7 +50,7 @@ const Profile = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-4 sm:px-6 pt-28 sm:pt-24 pb-8 max-w-2xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 max-w-2xl relative z-10">
         {/* Profile Header */}
         <div className="flex items-center gap-4 mb-8 p-4 bg-card/80 backdrop-blur-sm rounded-lg border border-border/50">
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary flex items-center justify-center text-2xl sm:text-3xl font-bold text-primary-foreground">
