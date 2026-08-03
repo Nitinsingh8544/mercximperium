@@ -135,24 +135,21 @@ const ShopLiveLanding = () => {
       <AuthenticatedHeader />
 
       <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-24 sm:pb-8 relative z-10">
-        {/* Back button */}
-        <div className="mb-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/dashboard")}
-            className="gap-2 h-8 text-foreground hover:bg-muted"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Button>
-        </div>
-
         {/* Search & Filter Bar */}
         <div className="mb-3 space-y-2">
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/dashboard")}
+              aria-label="Back"
+              className="h-9 w-9 shrink-0 text-foreground hover:bg-muted"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
             <div className="relative flex-1">
+
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search streams by name, seller, or tags..."
