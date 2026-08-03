@@ -134,13 +134,13 @@ const ShopLiveLanding = () => {
 
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-28 sm:pt-28 md:pt-24 pb-24 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-24 sm:pb-8 relative z-10">
         {/* Back button */}
-        <div className="mb-2">
+        <div className="mb-1">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/dashboard")}
             className="gap-2 h-8 text-foreground hover:bg-muted"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -238,8 +238,8 @@ const ShopLiveLanding = () => {
 
         {/* Followed Sellers' Streams */}
         {followedStreams.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
+          <div className="mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2">
               From Sellers You Follow
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
@@ -252,7 +252,7 @@ const ShopLiveLanding = () => {
 
         {/* All Live Streams */}
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground mb-2">
             {followedStreams.length > 0 ? "Discover More" : "Live Now"}
           </h2>
           {otherStreams.length > 0 ? (
