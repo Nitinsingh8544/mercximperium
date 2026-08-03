@@ -33,7 +33,8 @@ import { getStreamById } from "@/data/streamData";
 import { useFollows } from "@/hooks/useFollows";
 import { useLiveComments } from "@/hooks/useLiveComments";
 import ProductDetailModal from "./ProductDetailModal";
-import ShopLiveChat from "./ShopLiveChat";
+import LiveChatPanel from "./LiveChatPanel";
+import ShareProfileModal from "@/components/seller/ShareProfileModal";
 
 interface MobileShopFeedProps {
   streamId: number;
@@ -121,6 +122,7 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
   const [likeCount, setLikeCount] = useState(1284);
   const [showHeart, setShowHeart] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
 
   if (!meta) return null;
@@ -296,7 +298,13 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
           size="icon"
           onClick={(e) => {
             e.stopPropagation();
-            if (navigator.share) navigator.share({ title: meta.title, url: window.location.href }).catch(() => {});
+            if (navigator.share) {
+              navigator
+                .share({ title: meta.title, url: window.location.href })
+                .catch(() => setShareOpen(true));
+            } else {
+              setShareOpen(true);
+            }
           }}
           className="h-11 w-11 rounded-full bg-foreground/50 backdrop-blur-md text-white hover:bg-foreground/70 border border-white/20"
           aria-label="Share"
@@ -315,12 +323,12 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
               <MessageCircle className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col">
-            <SheetHeader className="px-4 pt-4 pb-2">
+          <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col rounded-t-2xl overflow-hidden">
+            <SheetHeader className="sr-only">
               <SheetTitle>Live Chat</SheetTitle>
             </SheetHeader>
-            <div className="flex-1 overflow-hidden px-3 pb-4">
-              <ShopLiveChat streamId={`shop-live-${streamId}`} />
+            <div className="flex-1 overflow-hidden">
+              <LiveChatPanel streamId={`shop-live-${streamId}`} viewers={meta.viewers} />
             </div>
           </SheetContent>
         </Sheet>
@@ -336,9 +344,10 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
               <ShoppingBag className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[75vh] p-0 flex flex-col">
+          <SheetContent side="bottom" className="h-[75vh] p-0 flex flex-col rounded-t-2xl overflow-hidden">
             <SheetHeader className="px-4 pt-4 pb-2">
-              <SheetTitle>Shop this stream</SheetTitle>
+              <SheetTitle className="text-left text-base">Shop this stream</SheetTitle>
+              <p className="text-left text-xs text-muted-foreground">{products.length} items from {meta.host}</p>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto px-3 pb-6">
               <div className="grid grid-cols-2 gap-3">
@@ -346,16 +355,24 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
                   <button
                     key={p.id}
                     onClick={() => setSelectedProduct(p)}
-                    className="text-left rounded-lg border border-border bg-card overflow-hidden"
+                    className="text-left rounded-2xl border border-border bg-card overflow-hidden shadow-sm active:scale-[0.98] transition-transform"
                   >
-                    <div className="aspect-square bg-muted">
+                    <div className="relative aspect-square bg-muted">
                       <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                      <span className="absolute top-2 left-2 rounded-full bg-destructive px-2 py-0.5 text-[9px] font-bold text-destructive-foreground">
+                        LIVE DEAL
+                      </span>
                     </div>
-                    <div className="p-2">
-                      <p className="text-xs font-medium text-foreground line-clamp-2">{p.title}</p>
-                      <p className="text-sm font-bold text-primary mt-1">
-                        {p.currency}{p.price.toLocaleString()}
-                      </p>
+                    <div className="p-2.5">
+                      <p className="text-xs font-medium text-foreground line-clamp-2 min-h-[2rem]">{p.title}</p>
+                      <div className="mt-1.5 flex items-center justify-between gap-1">
+                        <p className="text-sm font-bold text-primary">
+                          {p.currency}{p.price.toLocaleString()}
+                        </p>
+                        <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">
+                          Buy
+                        </span>
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -381,9 +398,10 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
                 <span className="text-[11px] font-semibold">{products.length} items</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col">
+            <SheetContent side="bottom" className="h-[70vh] p-0 flex flex-col rounded-t-2xl overflow-hidden">
               <SheetHeader className="px-4 pt-4 pb-2">
-                <SheetTitle>Items in this live</SheetTitle>
+                <SheetTitle className="text-left text-base">Items in this live</SheetTitle>
+                <p className="text-left text-xs text-muted-foreground">{products.length} items · tap to view details</p>
               </SheetHeader>
               <div className="flex-1 overflow-y-auto px-3 pb-4">
                 <div className="grid grid-cols-2 gap-3">
@@ -391,16 +409,24 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
                     <button
                       key={p.id}
                       onClick={() => setSelectedProduct(p)}
-                      className="text-left rounded-lg border border-border bg-card overflow-hidden"
+                      className="text-left rounded-2xl border border-border bg-card overflow-hidden shadow-sm active:scale-[0.98] transition-transform"
                     >
-                      <div className="aspect-square bg-muted">
+                      <div className="relative aspect-square bg-muted">
                         <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                        <span className="absolute top-2 left-2 rounded-full bg-destructive px-2 py-0.5 text-[9px] font-bold text-destructive-foreground">
+                          LIVE DEAL
+                        </span>
                       </div>
-                      <div className="p-2">
-                        <p className="text-xs font-medium text-foreground line-clamp-2">{p.title}</p>
-                        <p className="text-sm font-bold text-primary mt-1">
-                          {p.currency}{p.price.toLocaleString()}
-                        </p>
+                      <div className="p-2.5">
+                        <p className="text-xs font-medium text-foreground line-clamp-2 min-h-[2rem]">{p.title}</p>
+                        <div className="mt-1.5 flex items-center justify-between gap-1">
+                          <p className="text-sm font-bold text-primary">
+                            {p.currency}{p.price.toLocaleString()}
+                          </p>
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground">
+                            Buy
+                          </span>
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -420,6 +446,12 @@ const ActiveSlide = ({ streamId }: { streamId: number }) => {
 
 
       <ChatOverlay streamId={streamId} />
+
+      <ShareProfileModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        userName={meta.host}
+      />
 
       <ProductDetailModal
         isOpen={!!selectedProduct}
