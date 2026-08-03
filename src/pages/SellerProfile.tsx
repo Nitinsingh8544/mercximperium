@@ -52,7 +52,7 @@ const SellerProfile = () => {
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
 
-      <div className="pt-32 sm:pt-28 md:pt-20 px-4 pb-24 lg:pb-8">
+      <div className="pt-24 sm:pt-24 md:pt-20 px-4 pb-24 lg:pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Back button */}
           <Button
