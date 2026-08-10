@@ -101,7 +101,7 @@ const Addresses = () => {
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
       
-      <div className="flex flex-col md:flex-row pt-24 sm:pt-24 md:pt-16">
+      <div className="flex flex-col md:flex-row pt-[100px] sm:pt-24 md:pt-16">
         {/* Mobile Header Navigation */}
         <div className="md:hidden px-4 py-3 border-b border-border bg-card/50">
           <Link to="/profile-view" className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity">

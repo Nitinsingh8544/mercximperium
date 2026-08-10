@@ -109,7 +109,7 @@ const Wallet = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5" />
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 relative z-10 max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 pt-[100px] sm:pt-24 pb-8 relative z-10 max-w-5xl">
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
