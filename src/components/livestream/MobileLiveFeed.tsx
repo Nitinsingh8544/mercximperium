@@ -248,6 +248,7 @@ const ActiveSlide = ({
             <SheetHeader className="px-4 pt-4 pb-3 bg-gradient-to-r from-secondary/25 via-primary/20 to-transparent">
               <SheetTitle className="flex items-center gap-2 text-left">
                 <Trophy className="h-4 w-4 text-secondary" /> Auction Winners
+              </SheetTitle>
             </SheetHeader>
             <div className="px-3 pb-4">
               <AuctionWinnersPanel streamId={streamId} />
