@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import LiveStreamVideo from "./LiveStreamVideo";
 import LiveStreamShop from "./LiveStreamShop";
+import WalletSheet from "./WalletSheet";
 import AuctionWinnersPanel from "./AuctionWinnersPanel";
 import ProductDetailModal from "./ProductDetailModal";
 
@@ -152,6 +153,7 @@ const ActiveSlide = ({
   const [productOpen, setProductOpen] = useState(false);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { balance: walletBalance } = useWallet();
+  const [walletOpen, setWalletOpen] = useState(false);
 
   const itemInfo = streamItemData[streamId] || defaultItem;
   const currentBidInRupees = Math.round(currentBid * INR_CONVERSION_RATE);
@@ -210,9 +212,21 @@ const ActiveSlide = ({
               <ShoppingBag className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[80vh] p-0 flex flex-col">
-            <SheetHeader className="px-4 pt-4 pb-2">
-              <SheetTitle>Shop this stream</SheetTitle>
+          <SheetContent side="bottom" className="h-[85vh] p-0 flex flex-col rounded-t-3xl overflow-hidden">
+            <SheetHeader className="px-4 pt-4 pb-3 bg-gradient-to-r from-primary/25 via-secondary/25 to-transparent">
+              <SheetTitle className="flex items-center gap-2 text-left">
+                <span className="h-7 w-7 rounded-full bg-secondary/20 flex items-center justify-center">
+                  <ShoppingBag className="h-4 w-4 text-secondary" />
+                </span>
+                Shop this stream
+                <span className="ml-auto flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-destructive" />
+                  </span>
+                  Live deals
+                </span>
+              </SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-hidden px-3 pb-4">
               <LiveStreamShop streamId={streamId} sellerInfo={sellerInfo} />
@@ -230,9 +244,11 @@ const ActiveSlide = ({
               <Trophy className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[60vh] p-0">
-            <SheetHeader className="px-4 pt-4 pb-2">
-              <SheetTitle>Auction Winners</SheetTitle>
+          <SheetContent side="bottom" className="h-[60vh] p-0 rounded-t-3xl overflow-hidden">
+            <SheetHeader className="px-4 pt-4 pb-3 bg-gradient-to-r from-secondary/25 via-primary/20 to-transparent">
+              <SheetTitle className="flex items-center gap-2 text-left">
+                <Trophy className="h-4 w-4 text-secondary" /> Auction Winners
+              </SheetTitle>
             </SheetHeader>
             <div className="px-3 pb-4">
               <AuctionWinnersPanel streamId={streamId} />
@@ -241,13 +257,19 @@ const ActiveSlide = ({
         </Sheet>
 
         {/* Wallet pill moved to bottom of stack */}
-        <div className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20">
+        <button
+          type="button"
+          onClick={() => setWalletOpen(true)}
+          aria-label="Open wallet"
+          className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-foreground/55 backdrop-blur-md border border-white/20 active:scale-95 transition-transform">
           <WalletIcon className="h-4 w-4 text-secondary" />
           <span className="text-[10px] font-bold text-white leading-none">
             ₹{walletBalance >= 1000 ? `${(walletBalance / 1000).toFixed(1)}k` : walletBalance.toLocaleString("en-IN")}
           </span>
-        </div>
+        </button>
       </div>
+
+      <WalletSheet open={walletOpen} onOpenChange={setWalletOpen} />
 
 
       {/* Item info bar - sits above the say-something input. Tap opens product details. */}
