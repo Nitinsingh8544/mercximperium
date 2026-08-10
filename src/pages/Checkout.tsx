@@ -232,7 +232,7 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
-      <div className="pt-20 px-4 md:px-8 max-w-6xl mx-auto pb-12">
+      <div className="pt-[100px] md:pt-20 px-4 md:px-8 max-w-6xl mx-auto pb-12">
         <Button variant="ghost" className="mb-4 gap-2 text-foreground" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>

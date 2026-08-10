@@ -44,7 +44,7 @@ const CategoryView = () => {
     return (
       <div className="min-h-screen bg-background">
         <AuthenticatedHeader />
-        <div className="container mx-auto pt-36 px-4">
+        <div className="container mx-auto pt-[100px] px-4">
           <p className="text-muted-foreground">Category not found.</p>
           <Button variant="ghost" onClick={() => navigate("/browse")} className="mt-3 gap-2">
             <ArrowLeft className="w-4 h-4" /> Back to Browse
@@ -126,7 +126,7 @@ const CategoryView = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5" />
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-24 pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-[100px] sm:pt-24 md:pt-24 pb-8 relative z-10">
         <Button
           variant="ghost"
           size="sm"

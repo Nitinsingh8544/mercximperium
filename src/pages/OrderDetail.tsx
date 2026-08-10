@@ -107,7 +107,7 @@ const OrderDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <AuthenticatedHeader />
-      <div className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-8 max-w-3xl">
+      <div className="container mx-auto px-4 sm:px-6 pt-[100px] sm:pt-24 pb-8 max-w-3xl">
         <Button variant="ghost" className="mb-4 gap-2" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>

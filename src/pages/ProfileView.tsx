@@ -36,7 +36,7 @@ const ProfileView = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-36 sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-[100px] sm:pt-32 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Profile Header */}
         <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="flex items-start gap-3 sm:gap-4">

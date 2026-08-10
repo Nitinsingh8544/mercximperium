@@ -145,7 +145,7 @@ const Messages = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-primary/5" />
       <AuthenticatedHeader />
 
-      <div className="container mx-auto px-2 sm:px-4 pt-20 sm:pt-24 pb-4 relative z-10">
+      <div className="container mx-auto px-2 sm:px-4 pt-[100px] sm:pt-24 pb-4 relative z-10">
         <div className="flex h-[calc(100vh-7rem)] rounded-xl border border-border bg-card/60 backdrop-blur overflow-hidden">
           {/* Sidebar */}
           <aside

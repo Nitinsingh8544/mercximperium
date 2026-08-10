@@ -47,7 +47,7 @@ const Dashboard = () => {
       
       <AuthenticatedHeader />
       
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-[104px] sm:pt-24 md:pt-24 pb-6 sm:pb-8 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-[100px] sm:pt-24 md:pt-24 pb-6 sm:pb-8 relative z-10">
         {/* Welcome Section */}
         <div className="mb-1 sm:mb-3 md:mb-4">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
