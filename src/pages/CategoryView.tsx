@@ -172,7 +172,7 @@ const CategoryView = () => {
               className="group inline-flex items-center gap-1 rounded-full bg-secondary text-secondary-foreground text-xs px-3 py-1 hover:bg-secondary/80 transition-colors"
               title={selectedCategories.length > 1 ? "Click to remove" : ""}
             >
-              <span>{c.icon}</span>
+              <img src={c.image} alt="" className="w-4 h-4 rounded-full object-cover" />
               <span className="font-medium">{c.name}</span>
               {selectedCategories.length > 1 && (
                 <span className="ml-1 opacity-70 group-hover:opacity-100">✕</span>

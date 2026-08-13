@@ -272,7 +272,7 @@ const AuthenticatedHeader = () => {
                               className="cursor-pointer"
                             >
                               <Tag className="mr-2 h-4 w-4 text-muted-foreground" />
-                              <span>{category.icon} {category.name}</span>
+                              <span className="flex items-center gap-2"><img src={category.image} alt="" className="w-5 h-5 rounded object-cover" />{category.name}</span>
                             </CommandItem>
                           ))}
                         </CommandGroup>
