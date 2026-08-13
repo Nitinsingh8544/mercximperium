@@ -115,17 +115,25 @@ const Browse = () => {
                 >
                   {isSelected ? <Check className="w-3.5 h-3.5" /> : <Check className="w-3.5 h-3.5" />}
                 </button>
-                <CardContent className="p-3 sm:p-4 md:p-6 text-center">
-                  <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3 md:mb-4 group-hover:scale-110 transition-transform">
-                    {category.icon}
+                <CardContent className="p-0 overflow-hidden rounded-xl">
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={category.image}
+                      alt={`${category.name} live shopping category`}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
+                    <Badge className="absolute bottom-1.5 left-1.5 bg-secondary text-secondary-foreground text-[10px] sm:text-xs px-1.5 py-0.5">
+                      <span className="w-1.5 h-1.5 bg-red-600 rounded-full inline-block mr-1 animate-pulse"></span>
+                      {category.viewers}
+                    </Badge>
                   </div>
-                  <h3 className="font-semibold text-xs sm:text-sm mb-1 sm:mb-2 text-foreground line-clamp-2">
-                    {category.name}
-                  </h3>
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
-                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-600 rounded-full inline-block mr-1"></span>
-                    {category.viewers}
-                  </Badge>
+                  <div className="p-2 sm:p-3 text-center">
+                    <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-2">
+                      {category.name}
+                    </h3>
+                  </div>
                 </CardContent>
               </Card>
             );
