@@ -137,7 +137,15 @@ const CategoryView = () => {
         </Button>
 
         <div className="flex items-center gap-3 mb-3">
-          <div className="text-4xl sm:text-5xl">{headerIcon}</div>
+          {selectedCategories.length === 1 ? (
+            <img
+              src={selectedCategories[0].image}
+              alt={`${selectedCategories[0].name} category`}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover shadow-md"
+            />
+          ) : (
+            <div className="text-4xl sm:text-5xl">{headerIcon}</div>
+          )}
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
               {headerTitle}
@@ -147,6 +155,7 @@ const CategoryView = () => {
             </p>
           </div>
         </div>
+
 
         <div className="flex flex-wrap gap-1.5 mb-4">
           {selectedCategories.map((c) => (
@@ -163,7 +172,7 @@ const CategoryView = () => {
               className="group inline-flex items-center gap-1 rounded-full bg-secondary text-secondary-foreground text-xs px-3 py-1 hover:bg-secondary/80 transition-colors"
               title={selectedCategories.length > 1 ? "Click to remove" : ""}
             >
-              <span>{c.icon}</span>
+              <img src={c.image} alt="" className="w-4 h-4 rounded-full object-cover" />
               <span className="font-medium">{c.name}</span>
               {selectedCategories.length > 1 && (
                 <span className="ml-1 opacity-70 group-hover:opacity-100">✕</span>

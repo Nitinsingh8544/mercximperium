@@ -4,6 +4,7 @@ export interface BrowseCategory {
   slug: string;
   name: string;
   icon: string;
+  image: string;
   viewers: string;
   matches: (s: StreamMeta) => boolean;
 }
@@ -18,22 +19,22 @@ const has = (s: StreamMeta, ...keys: string[]) =>
   );
 
 export const browseCategories: BrowseCategory[] = [
-  { slug: "sneakers-streetwear", name: "Sneakers & Streetwear", icon: "👟", viewers: "2.8K", matches: (s) => has(s, "footwear", "sneakers", "streetwear", "shoes") },
-  { slug: "home-garden", name: "Home & Garden", icon: "🌿", viewers: "1.2K", matches: (s) => has(s, "home", "plants", "decor", "kitchen") },
-  { slug: "toys-hobbies", name: "Toys & Hobbies", icon: "🎮", viewers: "8.7K", matches: (s) => has(s, "toys", "gaming", "hobbies") },
-  { slug: "trading-card-games", name: "Trading Card Games", icon: "🃏", viewers: "8.9K", matches: (s) => has(s, "trading-cards", "tcg", "cards") },
-  { slug: "books-movies", name: "Books & Movies", icon: "📚", viewers: "126", matches: (s) => has(s, "books", "movies", "media") },
-  { slug: "sports-cards", name: "Sports Cards", icon: "⚾", viewers: "7.6K", matches: (s) => has(s, "sports", "trading-cards", "cards") },
-  { slug: "electronics", name: "Electronics", icon: "🎧", viewers: "5K", matches: (s) => has(s, "electronics", "tech", "audio", "gaming", "photography") },
-  { slug: "coins-money", name: "Coins & Money", icon: "🪙", viewers: "3K", matches: (s) => has(s, "numismatics", "coins", "currency") },
-  { slug: "estate-storage", name: "Estate Sales & Storage Units", icon: "📦", viewers: "2K", matches: (s) => has(s, "antiques", "estate", "vintage", "furniture") },
-  { slug: "sports-memorabilia", name: "Sports Memorabilia", icon: "🏆", viewers: "118", matches: (s) => has(s, "memorabilia", "sports", "signed") },
-  { slug: "mens-fashion", name: "Men's Fashion", icon: "👔", viewers: "2.6K", matches: (s) => has(s, "fashion", "streetwear", "mens", "clothing") },
-  { slug: "womens-fashion", name: "Women's Fashion", icon: "👗", viewers: "12.6K", matches: (s) => has(s, "fashion", "womens", "clothing", "luxury") },
-  { slug: "bags-accessories", name: "Bags & Accessories", icon: "👜", viewers: "1.5K", matches: (s) => has(s, "accessories", "bags", "watches") },
-  { slug: "beauty", name: "Beauty", icon: "💄", viewers: "3.4K", matches: (s) => has(s, "beauty", "cosmetics", "skincare", "fragrance") },
-  { slug: "jewelry", name: "Jewelry", icon: "💎", viewers: "2.1K", matches: (s) => has(s, "jewelry", "gems", "gemstones") },
-  { slug: "music", name: "Music", icon: "🎵", viewers: "890", matches: (s) => has(s, "music", "instruments", "vinyl") },
+  { slug: "sneakers-streetwear", name: "Sneakers & Streetwear", icon: "👟", image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400&q=80&auto=format&fit=crop", viewers: "2.8K", matches: (s) => has(s, "footwear", "sneakers", "streetwear", "shoes") },
+  { slug: "home-garden", name: "Home & Garden", icon: "🌿", image: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&q=80&auto=format&fit=crop", viewers: "1.2K", matches: (s) => has(s, "home", "plants", "decor", "kitchen") },
+  { slug: "toys-hobbies", name: "Toys & Hobbies", icon: "🎮", image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80&auto=format&fit=crop", viewers: "8.7K", matches: (s) => has(s, "toys", "gaming", "hobbies") },
+  { slug: "trading-card-games", name: "Trading Card Games", icon: "🃏", image: "https://images.unsplash.com/photo-1637628815954-f1ee0a0f9b96?w=400&q=80&auto=format&fit=crop", viewers: "8.9K", matches: (s) => has(s, "trading-cards", "tcg", "cards") },
+  { slug: "books-movies", name: "Books & Movies", icon: "📚", image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80&auto=format&fit=crop", viewers: "126", matches: (s) => has(s, "books", "movies", "media") },
+  { slug: "sports-cards", name: "Sports Cards", icon: "⚾", image: "https://images.unsplash.com/photo-1508344928928-7165b67de128?w=400&q=80&auto=format&fit=crop", viewers: "7.6K", matches: (s) => has(s, "sports", "trading-cards", "cards") },
+  { slug: "electronics", name: "Electronics", icon: "🎧", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80&auto=format&fit=crop", viewers: "5K", matches: (s) => has(s, "electronics", "tech", "audio", "gaming", "photography") },
+  { slug: "coins-money", name: "Coins & Money", icon: "🪙", image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&q=80&auto=format&fit=crop", viewers: "3K", matches: (s) => has(s, "numismatics", "coins", "currency") },
+  { slug: "estate-storage", name: "Estate Sales & Storage Units", icon: "📦", image: "https://images.unsplash.com/photo-1530653333484-8f6cf2c39c41?w=400&q=80&auto=format&fit=crop", viewers: "2K", matches: (s) => has(s, "antiques", "estate", "vintage", "furniture") },
+  { slug: "sports-memorabilia", name: "Sports Memorabilia", icon: "🏆", image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&q=80&auto=format&fit=crop", viewers: "118", matches: (s) => has(s, "memorabilia", "sports", "signed") },
+  { slug: "mens-fashion", name: "Men's Fashion", icon: "👔", image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=400&q=80&auto=format&fit=crop", viewers: "2.6K", matches: (s) => has(s, "fashion", "streetwear", "mens", "clothing") },
+  { slug: "womens-fashion", name: "Women's Fashion", icon: "👗", image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=80&auto=format&fit=crop", viewers: "12.6K", matches: (s) => has(s, "fashion", "womens", "clothing", "luxury") },
+  { slug: "bags-accessories", name: "Bags & Accessories", icon: "👜", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&q=80&auto=format&fit=crop", viewers: "1.5K", matches: (s) => has(s, "accessories", "bags", "watches") },
+  { slug: "beauty", name: "Beauty", icon: "💄", image: "https://images.unsplash.com/photo-1522335789203-aaa730d72a13?w=400&q=80&auto=format&fit=crop", viewers: "3.4K", matches: (s) => has(s, "beauty", "cosmetics", "skincare", "fragrance") },
+  { slug: "jewelry", name: "Jewelry", icon: "💎", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80&auto=format&fit=crop", viewers: "2.1K", matches: (s) => has(s, "jewelry", "gems", "gemstones") },
+  { slug: "music", name: "Music", icon: "🎵", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80&auto=format&fit=crop", viewers: "890", matches: (s) => has(s, "music", "instruments", "vinyl") },
 ];
 
 // Extra streams + auctions to ensure every browse category has content
