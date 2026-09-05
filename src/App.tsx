@@ -35,6 +35,7 @@ import Checkout from "./pages/Checkout";
 import Wallet from "./pages/Wallet";
 import Credits from "./pages/Credits";
 import OrderDetail from "./pages/OrderDetail";
+import OrderConfirmation from "./pages/OrderConfirmation";
 import UserReports from "./pages/UserReports";
 import ContactUs from "./pages/ContactUs";
 import UserProfile from "./pages/UserProfile";
@@ -79,6 +80,7 @@ const App = () => (
             <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
             <Route path="/credits" element={<ProtectedRoute><Credits /></ProtectedRoute>} />
             <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+             <Route path="/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
             <Route path="/user-reports" element={<ProtectedRoute><UserReports /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><ContactUs /></ProtectedRoute>} />
             <Route path="/u/:username" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
