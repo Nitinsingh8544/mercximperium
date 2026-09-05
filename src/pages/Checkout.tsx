@@ -106,6 +106,7 @@ const Checkout = () => {
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedEmi, setSelectedEmi] = useState("");
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   // New address form
   const [newAddr, setNewAddr] = useState({ name: "", addressLine1: "", addressLine2: "", city: "", state: "", postalCode: "", country: "India" });
@@ -164,46 +165,53 @@ const Checkout = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (isPlacingOrder) return;
     if (!selectedAddress) {
       toast({ title: "Please select a delivery address", variant: "destructive" });
       return;
     }
 
-    // Apply credits if any were selected
-    if (appliedCredits > 0) {
-      const success = await applyCredits(appliedCredits);
-      if (!success) {
-        toast({ title: "Failed to apply credits", variant: "destructive" });
+    setIsPlacingOrder(true);
+
+    try {
+      // Apply credits if any were selected
+      if (appliedCredits > 0) {
+        const success = await applyCredits(appliedCredits);
+        if (!success) {
+          toast({ title: "Failed to apply credits", variant: "destructive" });
+          return;
+        }
+      }
+
+      // If user chose Wallet, deduct from wallet balance
+      if (paymentMethod === "wallet") {
+        if (walletBalance < orderTotal) {
+          toast({
+            title: "Insufficient wallet balance",
+            description: `You have ₹${walletBalance.toLocaleString("en-IN")}. Add money to your wallet or pick another method.`,
+            variant: "destructive",
+          });
+          return;
+        }
+        const desc = items.length > 1 ? `Order payment for ${items.length} items` : `Order payment: ${item.title}`;
+        const res = await spendWallet(orderTotal, desc, `ORD${Date.now().toString().slice(-8)}`);
+        if (!res.success) {
+          toast({ title: "Wallet payment failed", description: res.error, variant: "destructive" });
+          return;
+        }
+      }
+
+      // Earn credits based on the final order amount (1 credit per ₹5 spent)
+      await earnCredits(orderTotal);
+
+      // Persist orders via the secure server function and use its returned rows
+      // so every item can be tracked or cancelled independently.
+      if (!user) {
+        toast({ title: "Please sign in to place this order", variant: "destructive" });
         return;
       }
-    }
 
-    // If user chose Wallet, deduct from wallet balance
-    if (paymentMethod === "wallet") {
-      if (walletBalance < orderTotal) {
-        toast({
-          title: "Insufficient wallet balance",
-          description: `You have ₹${walletBalance.toLocaleString("en-IN")}. Add money to your wallet or pick another method.`,
-          variant: "destructive",
-        });
-        return;
-      }
-      const desc = items.length > 1 ? `Order payment for ${items.length} items` : `Order payment: ${item.title}`;
-      const res = await spendWallet(orderTotal, desc, `ORD${Date.now().toString().slice(-8)}`);
-      if (!res.success) {
-        toast({ title: "Wallet payment failed", description: res.error, variant: "destructive" });
-        return;
-      }
-    }
-
-    // Earn credits based on the final order amount (1 credit per ₹5 spent)
-    const earned = await earnCredits(orderTotal);
-
-    // Persist orders via secure edge function (server validates & inserts)
-    if (user) {
-      const addrText = selectedAddress
-        ? `${selectedAddress.name}, ${selectedAddress.addressLine1}${selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ""}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.postalCode}, ${selectedAddress.country}`
-        : null;
+      const addrText = `${selectedAddress.name}, ${selectedAddress.addressLine1}${selectedAddress.addressLine2 ? `, ${selectedAddress.addressLine2}` : ""}, ${selectedAddress.city}, ${selectedAddress.state}, ${selectedAddress.postalCode}, ${selectedAddress.country}`;
       const { supabase } = await import("@/integrations/supabase/client");
       const rows = items.map((it) => ({
         product_title: it.title,
@@ -216,17 +224,18 @@ const Checkout = () => {
         payment_method: paymentMethod,
         shipping_address: addrText,
       }));
-      await supabase.functions.invoke("orders-operations", {
+      const { data, error } = await supabase.functions.invoke("orders-operations", {
         body: { action: "create", orders: rows },
       });
-    }
+      if (error || data?.error || !Array.isArray(data?.orders)) {
+        toast({ title: "Could not place your order", description: data?.error || error?.message || "Please try again.", variant: "destructive" });
+        return;
+      }
 
-    const orderDesc = items.length > 1 ? `${items.length} items` : item.title;
-    toast({
-      title: "Order placed successfully!",
-      description: `Your order for ${orderDesc} will be delivered soon.${earned > 0 ? ` You earned ${earned} credits!` : ""}`,
-    });
-    navigate("/activity");
+      navigate("/order-confirmation", { state: { orders: data.orders, total: orderTotal } });
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
   return (
@@ -462,19 +471,14 @@ const Checkout = () => {
                 </div>
               </RadioGroup>
 
-              <div className="mt-5">
-                <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" onClick={handlePlaceOrder}>
-                  Use this payment method
-                </Button>
-              </div>
             </div>
           </div>
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-card rounded-lg border border-border p-5 sticky top-24">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold mb-4" onClick={handlePlaceOrder}>
-                Use this payment method
+               <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold mb-4" onClick={handlePlaceOrder} disabled={isPlacingOrder}>
+                 {isPlacingOrder ? "Placing order..." : "Place order"}
               </Button>
 
               <Separator className="mb-4" />

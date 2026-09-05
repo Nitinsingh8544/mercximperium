@@ -34,6 +34,14 @@ const AuthenticatedHeader = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  const formatCompactAmount = (amount: number) => {
+    if (amount < 1000) return amount.toLocaleString("en-IN");
+    if (amount < 1_000_000) return `${(amount / 1000).toFixed(amount >= 100_000 ? 0 : 1)}K`;
+    if (amount < 1_000_000_000) return `${(amount / 1_000_000).toFixed(amount >= 100_000_000 ? 0 : 1)}M`;
+    return `${(amount / 1_000_000_000).toFixed(1)}B`;
+  };
 
   const userInitial = (profile?.name || profile?.username || user?.email || "U").charAt(0).toUpperCase();
 
@@ -286,7 +294,25 @@ const AuthenticatedHeader = () => {
 
           {/* Right Actions - Compact on mobile */}
           <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
-            <Button variant="ghost" className="hidden lg:flex text-sm">
+             <Button variant="ghost" className="hidden lg:flex text-sm">
+              Become a Seller
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 lg:hidden"
+              aria-label="Search"
+              onClick={() => setMobileSearchOpen((open) => !open)}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-8 px-2 text-[10px] font-semibold lg:hidden"
+              onClick={() => navigate("/account")}
+            >
               Become a Seller
             </Button>
 
@@ -330,7 +356,7 @@ const AuthenticatedHeader = () => {
                 aria-label="Wallet"
               >
                 <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-secondary shrink-0" />
-                <span className="text-xs sm:text-sm font-medium">₹{walletBalance.toLocaleString("en-IN")}</span>
+                <span className="text-xs sm:text-sm font-medium">₹{formatCompactAmount(walletBalance)}</span>
               </Button>
             </Link>
 
@@ -357,7 +383,7 @@ const AuthenticatedHeader = () => {
         </div>
 
         {/* Mobile Search Bar */}
-        <div className="lg:hidden mt-2 relative">
+        {mobileSearchOpen && <div className="lg:hidden mt-2 relative">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
@@ -450,7 +476,7 @@ const AuthenticatedHeader = () => {
               )}
             </div>
           )}
-        </div>
+        </div>}
       </div>
     </header>
     <BottomNav />

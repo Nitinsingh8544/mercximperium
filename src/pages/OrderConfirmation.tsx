@@ -69,6 +69,9 @@ const OrderConfirmation = () => {
                     <p className="shrink-0 text-sm font-semibold text-foreground">
                       {order.product_currency || "₹"}{Number(order.total_amount).toLocaleString("en-IN")}
                     </p>
+                    <Button variant="ghost" size="sm" className="shrink-0 px-2 text-xs" onClick={() => navigate(`/orders/${order.id}`)}>
+                      Track
+                    </Button>
                   </div>
                 ))}
               </div>
